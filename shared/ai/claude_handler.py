@@ -142,11 +142,74 @@ class ClaudeHandler:
         
         # For normal Claude forwarding, check if --continue should be added
         if '--continue' not in claude_cmd and next_prompt is None:
-            # Add --continue for normal conversation flow
-            claude_cmd = claude_cmd.replace('--print', '--print --continue')
+            # Check if CI needs fresh start (after sundown)
+            needs_fresh = registry.get_needs_fresh_start(ci_name) if hasattr(registry, 'get_needs_fresh_start') else False
+            
+            if not needs_fresh:
+                # Add --continue for normal conversation flow
+                claude_cmd = claude_cmd.replace('--print', '--print --continue')
+            else:
+                # Clear the fresh start flag after use
+                if hasattr(registry, 'set_needs_fresh_start'):
+                    registry.set_needs_fresh_start(ci_name, False)
         
         # Check for buffered messages from other CIs
         from shared.aish.src.core.unified_sender import get_buffered_messages
+        buffered = get_buffered_messages(ci_name, clear=False)  # Don't clear yet
+        
+        # TOKEN MANAGEMENT: Check if prompt will fit
+        try:
+            from Rhetor.rhetor.core.token_manager import get_token_manager
+            token_mgr = get_token_manager()
+            
+            # Determine model from command
+            if 'opus' in claude_cmd:
+                model = 'claude-opus-4'
+            elif 'sonnet' in claude_cmd:
+                model = 'claude-3-5-sonnet'
+            elif 'haiku' in claude_cmd:
+                model = 'claude-3-5-haiku'
+            else:
+                model = 'claude-3-sonnet'  # Default
+            
+            # Initialize tracking if needed
+            if ci_name not in token_mgr.usage_tracker:
+                token_mgr.init_ci_tracking(ci_name, model)
+            
+            # Estimate prompt size
+            system_prompt = ""  # TODO: Get actual system prompt if available
+            estimate = token_mgr.estimate_prompt_size(
+                ci_name, 
+                message,
+                system_prompt=system_prompt,
+                buffered_messages=buffered or ""
+            )
+            
+            # Check if we should trigger sundown
+            should_sundown, reason = token_mgr.should_sundown(ci_name)
+            
+            if not estimate['fits']:
+                print(f"[Claude Handler] WARNING: Prompt may exceed token limit for {ci_name}")
+                print(f"  Total tokens: {estimate['total']}, Limit: {estimate['limit']}")
+                print(f"  Recommendation: {estimate['recommendation']}")
+                
+                # If critical, we might want to trigger sundown
+                if estimate['percentage'] >= 0.95:
+                    print(f"[Claude Handler] CRITICAL: Triggering emergency sundown for {ci_name}")
+                    # TODO: Implement emergency sundown procedure
+                    
+            elif should_sundown:
+                print(f"[Claude Handler] Sundown recommended for {ci_name}: {reason}")
+                
+            # Update usage tracking
+            token_mgr.update_usage(ci_name, 'buffered_messages', buffered or "")
+            token_mgr.update_usage(ci_name, 'conversation_history', message)
+            
+        except Exception as e:
+            # Don't fail if token management has issues
+            print(f"[Claude Handler] Token management error (non-fatal): {e}")
+        
+        # Now clear the buffered messages after checking
         buffered = get_buffered_messages(ci_name, clear=True)
         
         # Combine user message with buffered messages

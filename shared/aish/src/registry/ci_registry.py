@@ -650,6 +650,40 @@ class CIRegistry:
             return True
         return False
     
+    def set_needs_fresh_start(self, ci_name: str, needs_fresh: bool = True) -> bool:
+        """Set whether CI needs a fresh start (no --continue).
+        Used after sundown to prevent continuation of old context.
+        
+        Args:
+            ci_name: Name of the CI
+            needs_fresh: Whether to skip --continue on next interaction
+            
+        Returns:
+            Success status
+        """
+        ci_name = ci_name.lower()
+        if ci_name not in self._context_state:
+            self._context_state[ci_name] = {}
+        
+        self._context_state[ci_name]['needs_fresh_start'] = needs_fresh
+        self._save_context_state()
+        return True
+    
+    def get_needs_fresh_start(self, ci_name: str) -> bool:
+        """Check if CI needs fresh start (no --continue).
+        
+        Args:
+            ci_name: Name of the CI
+            
+        Returns:
+            Whether to skip --continue
+        """
+        ci_name = ci_name.lower()
+        if ci_name not in self._context_state:
+            return False
+        
+        return self._context_state[ci_name].get('needs_fresh_start', False)
+    
     @integration_point(
         title="CI Exchange Storage",
         description="Stores complete user message and CI response exchanges",
