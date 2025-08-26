@@ -13,9 +13,56 @@ from typing import Dict, Any, Optional, List
 from datetime import datetime
 from pathlib import Path
 
+# Import landmarks with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        ci_orchestrated,
+        state_checkpoint,
+        integration_point,
+        ci_collaboration
+    )
+except ImportError:
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    def ci_orchestrated(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    def integration_point(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    def ci_collaboration(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+
 logger = logging.getLogger(__name__)
 
 
+@architecture_decision(
+    title="CI Agency in Context Management",
+    description="CIs prepare for tomorrow like humans planning their day",
+    rationale="CIs need agency to decide what's important to preserve",
+    alternatives_considered=["Automatic extraction", "Fixed templates", "Full context dump"],
+    impacts=["ci_autonomy", "context_quality", "memory_efficiency"],
+    decided_by="Casey",
+    decision_date="2025-08-26"
+)
+@ci_orchestrated(
+    title="Sundown/Sunrise Orchestration",
+    description="Apollo manages graceful context transitions for all CIs",
+    orchestrator="apollo",
+    workflow=["detect_limit", "request_summary", "save_state", "restore_context"],
+    ci_capabilities=["self_summarization", "priority_identification", "context_restoration"]
+)
 class SundownSunriseManager:
     """Manages sundown/sunrise operations for CIs."""
     
@@ -24,6 +71,13 @@ class SundownSunriseManager:
         self.active_sundowns = {}
         self.sunrise_queue = {}
         
+    @ci_collaboration(
+        title="CI Sundown Protocol",
+        description="CI creates their own tomorrow preparation",
+        participants=["apollo", "target_ci", "engram"],
+        coordination_method="request_response",
+        synchronization="async_with_callback"
+    )
     async def sundown(self, ci_name: str, reason: Optional[str] = None) -> Dict[str, Any]:
         """
         Execute sundown procedure for a CI.

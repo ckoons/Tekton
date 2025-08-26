@@ -14,9 +14,20 @@ from typing import List, Optional
 
 # Add parent paths for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
-from shared.ai.sundown_sunrise import SundownSunrise
-from shared.aish.src.registry.ci_registry import CIRegistry
+try:
+    from Apollo.apollo.core.sundown_sunrise import get_sundown_sunrise_manager
+    from Rhetor.rhetor.core.token_manager import get_token_manager
+except ImportError:
+    # Fallback to old implementation
+    from shared.ai.sundown_sunrise import SundownSunrise
+    def get_sundown_sunrise_manager():
+        return SundownSunrise()
+    def get_token_manager():
+        return None
+
+from shared.aish.src.registry.ci_registry import get_registry
 
 
 def handle_sundown_command(args: List[str]) -> bool:
@@ -24,6 +35,7 @@ def handle_sundown_command(args: List[str]) -> bool:
     Handle the sundown command.
     
     Usage: aish sundown <ci-name> [reason]
+           aish sundown status
     
     Args:
         args: Command arguments
@@ -31,11 +43,17 @@ def handle_sundown_command(args: List[str]) -> bool:
     Returns:
         bool: Success status
     """
+    # Check for status command first
+    if len(args) > 1 and args[1] == 'status':
+        return handle_sundown_status_command(args)
+    
     if len(args) < 2:
         print("Usage: aish sundown <ci-name> [reason]")
+        print("       aish sundown status")
         print("\nExamples:")
         print("  aish sundown hermes")
         print("  aish sundown sophia 'Complex analysis complete'")
+        print("  aish sundown status")
         print("\nSundown gracefully preserves CI context when approaching limits.")
         return False
     
@@ -43,11 +61,11 @@ def handle_sundown_command(args: List[str]) -> bool:
     reason = ' '.join(args[2:]) if len(args) > 2 else "Manual sundown requested"
     
     # Check if CI exists
-    registry = CIRegistry()
-    ci_dict = registry.get_all()
+    registry = get_registry()
+    forward_states = registry.list_forward_states()
     
     # Normalize CI name
-    valid_cis = list(ci_dict.keys()) if ci_dict else []
+    valid_cis = list(forward_states.keys()) if forward_states else []
     if ci_name not in valid_cis:
         # Try to find a match
         matches = [ci for ci in valid_cis if ci.startswith(ci_name)]
@@ -70,8 +88,28 @@ def handle_sundown_command(args: List[str]) -> bool:
     
     # Run sundown
     async def run_sundown():
-        ss = SundownSunrise()
-        result = await ss.sundown(ci_name, context)
+        manager = get_sundown_sunrise_manager()
+        token_mgr = get_token_manager()
+        
+        # Check token usage if available
+        if token_mgr and hasattr(token_mgr, 'should_sundown'):
+            should_sundown, check_reason = token_mgr.should_sundown(ci_name)
+            usage = token_mgr.get_status(ci_name) if hasattr(token_mgr, 'get_status') else {}
+            
+            print(f"\nToken usage for {ci_name}: {usage.get('usage_percentage', 0):.1f}%")
+            if should_sundown:
+                print(f"Sundown recommended: {check_reason}")
+        
+        # Use new or old manager
+        if hasattr(manager, 'initiate_sundown'):
+            # New manager
+            # DON'T set fresh start yet - CI needs context to summarize!
+            result = await manager.initiate_sundown(ci_name, reason=reason)
+            # NOTE: Fresh start should be set AFTER the CI responds with summary
+            # For now, this needs to be handled by monitoring the response
+        else:
+            # Old manager fallback
+            result = await manager.sundown(ci_name, context)
         
         print(f"\n🌅 Sundown initiated for {ci_name}")
         print(f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
@@ -113,11 +151,11 @@ def handle_sunrise_command(args: List[str]) -> bool:
     ci_name = args[1].lower()
     
     # Check if CI exists
-    registry = CIRegistry()
-    ci_dict = registry.get_all()
+    registry = get_registry()
+    forward_states = registry.list_forward_states()
     
     # Normalize CI name
-    valid_cis = list(ci_dict.keys()) if ci_dict else []
+    valid_cis = list(forward_states.keys()) if forward_states else []
     if ci_name not in valid_cis:
         # Try to find a match
         matches = [ci for ci in valid_cis if ci.startswith(ci_name)]
@@ -133,8 +171,25 @@ def handle_sunrise_command(args: List[str]) -> bool:
     
     # Run sunrise
     async def run_sunrise():
-        ss = SundownSunrise()
-        result = await ss.sunrise(ci_name)
+        manager = get_sundown_sunrise_manager()
+        token_mgr = get_token_manager()
+        
+        # Use new or old manager
+        if hasattr(manager, 'restore_context'):
+            # New manager - restore context
+            result = await manager.restore_context(ci_name)
+            
+            # Clear fresh start flag
+            registry.set_needs_fresh_start(ci_name, False)
+            
+            # Initialize new token tracking if available
+            if token_mgr and ci_name in token_mgr.usage_tracker:
+                forward_state = registry.get_forward_state(ci_name)
+                model = forward_state.get('model', 'claude-3-sonnet') if forward_state else 'claude-3-sonnet'
+                token_mgr.init_ci_tracking(ci_name, model)
+        else:
+            # Old manager fallback
+            result = await manager.sunrise(ci_name)
         
         if not result.get('success', False):
             print(f"\n⚠️  {result.get('message', 'No sundown state found')}")
@@ -186,7 +241,7 @@ def handle_sundown_status_command(args: List[str]) -> bool:
     from shared.env import TektonEnviron
     
     tekton_root = TektonEnviron.get('TEKTON_ROOT', Path.home() / '.tekton')
-    sundown_path = Path(tekton_root) / 'sundown'
+    sundown_path = Path(tekton_root) / 'Apollo' / 'sundown'
     
     if not sundown_path.exists():
         print("No sundown states found.")
@@ -257,10 +312,7 @@ def handle_command(args: List[str]) -> bool:
     command = args[0].lower()
     
     if command == 'sundown':
-        if len(args) > 1 and args[1] == 'status':
-            return handle_sundown_status_command(args)
-        else:
-            return handle_sundown_command(args)
+        return handle_sundown_command(args)
     elif command == 'sunrise':
         return handle_sunrise_command(args)
     else:

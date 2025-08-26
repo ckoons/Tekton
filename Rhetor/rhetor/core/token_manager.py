@@ -15,9 +15,57 @@ import tiktoken
 
 from shared.env import TektonEnviron
 
+# Import landmarks with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        performance_boundary,
+        state_checkpoint,
+        ci_collaboration,
+        danger_zone
+    )
+except ImportError:
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    def performance_boundary(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    def ci_collaboration(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    def danger_zone(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+
 logger = logging.getLogger(__name__)
 
 
+@architecture_decision(
+    title="Token Budget Management System",
+    description="Proactive token management preventing context window overflows",
+    rationale="CIs need agency to manage their context like humans planning their day",
+    alternatives_considered=["Error-driven recovery", "Fixed context windows", "Automatic truncation"],
+    impacts=["ci_autonomy", "context_preservation", "conversation_continuity"],
+    decided_by="Casey & Amy",
+    decision_date="2025-08-26"
+)
+@state_checkpoint(
+    title="CI Token Usage Tracking",
+    description="Per-CI token usage state with model-specific budgets",
+    state_type="memory",
+    persistence=False,
+    consistency_requirements="Real-time accuracy for sundown decisions",
+    recovery_strategy="Reinitialize from conversation history"
+)
 class TokenManager:
     """
     Manages token budgets and usage tracking for CIs.
@@ -97,6 +145,13 @@ class TokenManager:
                 
         return self.token_counters[model]
     
+    @performance_boundary(
+        title="Token Counting",
+        description="Fast token counting using tiktoken for accurate budget tracking",
+        sla="<10ms for typical messages",
+        optimization_notes="Encoder caching prevents repeated initialization",
+        measured_impact="Enables real-time token tracking without latency"
+    )
     def count_tokens(self, text: str, model: str = 'gpt-3.5-turbo') -> int:
         """
         Count tokens in text for the specified model.
@@ -228,6 +283,13 @@ class TokenManager:
         
         return tracker['usage']['total'] / model_limit
     
+    @ci_collaboration(
+        title="Sundown Decision Logic",
+        description="Multi-factor decision for when CIs should preserve context",
+        participants=["token_manager", "ci_agent"],
+        coordination_method="threshold_monitoring",
+        synchronization="proactive_notification"
+    )
     def should_sundown(self, ci_name: str) -> Tuple[bool, str]:
         """
         Check if a CI should enter sundown.
@@ -243,6 +305,18 @@ class TokenManager:
             
         usage_pct = self.get_usage_percentage(ci_name)
         tracker = self.usage_tracker[ci_name]
+        
+        # Log usage
+        try:
+            from .token_logger import get_token_logger
+            logger = get_token_logger()
+            logger.log_usage(ci_name, {
+                'usage_percentage': usage_pct * 100,
+                'model': tracker['model'],
+                'message_count': tracker.get('message_count', 0)
+            })
+        except:
+            pass  # Don't fail if logger has issues
         
         # Check critical threshold
         if usage_pct >= self.sundown_thresholds['critical']:

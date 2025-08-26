@@ -159,15 +159,30 @@ def update_last_output(ci_name, output):
 
 ## Trigger Conditions
 
+### Token Management Integration (New)
+
+The system now includes proactive token management through Rhetor's TokenManager:
+
+```python
+# Token-based triggers
+TOKEN_THRESHOLDS = {
+    'warning': 0.60,      # 60% - Show warning
+    'suggest': 0.75,      # 75% - Suggest sundown
+    'auto': 0.85,         # 85% - Auto-trigger sundown
+    'critical': 0.95      # 95% - Force emergency sundown
+}
+```
+
 ### Primary Triggers
 - **Context Stress**: >50% working memory usage
+- **Token Usage**: Automatic at 85%, critical at 95%
 - **Mood Indicators**: Confusion, fatigue, repetition
 - **Quality Degradation**: Decreasing coherence scores
 - **Time-Based**: Extended continuous work periods
 
 ### Secondary Triggers
 - **Task Boundaries**: Natural breakpoints in work
-- **User-Initiated**: Manual `/sunset` command
+- **User-Initiated**: Manual `aish sundown` command
 - **CI-Requested**: Model self-identifies need for rest
 - **Pattern Detection**: Apollo identifies degradation trends
 
@@ -210,6 +225,26 @@ claude --print --append-system-prompt "{apollo_task_prompt + sunrise_context}"
 - **Transparent to User**: Seamless experience
 - **Predictable Behavior**: Clear state machine
 - **Observable States**: Easy to monitor and debug
+
+## Implementation Components
+
+### Token Manager (Rhetor/rhetor/core/token_manager.py)
+- Proactive token tracking across models
+- Multi-threshold warnings and triggers
+- Budget allocation by component (system, history, working, response)
+- Real-time usage monitoring with tiktoken
+
+### Sundown/Sunrise Manager (Apollo/apollo/core/sundown_sunrise.py)
+- Graceful context preservation with CI agency
+- State persistence to JSON
+- Automatic sunrise context injection
+- Integration with claude_handler for --continue management
+
+### CLI Commands (shared/aish/src/commands/)
+- `aish sundown <ci> [reason]` - Manual sundown trigger
+- `aish sunrise <ci>` - Restore CI with context
+- `aish sundown status` - View CIs in sundown
+- Full integration with token monitoring
 
 ## Example Flow
 

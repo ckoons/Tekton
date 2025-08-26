@@ -15,7 +15,9 @@ try:
     from landmarks import (
         architecture_decision,
         integration_point,
-        message_buffer
+        message_buffer,
+        state_checkpoint,
+        performance_boundary
     )
 except ImportError:
     def architecture_decision(**kwargs):
@@ -25,6 +27,12 @@ except ImportError:
         def decorator(func): return func
         return decorator
     def message_buffer(**kwargs):
+        def decorator(func): return func
+        return decorator
+    def state_checkpoint(**kwargs):
+        def decorator(func): return func
+        return decorator
+    def performance_boundary(**kwargs):
         def decorator(func): return func
         return decorator
 
@@ -48,6 +56,17 @@ class ClaudeHandler:
     def __init__(self):
         self.claude_processes = {}  # Track active Claude processes per CI
         
+    @integration_point(
+        name="CI Message Forwarding",
+        description="Main entry point for forwarding CI messages to Claude",
+        integrates_with=["TokenManager", "SundownSunriseManager", "CIRegistry"],
+        data_flow="ci_message -> token_check -> sundown_check -> claude_execution"
+    )
+    @state_checkpoint(
+        name="Token Usage Check",
+        checkpoint_type="validation",
+        description="Validates token budget before message processing"
+    )
     async def handle_forwarded_message(self, ci_name: str, message: str) -> str:
         """
         Handle a message for a forwarded CI.
@@ -157,7 +176,9 @@ class ClaudeHandler:
         from shared.aish.src.core.unified_sender import get_buffered_messages
         buffered = get_buffered_messages(ci_name, clear=False)  # Don't clear yet
         
-        # TOKEN MANAGEMENT: Check if prompt will fit
+        # @integration_point: TOKEN MANAGEMENT
+        # Integration: claude_handler → TokenManager → sundown decision
+        # This section integrates with Rhetor's TokenManager for proactive management
         try:
             from Rhetor.rhetor.core.token_manager import get_token_manager
             token_mgr = get_token_manager()
@@ -193,13 +214,45 @@ class ClaudeHandler:
                 print(f"  Total tokens: {estimate['total']}, Limit: {estimate['limit']}")
                 print(f"  Recommendation: {estimate['recommendation']}")
                 
-                # If critical, we might want to trigger sundown
+                # @state_checkpoint: Critical token threshold
+                # If critical, PREVENT sending and force sundown
                 if estimate['percentage'] >= 0.95:
                     print(f"[Claude Handler] CRITICAL: Triggering emergency sundown for {ci_name}")
-                    # TODO: Implement emergency sundown procedure
                     
-            elif should_sundown:
-                print(f"[Claude Handler] Sundown recommended for {ci_name}: {reason}")
+                    # PREVENT the message from being sent
+                    error_msg = (
+                        f"🛑 PROMPT TOO LARGE: {estimate['percentage']:.1f}% of token limit\n"
+                        f"Total tokens: {estimate['total']:,} / Limit: {estimate['limit']:,}\n\n"
+                        f"Automatic sundown triggered. The CI needs to preserve context first.\n"
+                        f"Run: aish sundown {ci_name}\n"
+                        f"Then: aish sunrise {ci_name}"
+                    )
+                    
+                    # Set fresh start flag
+                    registry.set_needs_fresh_start(ci_name, True)
+                    
+                    # Return error instead of sending to Claude
+                    return error_msg
+                    
+            elif should_sundown and estimate['percentage'] >= 0.85:
+                print(f"[Claude Handler] AUTO-TRIGGERING SUNDOWN for {ci_name}: {reason}")
+                
+                # Auto-inject sundown prompt WITH context (use --continue)
+                sundown_prompt = (
+                    "\n\n[SYSTEM: Approaching token limit. Time to wrap up.]\n"
+                    "Please summarize:\n"
+                    "1. What you've been working on\n"
+                    "2. Key decisions or insights\n"
+                    "3. What should continue tomorrow\n"
+                    "Keep it concise but complete.\n\n"
+                )
+                
+                # Prepend sundown prompt to user message
+                combined_message = sundown_prompt + combined_message
+                print(f"[Claude Handler] Injected sundown prompt, keeping context with --continue")
+                
+                # Mark that after THIS response, we need fresh start
+                # TODO: Need to monitor response and set flag after
                 
             # Update usage tracking
             token_mgr.update_usage(ci_name, 'buffered_messages', buffered or "")
@@ -220,8 +273,24 @@ class ClaudeHandler:
             combined_message = message
         
         # Execute Claude with the combined message
-        return await self.execute_claude(claude_cmd, combined_message, ci_name)
+        response = await self.execute_claude(claude_cmd, combined_message, ci_name)
+        
+        # Monitor response for sundown completion
+        try:
+            from shared.ai.response_monitor import handle_post_response
+            handle_post_response(ci_name, combined_message, response)
+        except Exception as e:
+            # Don't fail if monitor has issues
+            print(f"[Claude Handler] Response monitor error (non-fatal): {e}")
+        
+        return response
     
+    @performance_boundary(
+        name="Claude Process Execution",
+        timeout_ms=300000,  # 5 minutes
+        sla_ms=60000,  # Expected 1 minute response
+        description="No timeout for Claude - can take 5+ minutes for complex tasks"
+    )
     async def execute_claude(self, claude_cmd: str, message: str, ci_name: str) -> str:
         """
         Execute Claude command with message.
