@@ -53,7 +53,7 @@ logger = logging.getLogger('aish-proxy')
 def configure_terminal_logging():
     """Configure logging for terminal instance to append to terma.log with proper format."""
     # Get terminal info
-    terminal_name = TektonEnviron.get('TERMA_TERMINAL_NAME', 'unknown')
+    terminal_name = TektonEnviron.get('TEKTON_NAME', 'unknown')
     pid = os.getpid()
     
     # Set up terma.log path
@@ -298,7 +298,7 @@ def start_heartbeat_daemon():
             heartbeat_data = {
                 "terma_id": terma_session_id,
                 "pid": os.getpid(),
-                "name": TektonEnviron.get('TERMA_TERMINAL_NAME', 'aish Terminal'),
+                "name": TektonEnviron.get('TEKTON_NAME', 'aish Terminal'),
                 "working_dir": os.getcwd(),
                 "terminal_app": TektonEnviron.get('TERM_PROGRAM', 'unknown'),
                 "aish_version": "3.0.0",
@@ -592,7 +592,7 @@ def main():
         configure_terminal_logging()
         
         # Log terminal startup
-        terminal_name = TektonEnviron.get('TERMA_TERMINAL_NAME', 'unknown')
+        terminal_name = TektonEnviron.get('TEKTON_NAME', 'unknown')
         session_id = TektonEnviron.get('TERMA_SESSION_ID', 'unknown')
         logger.info(f"Terminal starting - name: {terminal_name}, session: {session_id}, shell: {shell}")
         

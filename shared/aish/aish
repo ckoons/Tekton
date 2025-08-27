@@ -314,7 +314,7 @@ def _handle_ai_command(args, shell, ai_names):
         
         # Determine sender name - try terma first, then fall back to USER
         sender_name = None
-        terma_name = TektonEnviron.get('TERMA_TERMINAL_NAME')
+        terma_name = TektonEnviron.get('TEKTON_NAME')
         if terma_name and terma_name != 'unnamed':
             sender_name = terma_name
         else:
@@ -488,7 +488,7 @@ Environment variables:
     # Handle special commands first
     if args.ai_or_script == 'whoami':
         # Show terminal name from environment
-        terminal_name = TektonEnviron.get('TERMA_TERMINAL_NAME', 'Not in terma')
+        terminal_name = TektonEnviron.get('TEKTON_NAME', 'Not in terma')
         print(terminal_name)
         return
     

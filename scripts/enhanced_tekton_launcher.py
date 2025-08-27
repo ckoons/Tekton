@@ -704,6 +704,27 @@ class EnhancedComponentLauncher:
                 else:
                     env['PYTHONPATH'] = tekton_root
             
+            # @integration_point: Greek Chorus Sender Identification
+            # Set TEKTON_NAME for Greek Chorus components
+            # This allows CIs to identify which Greek Chorus member sent them messages
+            greek_chorus_components = [
+                'apollo', 'athena', 'rhetor', 'hermes', 'sophia', 
+                'engram', 'ergon', 'harmonia', 'metis', 'noesis', 
+                'numa', 'penia', 'prometheus', 'synthesis', 'telos',
+                'terma', 'hephaestus', 'tekton-core', 'tekton_core'
+            ]
+            
+            # Normalize the component name for comparison
+            component_lower = component_name.lower().replace('_', '-')
+            
+            # Check if this is a Greek Chorus component
+            if component_lower in greek_chorus_components or normalized_name in greek_chorus_components:
+                # Set TEKTON_NAME to identify this Greek Chorus member
+                env['TEKTON_NAME'] = component_name
+                
+                if self.verbose:
+                    self.log(f"Set TEKTON_NAME={component_name} for Greek Chorus member", "env", component_name)
+            
             # Change to component directory
             component_dir = self.get_component_directory(component_name)
                 

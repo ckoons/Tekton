@@ -293,11 +293,19 @@ class CILauncher:
             self.logger.info(f"Launching {ai_id} on port {ai_port}")
             self.logger.debug(f"Launch command: {' '.join(cmd)}")
             
+            # @integration_point: Greek Chorus Sender Identification for AI CIs
+            # Set TEKTON_NAME to identify forwarded CIs too
+            env = {**os.environ, 'PYTHONPATH': tekton_root}
+            
+            # Set TEKTON_NAME to the AI's component name
+            # This allows forwarded CIs to know their identity
+            env['TEKTON_NAME'] = ai_id  # Use ai_id which includes -ci suffix
+            
             process = subprocess.Popen(
                 cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                env={**os.environ, 'PYTHONPATH': tekton_root}
+                env=env
             )
             
             self.launched_ais[ai_id] = process

@@ -10,7 +10,7 @@ TEKTON_ROOT="/Users/cskoons/projects/github/Tekton"
 cd "$TEKTON_ROOT/Terma"
 
 # Launch a test terminal that will process commands
-export TERMA_TERMINAL_NAME="InboxTest"
+export TEKTON_NAME="InboxTest"
 export TERMA_SESSION_ID="test-$$"
 export TERMA_ENDPOINT="http://localhost:8004"
 

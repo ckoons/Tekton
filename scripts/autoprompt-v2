@@ -6,7 +6,7 @@ PIDFILE="$HOME/.autoprompt.pid"
 DEFAULT_INTERVAL=2  # 2 seconds default - keep the CI active!
 
 # Get terminal name from environment
-TERMINAL_NAME=${TERMA_TERMINAL_NAME:-$(whoami)}
+TERMINAL_NAME=${TEKTON_NAME:-$(whoami)}
 
 case "$1" in
     start)

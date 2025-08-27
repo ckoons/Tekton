@@ -25,7 +25,7 @@ tekton-core/scripts/
 
 ISSUE_NUMBER=$1
 DESCRIPTION=$2
-TERMINAL_NAME=$TERMA_TERMINAL_NAME
+TERMINAL_NAME=$TEKTON_NAME
 
 if [ -z "$ISSUE_NUMBER" ] || [ -z "$DESCRIPTION" ]; then
     echo "Usage: $0 <issue-number> <branch-description>"

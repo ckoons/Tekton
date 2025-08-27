@@ -471,10 +471,10 @@ class TerminalLauncher:
         config.env["TERMA_SESSION_ID"] = terma_id
         # Use tekton_url to get the correct endpoint for this environment
         config.env["TERMA_ENDPOINT"] = tekton_url('terma', '')
-        config.env["TERMA_TERMINAL_NAME"] = config.name
+        config.env["TEKTON_NAME"] = config.name
         # Debug: Log the session ID we're using
         self.logger.info(f"DEBUG: Setting TERMA_SESSION_ID={terma_id}")
-        self.logger.info(f"DEBUG: Setting TERMA_TERMINAL_NAME={config.name}")
+        self.logger.info(f"DEBUG: Setting TEKTON_NAME={config.name}")
         self.logger.info(f"Terminal name: {config.name}")
         self.logger.info(f"Terminal endpoint: {config.env['TERMA_ENDPOINT']}")
         

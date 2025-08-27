@@ -318,6 +318,30 @@ class ClaudeHandler:
             # This ensures each instance (Tekton, Coder-A/B/C) uses its own context
             launch_dir = str(tekton_root)
             
+            # @integration_point: Greek Chorus Sender Identification for Claude
+            # Set TEKTON_NAME for forwarded Claude processes
+            # This allows Claude to know which CI it's representing
+            env = os.environ.copy()
+            
+            # Check if forward state has terminal_name stored
+            terminal_name = ci_name
+            if forward_state and isinstance(forward_state.get('args'), str):
+                try:
+                    import json
+                    # Try to parse args as JSON to get terminal_name
+                    forward_data = json.loads(forward_state['args'])
+                    if 'terminal_name' in forward_data:
+                        terminal_name = forward_data['terminal_name']
+                except:
+                    # Fall back to default behavior
+                    if terminal_name.endswith('-ci'):
+                        terminal_name = terminal_name[:-3]
+            else:
+                # Default behavior: remove -ci suffix if present
+                if terminal_name.endswith('-ci'):
+                    terminal_name = terminal_name[:-3]
+            
+            env['TEKTON_NAME'] = terminal_name
             
             # Create subprocess with specified working directory
             process = await asyncio.create_subprocess_exec(
@@ -325,7 +349,8 @@ class ClaudeHandler:
                 stdin=asyncio.subprocess.PIPE,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
-                cwd=launch_dir  # Set working directory for Claude
+                cwd=launch_dir,  # Set working directory for Claude
+                env=env  # Pass environment with TEKTON_NAME
             )
             
             # Send message and get response - NO TIMEOUT for Claude

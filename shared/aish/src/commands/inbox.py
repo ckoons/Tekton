@@ -239,7 +239,7 @@ def clear_inbox(ci_name: str, inbox_type: str, from_filter: Optional[str] = None
 def get_current_ci() -> str:
     """Get current CI name from environment"""
     # Try terma terminal name first
-    ci_name = TektonEnviron.get('TERMA_TERMINAL_NAME')
+    ci_name = TektonEnviron.get('TEKTON_NAME')
     if ci_name:
         return ci_name
     

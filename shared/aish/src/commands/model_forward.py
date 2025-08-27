@@ -124,6 +124,8 @@ def handle_model_unforward_command(args):
 def set_claude_forward(ci_name, model, args):
     """Set up Claude forwarding for a CI"""
     
+    import json
+    
     registry = get_registry()
     
     # Check if CI exists
@@ -136,9 +138,26 @@ def set_claude_forward(ci_name, model, args):
     # Resolve the model alias to specific model
     resolved_model = resolve_model_alias(model)
     
-    # Set forward state in registry with resolved model
-    if registry.set_forward_state(ci_name, resolved_model, args):
+    # @architecture_decision: Store CI Identity in Forward State
+    # Each forwarded CI stores its terminal name in the forward state
+    # This ensures Claude processes spawned for messages have correct identity
+    
+    # Remove -ci suffix for cleaner terminal name
+    terminal_name = ci_name[:-3] if ci_name.endswith('-ci') else ci_name
+    
+    # Store forward info including terminal identity
+    forward_data = {
+        'terminal_name': terminal_name,
+        'original_args': args
+    }
+    
+    # Combine args with identity info as JSON
+    args_with_identity = json.dumps(forward_data)
+    
+    # Set forward state in registry with identity info
+    if registry.set_forward_state(ci_name, resolved_model, args_with_identity):
         print(f"✓ Forwarded {ci_name} to {model}")
+        print(f"  Identity: TEKTON_NAME will be set to '{terminal_name}'")
         if resolved_model != model:
             print(f"  Resolved to: {resolved_model}")
         if args:

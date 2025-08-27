@@ -186,7 +186,7 @@ def terma_list_terminals():
 def terma_whoami():
     """Show current terminal information."""
     try:
-        name = TektonEnviron.get('TERMA_TERMINAL_NAME', 'unnamed')
+        name = TektonEnviron.get('TEKTON_NAME', 'unnamed')
         session_id = TektonEnviron.get('TERMA_SESSION_ID', 'unknown')
         pid = os.getpid()
         
@@ -257,7 +257,7 @@ def terma_error_report(message):
         
         error_data = {
             "terma_id": TektonEnviron.get('TERMA_SESSION_ID', 'unknown'),
-            "terminal_name": TektonEnviron.get('TERMA_TERMINAL_NAME', 'unnamed'),
+            "terminal_name": TektonEnviron.get('TEKTON_NAME', 'unnamed'),
             "timestamp": datetime.now().isoformat(),
             "error_message": message,
             "type": "user_report"
@@ -277,7 +277,7 @@ def terma_send_message(target, message):
     try:
         # Get sender info
         sender_id = TektonEnviron.get('TERMA_SESSION_ID', 'unknown')
-        sender_name = TektonEnviron.get('TERMA_TERMINAL_NAME', 'unnamed')
+        sender_name = TektonEnviron.get('TEKTON_NAME', 'unnamed')
         
         if sender_id == 'unknown':
             print("This terminal was not launched through Terma")

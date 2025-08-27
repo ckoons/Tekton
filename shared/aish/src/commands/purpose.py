@@ -94,7 +94,7 @@ class PurposeCommand:
         print(f"  {self.ci_purposes_dir}")
         
         # If running in the target terminal, export TEKTON_PURPOSE
-        current_terminal = TektonEnviron.get('TERMA_TERMINAL_NAME', '')
+        current_terminal = TektonEnviron.get('TEKTON_NAME', '')
         if current_terminal.lower() == terminal_name.lower():
             TektonEnviron.set('TEKTON_TERMINAL_PURPOSE', purpose_string)
             print(f"\nExported TEKTON_TERMINAL_PURPOSE='{purpose_string}'")
@@ -250,7 +250,7 @@ class PurposeCommand:
     )
     def show_current_purpose(self) -> None:
         """Show the current terminal's purpose and playbook content."""
-        terminal_name = TektonEnviron.get('TERMA_TERMINAL_NAME', '')
+        terminal_name = TektonEnviron.get('TEKTON_NAME', '')
         if not terminal_name:
             print("Not in a Terma-launched terminal")
             return

@@ -242,7 +242,7 @@ def send_to_ci(ci_name: str, message: str, sender_name: Optional[str] = None,
             
             # Use provided sender_name or get from environment
             if not sender_name:
-                sender_name = TektonEnviron.get('TERMA_TERMINAL_NAME', 'aish')
+                sender_name = TektonEnviron.get('TEKTON_NAME', 'aish')
             
             msg_data = {
                 "from": {

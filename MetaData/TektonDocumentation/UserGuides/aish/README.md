@@ -205,7 +205,7 @@ aish review list
 
 aish respects these environment variables:
 - `TEKTON_ROOT`: Root directory of your Tekton installation
-- `TERMA_TERMINAL_NAME`: Your terminal's name (set by Terma)
+- `TEKTON_NAME`: Your terminal's name (set by Terma)
 - `TEKTON_DEBUG`: Enable debug output
 
 ## Troubleshooting

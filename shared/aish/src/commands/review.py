@@ -102,7 +102,7 @@ def start_review() -> int:
     os.close(temp_fd)  # Close the file descriptor, script will handle the file
     
     # Get terminal metadata
-    terminal_name = TektonEnviron.get('TERMA_TERMINAL_NAME', 'unknown')
+    terminal_name = TektonEnviron.get('TEKTON_NAME', 'unknown')
     terminal_purpose = TektonEnviron.get('TEKTON_TERMINAL_PURPOSE', '')
     terminal_role = TektonEnviron.get('TEKTON_TERMINAL_ROLE', 'coding')
     

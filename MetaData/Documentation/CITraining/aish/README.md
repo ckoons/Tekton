@@ -288,7 +288,7 @@ aish -r http://custom-rhetor:8003 apollo "message"
 
 - `RHETOR_ENDPOINT` - Override default Rhetor location
 - `TERMA_SESSION_ID` - Your terminal session identifier
-- `TERMA_TERMINAL_NAME` - Your terminal's friendly name
+- `TEKTON_NAME` - Your terminal's friendly name
 - `TEKTON_ROOT` - Tekton installation directory
 - `AISH_DEBUG` - Enable debug output
 

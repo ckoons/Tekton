@@ -82,7 +82,7 @@ When launched via Terma, terminals automatically have:
 - `AISH_ACTIVE` - Set by aish-proxy when active
 - `AISH_DEBUG` - Enable debug output
 - `TERMA_SESSION_ID` - Set by Terma for terminal tracking
-- `TERMA_TERMINAL_NAME` - Terminal name for messaging
+- `TEKTON_NAME` - Terminal name for messaging
 
 ## Known Issues
 

@@ -243,7 +243,7 @@ def forward_project(args: List[str]) -> bool:
         terminal_name = target_terminal
     else:
         # Get current terminal name
-        terminal_name = TektonEnviron.get('TERMA_TERMINAL_NAME')
+        terminal_name = TektonEnviron.get('TEKTON_NAME')
         if not terminal_name:
             print("Error: Not running in a Terma terminal")
             print("Project forwarding requires a named Terma terminal session")

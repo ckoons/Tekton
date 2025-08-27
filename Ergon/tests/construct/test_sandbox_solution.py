@@ -23,6 +23,11 @@ import sys
 import platform
 import socket
 import pwd
+from pathlib import Path
+
+# Add path for TektonEnviron
+sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+from shared.env import TektonEnviron
 
 print("=== Sandbox Test Solution ===")
 print(f"Python Version: {sys.version}")
@@ -30,7 +35,7 @@ print(f"Platform: {platform.platform()}")
 print(f"Hostname: {socket.gethostname()}")
 print(f"Current User: {pwd.getpwuid(os.getuid()).pw_name}")
 print(f"Working Directory: {os.getcwd()}")
-print(f"Environment Sandbox ID: {os.environ.get('SANDBOX_ID', 'Not set')}")
+print(f"Environment Sandbox ID: {TektonEnviron.get('SANDBOX_ID', 'Not set')}")
 
 # List workspace contents
 print("\\n=== Workspace Contents ===")
