@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rhetor UI Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1e1e2e; color: #cdd6f4; }
+        button { margin: 10px; padding: 10px 20px; background: #673AB7; color: white; border: none; cursor: pointer; }
+        button:hover { background: #7c4dff; }
+        pre { background: #313244; padding: 10px; border-radius: 5px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #2e7d32; color: white; }
+        .error { background: #c62828; color: white; }
+    </style>
+</head>
+<body>
+    <h1>Rhetor Model Management Test</h1>
+    
+    <button onclick="testModels()">Test Models Endpoint</button>
+    <button onclick="testAssignments()">Test Assignments Endpoint</button>
+    <button onclick="testDropdownPopulation()">Test Dropdown Population</button>
+    
+    <div id="status"></div>
+    <pre id="output"></pre>
+    
+    <h2>Test Dropdown</h2>
+    <select id="test-dropdown">
+        <option>Not populated yet...</option>
+    </select>
+    
+    <script>
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.className = 'status ' + type;
+            status.textContent = message;
+        }
+        
+        function showOutput(data) {
+            const output = document.getElementById('output');
+            output.textContent = JSON.stringify(data, null, 2);
+        }
+        
+        async function testModels() {
+            try {
+                showStatus('Testing models endpoint...', 'info');
+                const response = await fetch('http://localhost:8103/api/models/');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                showStatus(`Success! Loaded ${data.length} models`, 'success');
+                showOutput(data);
+                
+                // Populate test dropdown
+                const select = document.getElementById('test-dropdown');
+                select.innerHTML = '<option>Select a model...</option>';
+                
+                // Group by provider
+                const byProvider = {};
+                data.forEach(model => {
+                    if (!byProvider[model.provider]) byProvider[model.provider] = [];
+                    byProvider[model.provider].push(model);
+                });
+                
+                Object.entries(byProvider).forEach(([provider, models]) => {
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = provider;
+                    models.forEach(model => {
+                        const option = document.createElement('option');
+                        option.value = model.id;
+                        option.textContent = model.name;
+                        optgroup.appendChild(option);
+                    });
+                    select.appendChild(optgroup);
+                });
+                
+            } catch (error) {
+                showStatus(`Error: ${error.message}`, 'error');
+                showOutput({ error: error.message });
+            }
+        }
+        
+        async function testAssignments() {
+            try {
+                showStatus('Testing assignments endpoint...', 'info');
+                const response = await fetch('http://localhost:8103/api/models/assignments');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                showStatus('Success! Loaded assignments', 'success');
+                showOutput(data);
+                
+            } catch (error) {
+                showStatus(`Error: ${error.message}`, 'error');
+                showOutput({ error: error.message });
+            }
+        }
+        
+        function testDropdownPopulation() {
+            const select = document.getElementById('test-dropdown');
+            if (select.options.length > 1) {
+                showStatus('Dropdown is populated with ' + (select.options.length - 1) + ' models', 'success');
+            } else {
+                showStatus('Dropdown is empty - run Test Models first', 'error');
+            }
+        }
+        
+        // Auto-test on load
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                console.log('Running auto-test...');
+                testModels();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

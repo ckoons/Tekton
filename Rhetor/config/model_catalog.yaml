@@ -1,0 +1,279 @@
+# Model Catalog - Central source of truth for all available models
+# This is the ONLY place where models are defined
+version: "2.0.0"
+last_updated: "2025-08-27"
+
+providers:
+  anthropic:
+    name: "Anthropic"
+    status: "active"
+    api_key_env: "ANTHROPIC_API_KEY"
+    models:
+      - id: claude-opus-4-20250827
+        name: Claude Opus 4
+        aliases: ["opus-4", "claude-opus-4", "opus4", "claude-opus"]
+        capabilities: ["code", "planning", "reasoning", "chat", "vision", "functions"]
+        context_window: 500000
+        max_output: 16384
+        deprecated: false
+        
+      - id: claude-sonnet-4-20250827
+        name: Claude Sonnet 4
+        aliases: ["sonnet-4", "claude-sonnet-4", "sonnet4", "claude-latest", "sonnet"]
+        capabilities: ["code", "planning", "reasoning", "chat", "vision", "functions"]
+        context_window: 300000
+        max_output: 8192
+        deprecated: false
+        
+      - id: claude-3-5-haiku-20241022
+        name: Claude Haiku 3.5
+        aliases: ["haiku-3.5", "claude-haiku", "haiku"]
+        capabilities: ["chat", "reasoning", "code"]
+        context_window: 200000
+        max_output: 8192
+        deprecated: false
+
+  openai:
+    name: "OpenAI"
+    status: "active"
+    api_key_env: "OPENAI_API_KEY"
+    models:
+      - id: gpt-5-20250827
+        name: GPT-5
+        aliases: ["gpt5", "gpt-5"]
+        capabilities: ["code", "planning", "reasoning", "chat", "vision", "functions"]
+        context_window: 256000
+        max_output: 16384
+        deprecated: false
+        
+      - id: gpt-5-mini-20250827
+        name: GPT-5 Mini
+        aliases: ["gpt5-mini", "gpt-5-mini"]
+        capabilities: ["code", "reasoning", "chat"]
+        context_window: 128000
+        max_output: 8192
+        deprecated: false
+        
+      - id: gpt-5-nano-20250827
+        name: GPT-5 Nano
+        aliases: ["gpt5-nano", "gpt-5-nano"]
+        capabilities: ["chat", "reasoning"]
+        context_window: 32000
+        max_output: 4096
+        deprecated: false
+        
+      - id: gpt-4-1-20250827
+        name: GPT-4.1
+        aliases: ["gpt4.1", "gpt-4.1"]
+        capabilities: ["code", "planning", "reasoning", "chat", "vision", "functions"]
+        context_window: 128000
+        max_output: 8192
+        deprecated: false
+
+  xai:
+    name: "X/AI"
+    status: "active"
+    api_key_env: "XAI_API_KEY"
+    models:
+      - id: grok-4-0709
+        name: Grok-4-0709
+        aliases: ["grok4", "grok-4"]
+        capabilities: ["code", "planning", "reasoning", "chat"]
+        context_window: 256000
+        max_output: 16384
+        deprecated: false
+        
+      - id: grok-3-20250827
+        name: Grok-3
+        aliases: ["grok3", "grok-3"]
+        capabilities: ["code", "reasoning", "chat"]
+        context_window: 128000
+        max_output: 8192
+        deprecated: false
+        
+      - id: grok-3-mini-20250827
+        name: Grok-3-mini
+        aliases: ["grok3-mini", "grok-3-mini"]
+        capabilities: ["chat", "reasoning"]
+        context_window: 64000
+        max_output: 4096
+        deprecated: false
+        
+      - id: grok-code-fast-1
+        name: Grok Code Fast 1
+        aliases: ["grok-code", "grok-code-fast"]
+        capabilities: ["code"]
+        context_window: 32000
+        max_output: 8192
+        deprecated: false
+
+  gemini:
+    name: "Google Gemini"
+    status: "active"
+    api_key_env: "GEMINI_API_KEY"
+    models:
+      - id: gemini-2-5-pro
+        name: Gemini 2.5 Pro
+        aliases: ["gemini-pro", "gemini-2.5-pro"]
+        capabilities: ["code", "planning", "reasoning", "chat", "vision"]
+        context_window: 2000000
+        max_output: 16384
+        deprecated: false
+        
+      - id: gemini-2-5-flash
+        name: Gemini 2.5 Flash
+        aliases: ["gemini-flash", "gemini-2.5-flash"]
+        capabilities: ["code", "reasoning", "chat", "vision"]
+        context_window: 1000000
+        max_output: 8192
+        deprecated: false
+        
+      - id: gemini-2-5-flash-lite
+        name: Gemini 2.5 Flash-Lite
+        aliases: ["gemini-lite", "gemini-flash-lite"]
+        capabilities: ["chat", "reasoning"]
+        context_window: 500000
+        max_output: 4096
+        deprecated: false
+
+  ollama:
+    name: "Ollama (Local)"
+    status: "active"
+    base_url: "http://localhost:11434"
+    models:
+      - id: gpt-oss:120b
+        name: GPT-OSS 120B
+        aliases: ["gpt-oss-large"]
+        capabilities: ["code", "planning", "reasoning", "chat"]
+        context_window: 128000
+        max_output: 8192
+        deprecated: false
+        
+      - id: gpt-oss:20b
+        name: GPT-OSS 20B
+        aliases: ["gpt-oss"]
+        capabilities: ["code", "reasoning", "chat"]
+        context_window: 64000
+        max_output: 4096
+        deprecated: false
+        
+      - id: llama3.3:70b
+        name: Llama 3.3 70B
+        aliases: ["llama3.3", "llama-3.3", "llama3.2:latest"]
+        capabilities: ["code", "reasoning", "chat"]
+        context_window: 128000
+        max_output: 8192
+        deprecated: false
+        
+      - id: deepseek-r1:32b
+        name: DeepSeek R1 32B
+        aliases: ["deepseek-r1", "deepseek"]
+        capabilities: ["code", "reasoning"]
+        context_window: 64000
+        max_output: 8192
+        deprecated: false
+        
+      - id: qwen2.5-coder:32b-instruct
+        name: Qwen 2.5 Coder 32B
+        aliases: ["qwen-coder", "qwen2.5-coder", "qwen2.5-coder:32b"]
+        capabilities: ["code"]
+        context_window: 128000
+        max_output: 8192
+        deprecated: false
+        
+      - id: codestral:22b
+        name: Codestral 22B
+        aliases: ["codestral", "codestral:latest"]
+        capabilities: ["code"]
+        context_window: 32000
+        max_output: 4096
+        deprecated: false
+        
+      - id: command-r:35b
+        name: Command-R 35B
+        aliases: ["command-r"]
+        capabilities: ["reasoning", "chat"]
+        context_window: 128000
+        max_output: 4096
+        deprecated: false
+        
+      - id: solar:10.7b
+        name: Solar 10.7B
+        aliases: ["solar"]
+        capabilities: ["reasoning", "chat"]
+        context_window: 32000
+        max_output: 4096
+        deprecated: false
+        
+      - id: gemma3:4b
+        name: Gemma 3 4B
+        aliases: ["gemma3", "gemma"]
+        capabilities: ["chat"]
+        context_window: 8192
+        max_output: 2048
+        deprecated: false
+
+# Model selection rules
+selection_rules:
+  # Priority order for each capability
+  capability_priority:
+    code:
+      - claude-opus-4-20250827
+      - gpt-5-20250827
+      - claude-sonnet-4-20250827
+      - grok-code-fast-1
+      - deepseek-r1:32b
+      - qwen2.5-coder:32b-instruct
+      
+    planning:
+      - claude-opus-4-20250827
+      - gpt-5-20250827
+      - claude-sonnet-4-20250827
+      - gemini-2-5-pro
+      - grok-4-0709
+      
+    reasoning:
+      - claude-opus-4-20250827
+      - gpt-5-20250827
+      - claude-sonnet-4-20250827
+      - gemini-2-5-pro
+      - grok-3-20250827
+      - llama3.3:70b
+      
+    chat:
+      - claude-3-5-haiku-20241022
+      - gpt-5-nano-20250827
+      - gemini-2-5-flash-lite
+      - grok-3-mini-20250827
+      - solar:10.7b
+      
+  # Cost tiers
+  cost_tiers:
+    expensive:
+      - claude-opus-4-20250827
+      - gpt-5-20250827
+      - gemini-2-5-pro
+      
+    moderate:
+      - claude-sonnet-4-20250827
+      - gpt-4-1-20250827
+      - grok-4-0709
+      - gemini-2-5-flash
+      
+    cheap:
+      - claude-3-5-haiku-20241022
+      - gpt-5-mini-20250827
+      - gpt-5-nano-20250827
+      - grok-3-mini-20250827
+      - gemini-2-5-flash-lite
+      
+    free:  # Local models
+      - gpt-oss:120b
+      - gpt-oss:20b
+      - llama3.3:70b
+      - deepseek-r1:32b
+      - qwen2.5-coder:32b-instruct
+      - codestral:22b
+      - command-r:35b
+      - solar:10.7b
+      - gemma3:4b

@@ -510,6 +510,125 @@ console.log('[FILE_TRACE] Loading: rhetor-service.js');
     }
     
     /**
+     * Get model assignments matrix
+     * @returns {Promise<Object>} Model assignments (defaults and components)
+     */
+    async getModelAssignments() {
+      this.debug('getModelAssignments', 'Getting model assignments');
+      
+      if (!this.connected) {
+        await this.connect();
+      }
+      
+      try {
+        const response = await fetch(`${this.apiUrl}/models/assignments`);
+        
+        if (!response.ok) {
+          this.error('getModelAssignments', 'Failed to fetch assignments', { 
+            status: response.status,
+            statusText: response.statusText
+          });
+          throw new Error(`Failed to fetch assignments: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        this.debug('getModelAssignments', 'Assignments fetched', { 
+          defaults: Object.keys(data.defaults || {}),
+          components: Object.keys(data.components || {}).length
+        });
+        
+        return data;
+      } catch (error) {
+        this.error('getModelAssignments', 'Error fetching assignments', { error: error.message });
+        throw error;
+      }
+    }
+    
+    /**
+     * Update model assignment for a component
+     * @param {string} component - Component name
+     * @param {string} capability - Capability (code, planning, reasoning, chat)
+     * @param {string} modelId - Model ID or "use_default"
+     * @returns {Promise<Object>} Update result
+     */
+    async updateModelAssignment(component, capability, modelId) {
+      this.debug('updateModelAssignment', 'Updating model assignment', { 
+        component, capability, modelId 
+      });
+      
+      if (!this.connected) {
+        await this.connect();
+      }
+      
+      try {
+        const response = await fetch(`${this.apiUrl}/models/assignments/component`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            component,
+            capability,
+            model_id: modelId
+          })
+        });
+        
+        if (!response.ok) {
+          this.error('updateModelAssignment', 'Failed to update assignment', { 
+            status: response.status,
+            statusText: response.statusText
+          });
+          throw new Error(`Failed to update assignment: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        this.debug('updateModelAssignment', 'Assignment updated', data);
+        
+        // Dispatch event for UI update
+        this.dispatchEvent('assignmentUpdated', { component, capability, modelId });
+        
+        return data;
+      } catch (error) {
+        this.error('updateModelAssignment', 'Error updating assignment', { error: error.message });
+        throw error;
+      }
+    }
+    
+    /**
+     * Get all available models (across all providers)
+     * @param {boolean} [includeDeprecated=false] - Include deprecated models
+     * @returns {Promise<Array>} Available models
+     */
+    async getAllModels(includeDeprecated = false) {
+      this.debug('getAllModels', 'Getting all available models', { includeDeprecated });
+      
+      if (!this.connected) {
+        await this.connect();
+      }
+      
+      try {
+        const url = `${this.apiUrl}/models${includeDeprecated ? '?include_deprecated=true' : ''}`;
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+          this.error('getAllModels', 'Failed to fetch models', { 
+            status: response.status,
+            statusText: response.statusText
+          });
+          throw new Error(`Failed to fetch models: ${response.status}`);
+        }
+        
+        const models = await response.json();
+        this.debug('getAllModels', 'Models fetched', { count: models.length });
+        
+        return models;
+      } catch (error) {
+        this.error('getAllModels', 'Error fetching models', { error: error.message });
+        throw error;
+      }
+    }
+    
+    /**
      * Get models for a specific provider
      * @param {string} provider - Provider name
      * @param {boolean} [forceRefresh=false] - Force refresh from server

@@ -201,6 +201,14 @@ try:
 except ImportError as e:
     logger.warning(f"Specialist Streaming endpoints not available: {e}")
 
+# Add Model Management endpoints
+try:
+    from .model_endpoints import router as model_router
+    app.include_router(model_router)
+    logger.info("Model Management endpoints added to Rhetor API")
+except ImportError as e:
+    logger.warning(f"Model Management endpoints not available: {e}")
+
 
 # Enable CORS
 app.add_middleware(

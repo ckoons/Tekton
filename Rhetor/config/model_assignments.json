@@ -1,0 +1,166 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2025-08-27T12:46:15.942601",
+  "description": "Model assignments matrix for Tekton components",
+  "defaults": {
+    "code": "claude-sonnet-4-20250827",
+    "planning": "claude-sonnet-4-20250827",
+    "reasoning": "claude-sonnet-4-20250827",
+    "chat": "claude-3-5-haiku-20241022"
+  },
+  "components": {
+    "apollo": {
+      "description": "Attention/Prediction",
+      "assignments": {
+        "code": "use_default",
+        "planning": "use_default",
+        "reasoning": "use_default",
+        "chat": "use_default"
+      }
+    },
+    "athena": {
+      "description": "Knowledge",
+      "assignments": {
+        "code": "use_default",
+        "planning": "use_default",
+        "reasoning": "use_default",
+        "chat": "use_default"
+      }
+    },
+    "engram": {
+      "description": "Memory",
+      "assignments": {
+        "code": "use_default",
+        "planning": "use_default",
+        "reasoning": "use_default",
+        "chat": "use_default"
+      }
+    },
+    "ergon": {
+      "description": "Automation/Solutions",
+      "assignments": {
+        "code": "claude-opus-4-20250827",
+        "planning": "use_default",
+        "reasoning": "use_default",
+        "chat": "llama3.3:70b"
+      }
+    },
+    "harmonia": {
+      "description": "Orchestration",
+      "assignments": {
+        "code": "use_default",
+        "planning": "use_default",
+        "reasoning": "use_default",
+        "chat": "use_default"
+      }
+    },
+    "hermes": {
+      "description": "Tektons/Federation",
+      "assignments": {
+        "code": "use_default",
+        "planning": "use_default",
+        "reasoning": "use_default",
+        "chat": "use_default"
+      }
+    },
+    "metis": {
+      "description": "Workflows",
+      "assignments": {
+        "code": "use_default",
+        "planning": "claude-sonnet-4-20250827",
+        "reasoning": "use_default",
+        "chat": "use_default"
+      }
+    },
+    "noesis": {
+      "description": "Discovery",
+      "assignments": {
+        "code": "use_default",
+        "planning": "use_default",
+        "reasoning": "claude-sonnet-4-20250827",
+        "chat": "use_default"
+      }
+    },
+    "numa": {
+      "description": "Companion",
+      "assignments": {
+        "code": "use_default",
+        "planning": "use_default",
+        "reasoning": "use_default",
+        "chat": "claude-sonnet-4-20250827"
+      }
+    },
+    "penia": {
+      "description": "LLM Cost",
+      "assignments": {
+        "code": "use_default",
+        "planning": "use_default",
+        "reasoning": "use_default",
+        "chat": "gpt-5-nano-20250827"
+      }
+    },
+    "prometheus": {
+      "description": "Planning",
+      "assignments": {
+        "code": "use_default",
+        "planning": "claude-sonnet-4-20250827",
+        "reasoning": "claude-sonnet-4-20250827",
+        "chat": "use_default"
+      }
+    },
+    "rhetor": {
+      "description": "Prompt/Context",
+      "assignments": {
+        "code": "claude-sonnet-4-20250827",
+        "planning": "claude-sonnet-4-20250827",
+        "reasoning": "claude-sonnet-4-20250827",
+        "chat": "claude-sonnet-4-20250827"
+      }
+    },
+    "sophia": {
+      "description": "Learning",
+      "assignments": {
+        "code": "use_default",
+        "planning": "use_default",
+        "reasoning": "claude-sonnet-4-20250827",
+        "chat": "use_default"
+      }
+    },
+    "synthesis": {
+      "description": "Integration",
+      "assignments": {
+        "code": "claude-sonnet-4-20250827",
+        "planning": "use_default",
+        "reasoning": "use_default",
+        "chat": "use_default"
+      }
+    },
+    "tekton": {
+      "description": "Projects",
+      "assignments": {
+        "code": "use_default",
+        "planning": "use_default",
+        "reasoning": "use_default",
+        "chat": "use_default"
+      }
+    },
+    "telos": {
+      "description": "Requirements",
+      "assignments": {
+        "code": "use_default",
+        "planning": "claude-sonnet-4-20250827",
+        "reasoning": "use_default",
+        "chat": "use_default"
+      }
+    },
+    "terma": {
+      "description": "Terminal",
+      "assignments": {
+        "code": "use_default",
+        "planning": "use_default",
+        "reasoning": "use_default",
+        "chat": "claude-3-5-haiku-20241022"
+      }
+    }
+  }
+}

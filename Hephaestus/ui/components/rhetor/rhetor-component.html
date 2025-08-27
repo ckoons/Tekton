@@ -856,7 +856,7 @@
                       data-tekton-status="active">●</span>
               </div>
               <div class="rhetor__provider-info">
-                <span class="rhetor__provider-models">4 models</span>
+                <span class="rhetor__provider-models">3 models</span>
                 <label class="rhetor__provider-toggle">
                   <input type="checkbox" checked>
                   <span class="rhetor__provider-toggle-slider"></span>
@@ -870,7 +870,7 @@
                 <span class="rhetor__provider-status">●</span>
               </div>
               <div class="rhetor__provider-info">
-                <span class="rhetor__provider-models">5 models</span>
+                <span class="rhetor__provider-models">9 models</span>
                 <label class="rhetor__provider-toggle">
                   <input type="checkbox" checked>
                   <span class="rhetor__provider-toggle-slider"></span>
@@ -884,22 +884,49 @@
                 <span class="rhetor__provider-status">●</span>
               </div>
               <div class="rhetor__provider-info">
-                <span class="rhetor__provider-models">2 models</span>
+                <span class="rhetor__provider-models">4 models</span>
                 <label class="rhetor__provider-toggle">
                   <input type="checkbox" checked>
                   <span class="rhetor__provider-toggle-slider"></span>
                 </label>
               </div>
             </div>
-            <!-- Others -->
-            <div class="rhetor__provider-card rhetor__provider-card--inactive" data-provider="others">
+            <!-- X/AI -->
+            <div class="rhetor__provider-card rhetor__provider-card--active" data-provider="xai">
               <div class="rhetor__provider-header">
-                <span class="rhetor__provider-name">Others</span>
-                <span class="rhetor__provider-status">○</span>
+                <span class="rhetor__provider-name">X/AI</span>
+                <span class="rhetor__provider-status">●</span>
               </div>
               <div class="rhetor__provider-info">
-                <span class="rhetor__provider-models">6 available</span>
-                <button class="rhetor__provider-configure">Configure</button>
+                <span class="rhetor__provider-models">4 models</span>
+                <label class="rhetor__provider-toggle">
+                  <input type="checkbox" checked>
+                  <span class="rhetor__provider-toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <!-- Gemini -->
+            <div class="rhetor__provider-card rhetor__provider-card--active" data-provider="gemini">
+              <div class="rhetor__provider-header">
+                <span class="rhetor__provider-name">Gemini</span>
+                <span class="rhetor__provider-status">●</span>
+              </div>
+              <div class="rhetor__provider-info">
+                <span class="rhetor__provider-models">3 models</span>
+                <label class="rhetor__provider-toggle">
+                  <input type="checkbox" checked>
+                  <span class="rhetor__provider-toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <!-- Others / Add Provider -->
+            <div class="rhetor__provider-card rhetor__provider-card--add" data-provider="add-provider">
+              <div class="rhetor__provider-header">
+                <span class="rhetor__provider-name">Add Provider</span>
+                <span class="rhetor__provider-status">+</span>
+              </div>
+              <div class="rhetor__provider-info">
+                <button class="rhetor__provider-configure" onclick="window.rhetor_showAddProviderDialog()">Configure New</button>
               </div>
             </div>
           </div>
@@ -907,7 +934,15 @@
 
         <!-- Model Assignment Matrix -->
         <div class="rhetor__models-section">
-          <h3 class="rhetor__models-section-title">Model Assignment Matrix</h3>
+          <div class="rhetor__models-section-header">
+            <h3 class="rhetor__models-section-title">Model Assignment Matrix</h3>
+            <div class="rhetor__matrix-actions">
+              <button class="rhetor__button rhetor__button--error" onclick="rhetor_saveModelConfig()"
+                      id="rhetor-save-models-btn"
+                      data-tekton-action="save-models">Save</button>
+              <span id="rhetor-save-status" class="rhetor__save-status"></span>
+            </div>
+          </div>
           <div class="rhetor__matrix-container">
             <table class="rhetor__model-matrix">
               <thead>
@@ -927,32 +962,22 @@
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="default" data-task="code">
-                      <option value="claude-3-opus">Claude 3 Opus</option>
-                      <option value="claude-3-sonnet" selected>Claude 3 Sonnet</option>
-                      <option value="gpt-4">GPT-4</option>
-                      <option value="llama3">Llama 3 (Local)</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="default" data-task="planning">
-                      <option value="claude-3-opus">Claude 3 Opus</option>
-                      <option value="claude-3-sonnet" selected>Claude 3 Sonnet</option>
-                      <option value="gpt-4">GPT-4</option>
-                      <option value="mixtral">Mixtral (Local)</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="default" data-task="reasoning">
-                      <option value="claude-3-opus">Claude 3 Opus</option>
-                      <option value="claude-3-sonnet" selected>Claude 3 Sonnet</option>
-                      <option value="gpt-4">GPT-4</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="default" data-task="chat">
-                      <option value="claude-3-haiku" selected>Claude 3 Haiku</option>
-                      <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                      <option value="llama3">Llama 3 (Local)</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                 </tr>
@@ -965,25 +990,22 @@
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="apollo" data-task="code">
-                      <option value="default" selected>Use Default</option>
-                      <option value="claude-3-opus">Claude 3 Opus</option>
-                      <option value="claude-3-sonnet">Claude 3 Sonnet</option>
-                      <option value="llama3">Llama 3 (Local)</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="apollo" data-task="planning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="apollo" data-task="reasoning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="apollo" data-task="chat">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                 </tr>
@@ -995,27 +1017,22 @@
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="athena" data-task="code">
-                      <option value="default" selected>Use Default</option>
-                      <option value="claude-3-opus">Claude 3 Opus</option>
-                      <option value="claude-3-sonnet">Claude 3 Sonnet</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="athena" data-task="planning">
-                      <option value="default" selected>Use Default</option>
-                      <option value="claude-3-sonnet">Claude 3 Sonnet</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="athena" data-task="reasoning">
-                      <option value="default" selected>Use Default</option>
-                      <option value="claude-3-opus">Claude 3 Opus</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="athena" data-task="chat">
-                      <option value="default" selected>Use Default</option>
-                      <option value="claude-3-haiku">Claude 3 Haiku</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                 </tr>
@@ -1027,22 +1044,22 @@
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="engram" data-task="code">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="engram" data-task="planning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="engram" data-task="reasoning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="engram" data-task="chat">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                 </tr>
@@ -1054,24 +1071,22 @@
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="ergon" data-task="code">
-                      <option value="default">Use Default</option>
-                      <option value="claude-3-opus" selected>Claude 3 Opus</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="ergon" data-task="planning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="ergon" data-task="reasoning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="ergon" data-task="chat">
-                      <option value="default">Use Default</option>
-                      <option value="llama3" selected>Llama 3 (Local)</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                 </tr>
@@ -1083,22 +1098,22 @@
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="harmonia" data-task="code">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="harmonia" data-task="planning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="harmonia" data-task="reasoning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="harmonia" data-task="chat">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                 </tr>
@@ -1110,22 +1125,22 @@
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="hermes" data-task="code">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="hermes" data-task="planning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="hermes" data-task="reasoning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="hermes" data-task="chat">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                 </tr>
@@ -1137,22 +1152,22 @@
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="metis" data-task="code">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="metis" data-task="planning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="metis" data-task="reasoning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="metis" data-task="chat">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                 </tr>
@@ -1164,22 +1179,22 @@
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="penia" data-task="code">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="penia" data-task="planning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="penia" data-task="reasoning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="penia" data-task="chat">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                 </tr>
@@ -1191,23 +1206,22 @@
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="prometheus" data-task="code">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="prometheus" data-task="planning">
-                      <option value="default">Use Default</option>
-                      <option value="claude-3-opus" selected>Claude 3 Opus</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="prometheus" data-task="reasoning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="prometheus" data-task="chat">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                 </tr>
@@ -1219,22 +1233,22 @@
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="rhetor" data-task="code">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="rhetor" data-task="planning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="rhetor" data-task="reasoning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="rhetor" data-task="chat">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                 </tr>
@@ -1246,22 +1260,22 @@
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="sophia" data-task="code">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="sophia" data-task="planning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="sophia" data-task="reasoning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="sophia" data-task="chat">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                 </tr>
@@ -1273,22 +1287,22 @@
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="synthesis" data-task="code">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="synthesis" data-task="planning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="synthesis" data-task="reasoning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="synthesis" data-task="chat">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                 </tr>
@@ -1300,22 +1314,22 @@
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="tekton" data-task="code">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="tekton" data-task="planning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="tekton" data-task="reasoning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="tekton" data-task="chat">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                 </tr>
@@ -1327,22 +1341,22 @@
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="telos" data-task="code">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="telos" data-task="planning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="telos" data-task="reasoning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="telos" data-task="chat">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                 </tr>
@@ -1354,31 +1368,27 @@
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="terma" data-task="code">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="terma" data-task="planning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="terma" data-task="reasoning">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                   <td class="rhetor__matrix-cell">
                     <select class="rhetor__model-select" data-component="terma" data-task="chat">
-                      <option value="default" selected>Use Default</option>
+                      <!-- Populated dynamically -->
                     </select>
                   </td>
                 </tr>
               </tbody>
             </table>
-            <div class="rhetor__matrix-actions">
-              <button class="rhetor__button rhetor__button--primary" onclick="rhetor_saveModelConfig()">Save Configuration</button>
-              <button class="rhetor__button" onclick="rhetor_resetModelConfig()">Reset to Defaults</button>
-            </div>
           </div>
         </div>
 
@@ -2918,20 +2928,69 @@ SUCCESS CRITERIA:
     gap: 16px;
   }
 
+  /* Models Section Header */
+  .rhetor__models-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
   .rhetor__provider-card {
     background-color: var(--bg-primary, #1e1e2e);
-    border: 1px solid var(--border-color, #444444);
+    border: 2px solid;
     border-radius: 6px;
     padding: 16px;
     transition: all 0.2s ease;
   }
 
+  /* Provider specific colors */
+  .rhetor__provider-card[data-provider="anthropic"] {
+    border-color: #ff6b35;  /* Orange */
+  }
+
+  .rhetor__provider-card[data-provider="ollama"] {
+    border-color: #17a2b8;  /* Teal */
+  }
+
+  .rhetor__provider-card[data-provider="openai"] {
+    border-color: #ffc107;  /* Yellow/Gold */
+  }
+
+  .rhetor__provider-card[data-provider="xai"] {
+    border-color: #1DA1F2;  /* Twitter Blue for X/AI */
+  }
+
+  .rhetor__provider-card[data-provider="gemini"] {
+    border-color: #4285F4;  /* Google Blue */
+  }
+
+  .rhetor__provider-card[data-provider="others"] {
+    border-color: #007bff;  /* Blue */
+  }
+
+  .rhetor__provider-card--add {
+    border-color: #6c757d;  /* Gray */
+    border-style: dashed;
+    cursor: pointer;
+  }
+
+  .rhetor__provider-card--add:hover {
+    border-color: #007bff;
+    background: rgba(0, 123, 255, 0.05);
+  }
+
+  .rhetor__provider-card:hover {
+    transform: translateY(-2px);
+  }
+
   .rhetor__provider-card--active {
-    border-color: var(--color-accent, #007bff);
+    opacity: 1;
   }
 
   .rhetor__provider-card--inactive {
     opacity: 0.6;
+    border-style: dashed;
   }
 
   .rhetor__provider-header {
@@ -3172,6 +3231,92 @@ SUCCESS CRITERIA:
   .rhetor__matrix-actions {
     display: flex;
     gap: 12px;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  
+  /* Rhetor red button for Save */
+  .rhetor__button--error {
+    background: #e63946;
+    color: white;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+    transition: background 0.2s;
+    border-radius: 0.25rem;
+    cursor: pointer;
+  }
+  
+  .rhetor__button--error:hover:not(:disabled) {
+    background: #d62828;
+  }
+  
+  .rhetor__button--error:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  /* Save status message */
+  .rhetor__save-status {
+    display: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  
+  .rhetor__save-status--success {
+    background: rgba(46, 160, 67, 0.1);
+    color: #2ea043;
+    border: 1px solid rgba(46, 160, 67, 0.2);
+  }
+  
+  .rhetor__save-status--error {
+    background: rgba(230, 57, 70, 0.1);
+    color: #e63946;
+    border: 1px solid rgba(230, 57, 70, 0.2);
+  }
+
+  /* Dialog styles */
+  .rhetor__dialog-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+  }
+
+  .rhetor__dialog {
+    background: var(--bg-primary, #1e1e2e);
+    border: 1px solid var(--border-primary, #313244);
+    border-radius: 8px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+  }
+
+  .rhetor__dialog h3 {
+    margin-top: 0;
+    color: var(--text-primary, #cdd6f4);
+  }
+
+  .rhetor__dialog-content {
+    color: var(--text-secondary, #a6adc8);
+    margin: 1.5rem 0;
+  }
+
+  .rhetor__dialog-content ul {
+    margin-left: 1.5rem;
+  }
+
+  .rhetor__dialog-actions {
+    display: flex;
+    gap: 1rem;
     justify-content: flex-end;
   }
 
@@ -3930,6 +4075,515 @@ if (window.uiManager) {
 
 // TAB SWITCHING NOW HANDLED BY CSS - NO JS NEEDED
 // The radio button pattern handles all tab switching through CSS :checked selectors
+
+// MODEL MANAGEMENT FUNCTIONS
+let modelAssignmentsState = null;  // Store current state
+let originalAssignments = null;    // Store original state for reverting
+
+// Load model assignments when Models tab is clicked
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('[RHETOR] Setting up Models tab handlers');
+    
+    const modelsTab = document.getElementById('tab-models');
+    if (modelsTab) {
+        modelsTab.addEventListener('change', function() {
+            console.log('[RHETOR] Models tab checked:', this.checked);
+            if (this.checked) {
+                window.rhetor_loadModelAssignments();
+            }
+        });
+        
+        // Check if already selected on load
+        if (modelsTab.checked) {
+            console.log('[RHETOR] Models tab already selected on load');
+            window.rhetor_loadModelAssignments();
+        }
+    }
+    
+    // Also handle tab clicks on labels
+    const modelsLabel = document.querySelector('label[for="tab-models"]');
+    if (modelsLabel) {
+        modelsLabel.addEventListener('click', function() {
+            console.log('[RHETOR] Models tab label clicked');
+            setTimeout(() => window.rhetor_loadModelAssignments(), 100);
+        });
+    }
+});
+
+// Load model assignments from backend
+window.rhetor_loadModelAssignments = async function() {
+    console.log('[RHETOR] Loading model assignments');
+    
+    try {
+        // Direct fetch from API
+        const response = await fetch('http://localhost:8103/api/models/assignments');
+        if (!response.ok) {
+            throw new Error(`Failed to load assignments: ${response.status}`);
+        }
+        
+        const assignments = await response.json();
+        console.log('[RHETOR] Assignments loaded:', assignments);
+        modelAssignmentsState = assignments;
+        originalAssignments = JSON.parse(JSON.stringify(assignments)); // Deep copy
+        
+        // Get available models
+        const modelsResponse = await fetch('http://localhost:8103/api/models/?include_deprecated=false');
+        if (!modelsResponse.ok) {
+            throw new Error(`Failed to load models: ${modelsResponse.status}`);
+        }
+        
+        const models = await modelsResponse.json();
+        console.log('[RHETOR] Models loaded:', models.length, 'models');
+        
+        // Update the matrix with actual values
+        window.updateModelMatrix(assignments, models);
+        
+        // Update provider cards
+        window.updateProviderCards();
+        
+        // Also populate Model Testing dropdown
+        window.updateTestModelDropdown(models);
+        
+    } catch (error) {
+        console.error('[RHETOR] Error loading model assignments:', error);
+        window.showSaveStatus('Failed to load model assignments - is Rhetor running on port 8103?', 'error');
+    }
+}
+
+// Update the model matrix UI with data
+window.updateModelMatrix = function(assignments, models) {
+    const matrix = document.querySelector('.rhetor__model-matrix tbody');
+    if (!matrix) return;
+    
+    const capabilities = ['code', 'planning', 'reasoning', 'chat'];
+    
+    // Update ALL selects in the matrix (both default and components)
+    const allSelects = matrix.querySelectorAll('.rhetor__model-select');
+    allSelects.forEach(select => {
+        const component = select.dataset.component;
+        const task = select.dataset.task;
+        
+        if (component === 'default') {
+            // For default row
+            const value = assignments.defaults?.[task] || '';
+            window.updateSelectOptions(select, models, value, false, task);
+        } else {
+            // For component rows  
+            const value = assignments.components?.[component]?.assignments?.[task] || 'use_default';
+            window.updateSelectOptions(select, models, value, true, task);
+        }
+    });
+}
+
+// Update select element with model options
+window.updateSelectOptions = function(select, models, currentValue, allowDefault, capability) {
+    select.innerHTML = '';
+    
+    // Add "Use Default" option for components
+    if (allowDefault) {
+        const defaultOpt = document.createElement('option');
+        defaultOpt.value = 'use_default';
+        defaultOpt.textContent = 'Use Default';
+        select.appendChild(defaultOpt);
+    }
+    
+    // Filter models by capability if provided
+    let filteredModels = models;
+    if (capability) {
+        filteredModels = models.filter(model => 
+            model.capabilities && model.capabilities.includes(capability)
+        );
+    }
+    
+    // Add model options grouped by provider
+    const modelsByProvider = {};
+    filteredModels.forEach(model => {
+        if (!modelsByProvider[model.provider]) {
+            modelsByProvider[model.provider] = [];
+        }
+        modelsByProvider[model.provider].push(model);
+    });
+    
+    // Sort providers for consistent display
+    const providerOrder = ['anthropic', 'openai', 'xai', 'gemini', 'ollama'];
+    const sortedProviders = Object.keys(modelsByProvider).sort((a, b) => {
+        const aIndex = providerOrder.indexOf(a);
+        const bIndex = providerOrder.indexOf(b);
+        if (aIndex === -1 && bIndex === -1) return a.localeCompare(b);
+        if (aIndex === -1) return 1;
+        if (bIndex === -1) return -1;
+        return aIndex - bIndex;
+    });
+    
+    sortedProviders.forEach(provider => {
+        const providerModels = modelsByProvider[provider];
+        if (providerModels.length === 0) return;
+        
+        const optgroup = document.createElement('optgroup');
+        optgroup.label = provider.charAt(0).toUpperCase() + provider.slice(1);
+        
+        providerModels.forEach(model => {
+            const opt = document.createElement('option');
+            opt.value = model.id;
+            opt.textContent = model.name || model.id;
+            optgroup.appendChild(opt);
+        });
+        
+        select.appendChild(optgroup);
+    });
+    
+    // Set current value
+    select.value = currentValue;
+    
+    // If value not found in options, add it as a special option
+    if (select.value !== currentValue && currentValue && currentValue !== 'use_default') {
+        const opt = document.createElement('option');
+        opt.value = currentValue;
+        opt.textContent = `${currentValue} (not available)`;
+        opt.disabled = true;
+        select.insertBefore(opt, select.firstChild);
+        select.value = currentValue;
+    }
+}
+
+// Save model configuration
+window.rhetor_saveModelConfig = async function() {
+    console.log('[RHETOR] Saving model configuration');
+    
+    const saveBtn = document.getElementById('rhetor-save-models-btn');
+    if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving...';
+    }
+    
+    try {
+        const service = window.rhetorService || new RhetorService();
+        const updates = [];
+        
+        // Collect all changes from the matrix
+        const capabilities = ['code', 'planning', 'reasoning', 'chat'];
+        
+        // Check default row changes
+        const defaultRow = document.querySelector('.rhetor__matrix-row--default');
+        if (defaultRow) {
+            capabilities.forEach(cap => {
+                const select = defaultRow.querySelector(`select[data-task="${cap}"]`);
+                if (select) {
+                    const newValue = select.value;
+                    const oldValue = originalAssignments?.defaults?.[cap];
+                    if (newValue !== oldValue) {
+                        updates.push({
+                            component: 'defaults',
+                            capability: cap,
+                            modelId: newValue
+                        });
+                    }
+                }
+            });
+        }
+        
+        // Check component rows
+        const componentRows = document.querySelectorAll('.rhetor__matrix-row:not(.rhetor__matrix-row--default)');
+        componentRows.forEach(row => {
+            const componentName = row.querySelector('.rhetor__component-name')?.textContent?.toLowerCase();
+            if (!componentName) return;
+            
+            capabilities.forEach(cap => {
+                const select = row.querySelector(`select[data-task="${cap}"]`);
+                if (select) {
+                    const newValue = select.value;
+                    const oldValue = originalAssignments?.components?.[componentName]?.assignments?.[cap] || 'use_default';
+                    if (newValue !== oldValue) {
+                        updates.push({
+                            component: componentName,
+                            capability: cap,
+                            modelId: newValue
+                        });
+                    }
+                }
+            });
+        });
+        
+        // Apply all updates
+        for (const update of updates) {
+            if (update.component === 'defaults') {
+                // Update default assignment via special endpoint
+                const response = await fetch('http://localhost:8103/api/models/assignments/default', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        capability: update.capability,
+                        model_id: update.modelId
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to update default: ${response.status}`);
+                }
+            } else {
+                // Update component assignment
+                const response = await fetch('http://localhost:8103/api/models/assignments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        component: update.component,
+                        capability: update.capability,
+                        model_id: update.modelId
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to update assignment: ${response.status}`);
+                }
+            }
+        }
+        
+        // Reload to confirm changes
+        await rhetor_loadModelAssignments();
+        
+        showSaveStatus('Model assignments saved successfully', 'success');
+        
+    } catch (error) {
+        console.error('[RHETOR] Error saving model configuration:', error);
+        showSaveStatus('Failed to save model assignments', 'error');
+    } finally {
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save';
+        }
+    }
+}
+
+// Update Model Testing dropdown
+window.updateTestModelDropdown = function(models) {
+    const testSelect = document.getElementById('test-model-select');
+    if (!testSelect) return;
+    
+    // Clear existing options
+    testSelect.innerHTML = '<option value="">Select a model to test...</option>';
+    
+    // Group models by provider
+    const modelsByProvider = {};
+    models.forEach(model => {
+        if (!modelsByProvider[model.provider]) {
+            modelsByProvider[model.provider] = [];
+        }
+        modelsByProvider[model.provider].push(model);
+    });
+    
+    // Sort providers
+    const providerOrder = ['anthropic', 'openai', 'xai', 'gemini', 'ollama'];
+    const sortedProviders = Object.keys(modelsByProvider).sort((a, b) => {
+        const aIndex = providerOrder.indexOf(a);
+        const bIndex = providerOrder.indexOf(b);
+        if (aIndex === -1 && bIndex === -1) return a.localeCompare(b);
+        if (aIndex === -1) return 1;
+        if (bIndex === -1) return -1;
+        return aIndex - bIndex;
+    });
+    
+    // Add options grouped by provider
+    sortedProviders.forEach(provider => {
+        const providerModels = modelsByProvider[provider];
+        if (providerModels.length === 0) return;
+        
+        const optgroup = document.createElement('optgroup');
+        optgroup.label = provider.charAt(0).toUpperCase() + provider.slice(1);
+        
+        providerModels.forEach(model => {
+            const opt = document.createElement('option');
+            opt.value = model.id;
+            opt.textContent = model.name || model.id;
+            optgroup.appendChild(opt);
+        });
+        
+        testSelect.appendChild(optgroup);
+    });
+    
+    console.log('[RHETOR] Model Testing dropdown updated with', models.length, 'models');
+}
+
+// Update provider cards with actual data
+window.updateProviderCards = async function() {
+    try {
+        // First get all models
+        const response = await fetch('http://localhost:8103/api/models/');
+        if (!response.ok) {
+            console.error('[RHETOR] Failed to fetch models for provider cards');
+            return;
+        }
+        const models = await response.json();
+        
+        // Group by provider
+        const providers = {};
+        models.forEach(model => {
+            if (!providers[model.provider]) {
+                providers[model.provider] = { models: [] };
+            }
+            providers[model.provider].models.push(model);
+        });
+        
+        Object.entries(providers).forEach(([name, info]) => {
+            const card = document.querySelector(`[data-provider="${name}"]`);
+            if (card) {
+                const modelsSpan = card.querySelector('.rhetor__provider-models');
+                if (modelsSpan) {
+                    modelsSpan.textContent = `${info.model_count} models`;
+                }
+                
+                const statusSpan = card.querySelector('.rhetor__provider-status');
+                if (statusSpan && info.status === 'active') {
+                    card.classList.add('rhetor__provider-card--active');
+                    card.classList.remove('rhetor__provider-card--inactive');
+                }
+            }
+        });
+    } catch (error) {
+        console.error('[RHETOR] Error updating provider cards:', error);
+    }
+}
+
+// Show save status message
+window.showSaveStatus = function(message, type) {
+    const statusEl = document.getElementById('rhetor-save-status');
+    if (statusEl) {
+        statusEl.textContent = message;
+        statusEl.className = `rhetor__save-status rhetor__save-status--${type}`;
+        statusEl.style.display = 'inline-block';
+        
+        setTimeout(() => {
+            statusEl.style.display = 'none';
+        }, 3000);
+    }
+}
+
+// Manual test function for debugging
+window.testModelLoading = async function() {
+    console.log('=== TESTING MODEL LOADING ===');
+    
+    // Test 1: Check if service is available
+    console.log('1. Checking RhetorService...');
+    if (typeof RhetorService === 'undefined') {
+        console.error('   ❌ RhetorService not loaded!');
+        return;
+    }
+    console.log('   ✅ RhetorService available');
+    
+    // Test 2: Try to fetch models directly
+    console.log('2. Fetching models directly...');
+    try {
+        const response = await fetch('http://localhost:8003/api/models');
+        if (!response.ok) {
+            console.error('   ❌ Failed to fetch:', response.status);
+            return;
+        }
+        const models = await response.json();
+        console.log(`   ✅ Got ${models.length} models`);
+        console.log('   Sample:', models[0]);
+    } catch (error) {
+        console.error('   ❌ Error:', error.message);
+        console.error('   Is Rhetor running on port 8003?');
+        return;
+    }
+    
+    // Test 3: Try to load via our function
+    console.log('3. Testing rhetor_loadModelAssignments...');
+    await window.rhetor_loadModelAssignments();
+    
+    // Test 4: Check if dropdowns were populated
+    console.log('4. Checking dropdowns...');
+    const selects = document.querySelectorAll('.rhetor__model-select');
+    console.log(`   Found ${selects.length} select elements`);
+    selects.forEach((select, i) => {
+        const optCount = select.querySelectorAll('option').length;
+        const optgroupCount = select.querySelectorAll('optgroup').length;
+        console.log(`   Select ${i}: ${optCount} options in ${optgroupCount} groups`);
+    });
+    
+    console.log('=== TEST COMPLETE ===');
+    console.log('To manually trigger loading: window.rhetor_loadModelAssignments()');
+};
+
+// Test with fake data (no backend needed)
+window.testWithFakeData = function() {
+    console.log('Testing dropdown population with fake data...');
+    
+    const fakeModels = [
+        {id: 'claude-opus-4', name: 'Claude Opus 4', provider: 'anthropic', capabilities: ['code', 'planning', 'reasoning', 'chat']},
+        {id: 'gpt-5', name: 'GPT-5', provider: 'openai', capabilities: ['code', 'planning', 'reasoning', 'chat']},
+        {id: 'llama3', name: 'Llama 3', provider: 'ollama', capabilities: ['code', 'chat']}
+    ];
+    
+    const fakeAssignments = {
+        defaults: {
+            code: 'claude-opus-4',
+            planning: 'claude-opus-4',
+            reasoning: 'claude-opus-4',
+            chat: 'gpt-5'
+        },
+        components: {
+            ergon: {
+                assignments: {
+                    code: 'claude-opus-4',
+                    planning: 'use_default',
+                    reasoning: 'use_default',
+                    chat: 'llama3'
+                }
+            }
+        }
+    };
+    
+    console.log('Calling updateModelMatrix with fake data...');
+    window.updateModelMatrix(fakeAssignments, fakeModels);
+    
+    console.log('Calling updateTestModelDropdown with fake data...');
+    window.updateTestModelDropdown(fakeModels);
+    
+    console.log('Check the dropdowns now!');
+};
+
+// Show add provider dialog  
+window.rhetor_showAddProviderDialog = function() {
+    console.log('[RHETOR] Showing add provider dialog');
+    
+    // Create a simple dialog for adding a new provider
+    const dialog = document.createElement('div');
+    dialog.className = 'rhetor__dialog-backdrop';
+    dialog.innerHTML = `
+        <div class="rhetor__dialog">
+            <h3>Add New Provider</h3>
+            <div class="rhetor__dialog-content">
+                <p>To add a new provider, edit the model_catalog.yaml file in Rhetor/config/</p>
+                <p>Required fields:</p>
+                <ul>
+                    <li>Provider name and status</li>
+                    <li>API key environment variable</li>
+                    <li>Model definitions with capabilities</li>
+                </ul>
+                <p>After adding, restart Rhetor to load the new provider.</p>
+            </div>
+            <div class="rhetor__dialog-actions">
+                <button class="rhetor__button" onclick="this.closest('.rhetor__dialog-backdrop').remove()">Close</button>
+                <button class="rhetor__button rhetor__button--primary" onclick="window.rhetor_openConfigFile()">Open Config</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(dialog);
+    console.log('[RHETOR] Dialog added to DOM');
+}
+
+// Open configuration file (placeholder - actual implementation would use system editor)
+window.rhetor_openConfigFile = function() {
+    console.log('[RHETOR] Opening model_catalog.yaml for editing');
+    // In a real implementation, this would open the file in the system editor
+    // or provide an in-UI editor
+    alert('Please edit Rhetor/config/model_catalog.yaml to add new providers');
+    document.querySelector('.rhetor__dialog-backdrop')?.remove();
+}
 
 // SEND LLM CHAT FUNCTION - DEPRECATED (now handled by rhetor_sendLLMChatMessage)
 /*
@@ -5527,5 +6181,32 @@ function rhetor_editContext(componentName) {
             });
     }
 }
+
+// Add the missing rhetor_loadAllModels function
+window.rhetor_loadAllModels = async function() {
+    console.log('[RHETOR] Loading all models');
+    try {
+        const response = await fetch('http://localhost:8103/api/models/?include_deprecated=false');
+        if (!response.ok) {
+            throw new Error(`Failed to load models: ${response.status}`);
+        }
+        
+        const models = await response.json();
+        console.log('[RHETOR] Loaded', models.length, 'models');
+        return models;
+    } catch (error) {
+        console.error('[RHETOR] Error loading models:', error);
+        return [];
+    }
+}
+
+// Try loading models when script loads
+console.log('[RHETOR] Script loaded, attempting model load after delay...');
+setTimeout(() => {
+    console.log('[RHETOR] Delayed initialization - loading models...');
+    if (window.rhetor_loadModelAssignments) {
+        window.rhetor_loadModelAssignments();
+    }
+}, 1000);
 
 </script>
