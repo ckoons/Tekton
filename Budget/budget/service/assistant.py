@@ -549,7 +549,6 @@ async def create_budget_assistant():
     try:
         # Import here to avoid circular imports
         from budget.core.engine import get_budget_engine
-        from budget.adapters.llm_adapter import get_llm_client
         
         engine = await get_budget_engine()
         llm_client = await get_llm_client()

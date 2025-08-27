@@ -11,7 +11,6 @@ from datetime import datetime
 import asyncio
 
 from metis.core.task_manager import TaskManager
-from metis.core.llm_adapter import MetisLLMAdapter
 from metis.core.task_decomposer import TaskDecomposer
 from metis.models.enums import TaskStatus
 

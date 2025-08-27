@@ -590,8 +590,7 @@ class RecommendationSystem:
                 
                 # Try to get LLM adapter (may not be available)
                 try:
-                    from .llm_adapter import get_llm_adapter
-                    llm_adapter = await get_llm_adapter()
+        # REMOVED: llm_adapter = await get_llm_adapter()
                     
                     # Generate LLM-enhanced analysis
                     llm_analysis = await llm_adapter.analyze_metrics(
@@ -781,8 +780,7 @@ class RecommendationSystem:
                 
                 # Try to get LLM adapter (may not be available)
                 try:
-                    from .llm_adapter import get_llm_adapter
-                    llm_adapter = await get_llm_adapter()
+        # REMOVED: llm_adapter = await get_llm_adapter()
                     
                     # Create hypothesis from experiment details
                     hypothesis = f"Implementing the changes tested in experiment '{report['name']}' will improve {', '.join(report['metrics'])}"

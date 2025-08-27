@@ -17,7 +17,6 @@ from ..models.shared import LLMAnalysisRequest, LLMRiskAnalysisRequest
 from ..models.shared import StandardResponse
 
 # Import the PrometheusLLMAdapter
-from ...utils.llm_adapter import PrometheusLLMAdapter
 
 # Configure logging
 logger = logging.getLogger("prometheus.api.endpoints.llm_integration")

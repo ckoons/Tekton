@@ -30,7 +30,6 @@ logging.basicConfig(
 logger = logging.getLogger("engram.api.llm_endpoints")
 
 # Import Engram modules
-from engram.core.llm_adapter import LLMAdapter
 from engram.core.memory_manager import MemoryManager
 from engram.api.dependencies import get_memory_manager
 

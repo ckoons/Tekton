@@ -9,7 +9,6 @@ from fastapi import APIRouter, HTTPException, Depends, Query, Path
 from datetime import datetime
 
 from sophia.core.recommendation_system import get_recommendation_system
-from sophia.core.llm_adapter import get_llm_adapter
 from sophia.models.recommendation import (
     RecommendationCreate,
     RecommendationUpdate,

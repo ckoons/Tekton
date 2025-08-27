@@ -21,7 +21,6 @@ if tekton_root not in sys.path:
 from synthesis.core.execution_models import ExecutionContext, ExecutionResult
 from synthesis.core.condition_evaluator import evaluate_condition
 from synthesis.core.loop_handlers import handle_loop_step
-from synthesis.core.llm_adapter import get_llm_adapter
 
 # Configure logging
 logger = logging.getLogger("synthesis.core.step_handlers")

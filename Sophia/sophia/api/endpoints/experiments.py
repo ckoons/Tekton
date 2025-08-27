@@ -9,7 +9,6 @@ from fastapi import APIRouter, HTTPException, Depends, Query, Path, Body
 from datetime import datetime
 
 from sophia.core.experiment_framework import get_experiment_framework
-from sophia.core.llm_adapter import get_llm_adapter
 from sophia.models.experiment import (
     ExperimentCreate,
     ExperimentUpdate,

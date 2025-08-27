@@ -9,7 +9,6 @@ from fastapi import APIRouter, HTTPException, Depends, Query, Path, Body
 from datetime import datetime
 
 from sophia.core.metrics_engine import get_metrics_engine
-from sophia.core.llm_adapter import get_llm_adapter
 from sophia.models.metrics import (
     MetricSubmission,
     MetricQuery,

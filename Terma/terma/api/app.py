@@ -450,7 +450,6 @@ class LLMSetRequest(BaseModel):
 )
 async def get_llm_providers():
     """Get available LLM providers and models"""
-    from ..core.llm_adapter import LLMAdapter
     import aiohttp
 
     # Create LLM adapter
@@ -486,7 +485,6 @@ async def get_llm_providers():
 @app.get("/api/llm/models/{provider_id}", response_model=LLMModelsResponse)
 async def get_llm_models(provider_id: str):
     """Get models for a specific LLM provider"""
-    from ..core.llm_adapter import LLMAdapter
     from ..utils.config import LLM_PROVIDERS
     
     # Check if the provider exists
@@ -505,7 +503,6 @@ async def get_llm_models(provider_id: str):
 @app.post("/api/llm/set", response_model=StatusResponse)
 async def set_llm_provider_model(request: LLMSetRequest):
     """Set the LLM provider and model"""
-    from ..core.llm_adapter import LLMAdapter
     from ..utils.config import LLM_PROVIDERS
     
     # Check if the provider exists

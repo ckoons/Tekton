@@ -11,7 +11,6 @@ from typing import Dict, List, Optional, Any
 from datetime import datetime
 from uuid import uuid4
 
-from metis.core.llm_adapter import MetisLLMAdapter
 from metis.models.task import Task
 from metis.models.subtask import Subtask
 from metis.models.enums import TaskStatus, Priority
@@ -34,7 +33,7 @@ class TaskDecomposer:
         Args:
             llm_adapter: LLM adapter instance (creates new if not provided)
         """
-        self.llm_adapter = llm_adapter or MetisLLMAdapter()
+        # REMOVED: self.llm_adapter = llm_adapter or MetisLLMAdapter()
         logger.info("Task decomposer initialized")
     
     async def decompose_task(self,
