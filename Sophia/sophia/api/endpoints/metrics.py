@@ -35,7 +35,7 @@ async def explain_metrics(
     Translates technical metrics into clear, accessible explanations.
     """
     try:
-        explanation = await llm_adapter.explain_analysis(
+        explanation = await # llm_adapter.explain_analysis(
             analysis_data=metrics_data,
             audience=audience
         )

@@ -236,14 +236,14 @@ async def analyze_retrospective(
         }
         
         # Use the LLM adapter to analyze the retrospective
-        result = await llm_adapter.analyze_retrospective(retro_data)
+        result = await # llm_adapter.analyze_retrospective(retro_data)
         
         # Set up the analysis result structure
         analysis_result = {
             "retrospective_id": analysis.retrospective_id,
             "analysis_type": analysis.analysis_type,
             "timestamp": result.get("timestamp"),
-            "generated_by": result.get("model", llm_adapter.default_model),
+            "generated_by": result.get("model", # llm_adapter.default_model),
             "results": []
         }
         
@@ -356,7 +356,7 @@ async def analyze_retrospective(
         elif analysis.analysis_type == "improvement":
             # Use the existing improvement generation function if available
             try:
-                improvements = await llm_adapter.generate_improvements({"retrospective": retro_data})
+                improvements = await # llm_adapter.generate_improvements({"retrospective": retro_data})
                 
                 # Group improvements by category
                 improvement_categories = {}
@@ -728,7 +728,7 @@ async def get_improvement_suggestions(
             )
             
         # Generate improvement suggestions using the LLM adapter
-        improvements = await llm_adapter.generate_improvements(performance_data)
+        improvements = await # llm_adapter.generate_improvements(performance_data)
         
         # Limit to requested number of suggestions
         if suggestion.max_suggestions and len(improvements) > suggestion.max_suggestions:
@@ -781,7 +781,7 @@ async def get_improvement_suggestions(
             "context_id": suggestion.context_id,
             "analysis_depth": suggestion.analysis_depth,
             "timestamp": improvements[0].get("created_at") if improvements else None,
-            "generated_by": f"{llm_adapter.default_provider}/{llm_adapter.default_model}",
+            "generated_by": f"{# llm_adapter.default_provider}/{# llm_adapter.default_model}",
             "suggestions": formatted_suggestions
         }
         
@@ -891,7 +891,7 @@ async def analyze_risks(
     
     try:
         # Use the LLM adapter to analyze risks
-        risks = await llm_adapter.analyze_risks(project_data)
+        risks = await # llm_adapter.analyze_risks(project_data)
         
         # Add any additional information
         for risk in risks:
@@ -1017,7 +1017,7 @@ async def general_analysis(
         system_prompt += "Provide a thorough analysis of the content, focusing on key insights, main points, and recommendations."
         
         # Generate analysis using LLM adapter
-        response = await llm_adapter.generate_text(
+        response = await # llm_adapter.generate_text(
             prompt=analysis.content,
             system_prompt=system_prompt,
             temperature=0.4,  # Lower temperature for analysis
@@ -1055,8 +1055,8 @@ async def general_analysis(
         analysis_result = {
             "content_summary": analysis.content[:100] + "..." if len(analysis.content) > 100 else analysis.content,
             "analysis_type": analysis.analysis_type,
-            "timestamp": llm_adapter.default_model,  # Use current time
-            "generated_by": f"{llm_adapter.default_provider}/{llm_adapter.default_model}",
+            "timestamp": # llm_adapter.default_model,  # Use current time
+            "generated_by": f"{# llm_adapter.default_provider}/{# llm_adapter.default_model}",
             "results": analysis_content
         }
         

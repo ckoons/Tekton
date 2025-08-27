@@ -593,13 +593,13 @@ class RecommendationSystem:
         # REMOVED: llm_adapter = await get_llm_adapter()
                     
                     # Generate LLM-enhanced analysis
-                    llm_analysis = await llm_adapter.analyze_metrics(
+                    llm_analysis = await # llm_adapter.analyze_metrics(
                         metrics_data=analysis,
                         component_id=component_id
                     )
                     
                     # Generate recommendations based on LLM analysis
-                    llm_recommendations = await llm_adapter.generate_recommendations(
+                    llm_recommendations = await # llm_adapter.generate_recommendations(
                         analysis_results=llm_analysis,
                         target_component=component_id,
                         count=5  # Request 5 recommendations
@@ -786,7 +786,7 @@ class RecommendationSystem:
                     hypothesis = f"Implementing the changes tested in experiment '{report['name']}' will improve {', '.join(report['metrics'])}"
                     
                     # Generate a well-designed experiment with LLM
-                    experiment_design = await llm_adapter.design_experiment(
+                    experiment_design = await # llm_adapter.design_experiment(
                         hypothesis=hypothesis,
                         available_components=report["components"],
                         metrics_summary={"metrics": report["metrics"], "conclusion": report["conclusion"]}
@@ -822,7 +822,7 @@ class RecommendationSystem:
                 # Enhance the description with LLM if available
                 if 'llm_adapter' in locals() and llm_adapter:
                     try:
-                        llm_explanation = await llm_adapter.explain_analysis(
+                        llm_explanation = await # llm_adapter.explain_analysis(
                             analysis_data={
                                 "experiment": report["name"],
                                 "conclusion": report["conclusion"],

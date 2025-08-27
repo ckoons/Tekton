@@ -26,14 +26,14 @@ class TaskDecomposer:
     using LLM capabilities.
     """
     
-    def __init__(self, llm_adapter: Optional[MetisLLMAdapter] = None):
+    def __init__(self, llm_adapter=None):
         """
         Initialize the task decomposer.
         
         Args:
             llm_adapter: LLM adapter instance (creates new if not provided)
         """
-        # REMOVED: self.llm_adapter = llm_adapter or MetisLLMAdapter()
+        # REMOVED: # self.llm_adapter # = llm_adapter or MetisLLMAdapter()
         logger.info("Task decomposer initialized")
     
     async def decompose_task(self,
@@ -58,13 +58,8 @@ class TaskDecomposer:
         max_subtasks = max(1, min(20, max_subtasks))
         
         try:
-            # Call LLM adapter to decompose
-            result = await self.llm_adapter.decompose_task(
-                task_title=task.title,
-                task_description=task.description or "",
-                depth=depth,
-                max_subtasks=max_subtasks
-            )
+            # TODO: Replace with Rhetor client
+            result = {"success": False, "error": "LLM adapter removed - needs Rhetor integration"}
             
             if not result.get("success"):
                 return {

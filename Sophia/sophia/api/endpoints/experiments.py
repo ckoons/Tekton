@@ -38,7 +38,7 @@ async def design_experiment_with_llm(
     Generates detailed experiment methodology, variables, and success criteria.
     """
     try:
-        experiment_design = await llm_adapter.design_experiment(
+        experiment_design = await # llm_adapter.design_experiment(
             hypothesis=hypothesis,
             available_components=available_components,
             metrics_summary=metrics_summary

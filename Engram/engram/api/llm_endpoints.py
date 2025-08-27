@@ -71,14 +71,15 @@ router = APIRouter(
     tags=["LLM"],
 )
 
-# Dependency to get LLM adapter
+# Dependency to get LLM adapter - PLACEHOLDER
 async def get_llm_adapter():
-    return LLMAdapter()
+    # TODO: Replace with Rhetor client
+    return None
 
 @router.post("/chat", response_model=ChatResponse)
 async def chat(
     request: ChatRequest,
-    llm_adapter: LLMAdapter = Depends(get_llm_adapter),
+    llm_adapter = None,  # TODO: Replace with Rhetor client
     memory_manager: MemoryManager = Depends(get_memory_manager)
 ):
     """
@@ -111,7 +112,7 @@ async def chat(
         )
         
         # Get LLM client
-        client = await llm_adapter._get_client()
+        client = await # llm_adapter._get_client()
         
         # Generate text
         response = await client.generate_text(
@@ -155,7 +156,7 @@ async def chat(
 @router.post("/chat/stream")
 async def stream_chat(
     request: ChatRequest,
-    llm_adapter: LLMAdapter = Depends(get_llm_adapter),
+    llm_adapter = None,  # TODO: Replace with Rhetor client
     memory_manager: MemoryManager = Depends(get_memory_manager)
 ):
     """
@@ -194,7 +195,7 @@ async def stream_chat(
         full_response = ""
         
         # Get LLM client
-        client = await llm_adapter._get_client()
+        client = await # llm_adapter._get_client()
         
         try:
             # Start streaming
@@ -224,8 +225,8 @@ async def stream_chat(
                 
             # Get final model info
             model_info = getattr(response_stream, '_model_info', {})
-            model = model_info.get('model', request.model or llm_adapter.default_model)
-            provider = model_info.get('provider', llm_adapter.default_provider)
+            model = model_info.get('model', request.model or # llm_adapter.default_model)
+            provider = model_info.get('provider', # llm_adapter.default_provider)
             
             # Store in memory if requested
             if request.persist_memory:
@@ -264,7 +265,7 @@ async def stream_chat(
 @router.websocket("/chat/ws")
 async def websocket_chat(
     websocket: WebSocket,
-    llm_adapter: LLMAdapter = Depends(get_llm_adapter),
+    llm_adapter = None,  # TODO: Replace with Rhetor client
     memory_manager: MemoryManager = Depends(get_memory_manager)
 ):
     """
@@ -309,7 +310,7 @@ async def websocket_chat(
             )
             
             # Get LLM client
-            client = await llm_adapter._get_client()
+            client = await # llm_adapter._get_client()
             
             if stream:
                 # Create a websocket callback
@@ -345,8 +346,8 @@ async def websocket_chat(
                     
                     # Get final model info
                     model_info = getattr(response_stream, '_model_info', {})
-                    model_used = model_info.get('model', model or llm_adapter.default_model)
-                    provider_used = model_info.get('provider', llm_adapter.default_provider)
+                    model_used = model_info.get('model', model or # llm_adapter.default_model)
+                    provider_used = model_info.get('provider', # llm_adapter.default_provider)
                     
                     # Send completion message
                     await websocket.send_json({
@@ -446,13 +447,13 @@ async def websocket_chat(
 @router.post("/analyze", response_model=LLMAnalysisResponse)
 async def analyze_content(
     request: LLMAnalysisRequest,
-    llm_adapter: LLMAdapter = Depends(get_llm_adapter)
+    # llm_adapter removed - needs Rhetor integration
 ):
     """
     Analyze content using the LLM with enhanced features.
     """
     try:
-        result = await llm_adapter.analyze_memory(
+        result = await # llm_adapter.analyze_memory(
             content=request.content,
             context=request.context,
             model=request.model
@@ -468,13 +469,13 @@ async def analyze_content(
 
 @router.get("/models")
 async def get_models(
-    llm_adapter: LLMAdapter = Depends(get_llm_adapter)
+    # llm_adapter removed - needs Rhetor integration
 ):
     """
     Get available LLM models using the enhanced client features.
     """
     try:
-        models = await llm_adapter.get_available_models()
+        models = await # llm_adapter.get_available_models()
         return models
     except Exception as e:
         logger.error(f"Error getting models: {str(e)}")

@@ -28,12 +28,10 @@ def get_task_manager() -> TaskManager:
         _task_manager = TaskManager()
     return _task_manager
 
-def get_llm_adapter() -> MetisLLMAdapter:
-    """Get or create LLM adapter instance."""
-    global _llm_adapter
-    if _llm_adapter is None:
-        _llm_adapter = MetisLLMAdapter()
-    return _llm_adapter
+def get_llm_adapter():
+    """Get or create LLM adapter instance - PLACEHOLDER."""
+    # TODO: Replace with Rhetor client
+    return None
 
 def get_task_decomposer() -> TaskDecomposer:
     """Get or create TaskDecomposer instance."""
@@ -139,7 +137,7 @@ async def analyze_task_complexity(
             ]
         
         # Analyze complexity
-        result = await llm_adapter.analyze_task_complexity(
+        result = await # llm_adapter.analyze_task_complexity(
             task_title=task.title,
             task_description=task.description or "",
             subtasks=subtasks
@@ -224,7 +222,7 @@ async def suggest_task_order(
                 })
         
         # Get ordering suggestions
-        result = await llm_adapter.suggest_task_order(
+        result = await # llm_adapter.suggest_task_order(
             tasks=task_data,
             dependencies=all_deps
         )
@@ -282,7 +280,7 @@ async def generate_subtasks(
             parent_task_id = new_task.id
         
         # Generate subtasks using LLM
-        result = await llm_adapter.decompose_task(
+        result = await # llm_adapter.decompose_task(
             task_title=title,
             task_description=description,
             depth=2,
@@ -554,7 +552,7 @@ class MetisTaskManager:
     
     def __init__(self):
         self.task_manager = get_task_manager()
-        self.llm_adapter = get_llm_adapter()
+        # self.llm_adapter = get_llm_adapter()
         self.task_decomposer = get_task_decomposer()
     
     async def decompose_task(self, task_id: str, **kwargs):

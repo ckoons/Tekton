@@ -38,7 +38,7 @@ async def analyze_with_llm(
     Useful for getting deeper understanding of metrics or patterns.
     """
     try:
-        analysis_result = await llm_adapter.analyze_metrics(
+        analysis_result = await # llm_adapter.analyze_metrics(
             metrics_data=analysis_data,
             component_id=component_id
         )
@@ -61,7 +61,7 @@ async def generate_recommendations_with_llm(
     Produces structured, actionable recommendations with implementation steps.
     """
     try:
-        recommendations = await llm_adapter.generate_recommendations(
+        recommendations = await # llm_adapter.generate_recommendations(
             analysis_results=analysis_results,
             target_component=component_id,
             count=count
