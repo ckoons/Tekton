@@ -144,7 +144,7 @@ def set_forward(registry, ai_name, terminal_name, json_mode=False):
     # Validate CI name
     valid_ais = ['apollo', 'athena', 'rhetor', 'prometheus', 'synthesis', 
                  'metis', 'harmonia', 'numa', 'noesis', 'engram', 'penia',
-                 'hermes', 'ergon', 'sophia', 'telos', 'hephaestus']
+                 'hermes', 'ergon', 'sophia', 'telos', 'terma', 'hephaestum']
     
     if ai_name not in valid_ais:
         print(f"Unknown CI: {ai_name}")

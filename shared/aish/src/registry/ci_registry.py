@@ -834,9 +834,14 @@ class CIRegistry:
                 states = {}
         
         # Set new state
+        # @integration_point: Store CI identity in forward state
+        # This ensures every Claude subprocess gets correct TEKTON_NAME
+        terminal_name = ci_name[:-3] if ci_name.endswith('-ci') else ci_name
         states[ci_name] = {
             'model': model,
             'args': args,
+            'ci_name': ci_name,  # Store original CI name
+            'terminal_name': terminal_name,  # Store clean name for TEKTON_NAME
             'started': datetime.now().isoformat(),
             'active': True
         }

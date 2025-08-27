@@ -88,7 +88,7 @@ class ClaudeHandler:
             # Handle sunset protocol
             if next_prompt.startswith('SUNSET_PROTOCOL'):
                 # Send sunset message directly
-                response = await self.execute_claude('claude --print', next_prompt, ci_name)
+                response = await self.execute_claude('claude --print', next_prompt, ci_name, None)
                 
                 # Store the response in last_output for auto-detection
                 registry.update_ci_last_output(ci_name, {
@@ -113,7 +113,7 @@ class ClaudeHandler:
                 else:
                     claude_cmd = f"claude --print {next_prompt}"
                 
-                response = await self.execute_claude(claude_cmd, message, ci_name)
+                response = await self.execute_claude(claude_cmd, message, ci_name, None)
                 
                 # Clear the next_prompt and sunrise_context after use
                 registry.clear_next_prompt(ci_name)
@@ -273,7 +273,7 @@ class ClaudeHandler:
             combined_message = message
         
         # Execute Claude with the combined message
-        response = await self.execute_claude(claude_cmd, combined_message, ci_name)
+        response = await self.execute_claude(claude_cmd, combined_message, ci_name, forward_state)
         
         # Monitor response for sundown completion
         try:
@@ -291,7 +291,7 @@ class ClaudeHandler:
         sla_ms=60000,  # Expected 1 minute response
         description="No timeout for Claude - can take 5+ minutes for complex tasks"
     )
-    async def execute_claude(self, claude_cmd: str, message: str, ci_name: str) -> str:
+    async def execute_claude(self, claude_cmd: str, message: str, ci_name: str, forward_state: Optional[Dict] = None) -> str:
         """
         Execute Claude command with message.
         
@@ -299,6 +299,7 @@ class ClaudeHandler:
             claude_cmd: Full Claude command (e.g., 'claude --print')
             message: Message to send
             ci_name: CI name for context
+            forward_state: Forward state from registry containing terminal_name
             
         Returns:
             Claude's response
@@ -323,21 +324,20 @@ class ClaudeHandler:
             # This allows Claude to know which CI it's representing
             env = os.environ.copy()
             
-            # Check if forward state has terminal_name stored
-            terminal_name = ci_name
-            if forward_state and isinstance(forward_state.get('args'), str):
-                try:
-                    import json
-                    # Try to parse args as JSON to get terminal_name
-                    forward_data = json.loads(forward_state['args'])
-                    if 'terminal_name' in forward_data:
-                        terminal_name = forward_data['terminal_name']
-                except:
-                    # Fall back to default behavior
-                    if terminal_name.endswith('-ci'):
-                        terminal_name = terminal_name[:-3]
+            # Get terminal_name directly from forward_state (stored by registry)
+            # This ensures consistent identity for every Claude subprocess
+            terminal_name = ci_name  # Default to CI name
+            
+            # Get forward state to extract terminal_name
+            # NOTE: forward_state should already be available from line 125
+            if not forward_state:
+                forward_state = registry.get_forward_state(ci_name)
+            
+            if forward_state and 'terminal_name' in forward_state:
+                # Use the terminal_name stored in registry
+                terminal_name = forward_state['terminal_name']
             else:
-                # Default behavior: remove -ci suffix if present
+                # Fall back to default behavior: remove -ci suffix if present
                 if terminal_name.endswith('-ci'):
                     terminal_name = terminal_name[:-3]
             
