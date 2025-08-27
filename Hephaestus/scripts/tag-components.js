@@ -10,10 +10,10 @@ const path = require('path');
 // Component configurations with their CI specialist mappings
 const COMPONENT_CONFIGS = {
     'athena': { specialist: 'athena-assistant', description: 'Knowledge Graph' },
-    'apollo': { specialist: 'apollo-assistant', description: 'Attention/Prediction' },
-    'budget': { specialist: 'budget-assistant', description: 'LLM Cost Management' },
+    'apollo': { specialist: 'apollo-assistant', description: 'Insight' },
+    'budget': { specialist: 'budget-assistant', description: 'Cost Management' },
     'engram': { specialist: 'engram-assistant', description: 'Memory System' },
-    'rhetor': { specialist: 'rhetor-orchestrator', description: 'Prompt/Context' },
+    'rhetor': { specialist: 'rhetor-orchestrator', description: 'Models' },
     'prometheus': { specialist: 'prometheus-assistant', description: 'Strategic Planning' },
     'metis': { specialist: 'metis-assistant', description: 'Task Decomposition' },
     'harmonia': { specialist: 'harmonia-assistant', description: 'Workflow Orchestration' },

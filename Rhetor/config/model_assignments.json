@@ -10,7 +10,7 @@
   },
   "components": {
     "apollo": {
-      "description": "Attention/Prediction",
+      "description": "Insight",
       "assignments": {
         "code": "use_default",
         "planning": "use_default",
@@ -37,7 +37,7 @@
       }
     },
     "ergon": {
-      "description": "Automation/Solutions",
+      "description": "Solutions",
       "assignments": {
         "code": "claude-opus-4-20250827",
         "planning": "use_default",
@@ -55,7 +55,7 @@
       }
     },
     "hermes": {
-      "description": "Tektons/Federation",
+      "description": "Federation",
       "assignments": {
         "code": "use_default",
         "planning": "use_default",
@@ -91,7 +91,7 @@
       }
     },
     "penia": {
-      "description": "LLM Cost",
+      "description": "Cost",
       "assignments": {
         "code": "use_default",
         "planning": "use_default",
@@ -109,7 +109,7 @@
       }
     },
     "rhetor": {
-      "description": "Prompt/Context",
+      "description": "Models",
       "assignments": {
         "code": "claude-sonnet-4-20250827",
         "planning": "claude-sonnet-4-20250827",

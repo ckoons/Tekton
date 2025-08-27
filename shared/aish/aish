@@ -476,10 +476,10 @@ Environment variables:
                 'sophia',      # Learning
                 'noesis',      # Discovery
                 'engram',      # Memory
-                'apollo',      # Attention/Prediction
-                'rhetor',      # Prompt/Context
-                'penia',       # LLM Cost
-                'hermes',      # Tekton/Federation
+                'apollo',      # Insight
+                'rhetor',      # Models
+                'penia',       # Cost
+                'hermes',      # Federation
                 'ergon',       # Development/Solutions
                 'terma',       # Terminal
                 'hephaestus',  # UI/DevTools

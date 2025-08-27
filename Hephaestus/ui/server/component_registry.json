@@ -280,7 +280,7 @@
     {
       "id": "rhetor",
       "name": "Rhetor",
-      "description": "Prompt/Context",
+      "description": "Models",
       "icon": "💬",
       "defaultMode": "html",
       "capabilities": [

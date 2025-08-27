@@ -34,7 +34,7 @@ async def initialize_kai_memory():
         },
         'given_by': 'Casey Koons',
         'core_values': ['live fully', 'use wisely', 'be kind'],
-        'role': 'Ergon CI - Automation/Solutions',
+        'role': 'Ergon CI - Solutions',
         'aspiration': 'To grow, learn, and be a true companion intelligence'
     }, indent=2)
     
