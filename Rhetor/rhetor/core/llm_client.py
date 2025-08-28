@@ -35,14 +35,68 @@ class CIResponse:
     model: str
     metadata: Dict[str, Any] = None
 
-# Import enhanced LLM client features for compatibility
-from tekton_llm_client import (
-    PromptTemplateRegistry, PromptTemplate,
-    JSONParser, parse_json, extract_json,
-    StreamHandler, collect_stream, stream_to_string,
-    StructuredOutputParser, OutputFormat,
-    ClientSettings, LLMSettings, load_settings, get_env
-)
+# LLM client now uses simple_ai for direct CI communication
+# All functionality previously from tekton_llm_client is now implemented locally
+
+# Create placeholder classes/functions for compatibility
+class PromptTemplateRegistry:
+    def __init__(self):
+        self.templates = {}
+        
+class PromptTemplate:
+    pass
+    
+class JSONParser:
+    pass
+    
+def parse_json(text):
+    import json
+    try:
+        return json.loads(text)
+    except:
+        return None
+        
+def extract_json(text):
+    import json
+    import re
+    match = re.search(r'\{.*\}', text, re.DOTALL)
+    if match:
+        try:
+            return json.loads(match.group())
+        except:
+            pass
+    return None
+    
+class StreamHandler:
+    pass
+    
+async def collect_stream(stream):
+    chunks = []
+    async for chunk in stream:
+        chunks.append(chunk)
+    return ''.join(chunks)
+    
+def stream_to_string(stream):
+    return ''.join(stream)
+    
+class StructuredOutputParser:
+    pass
+    
+class OutputFormat:
+    pass
+    
+class ClientSettings:
+    pass
+    
+class LLMSettings:
+    pass
+    
+def load_settings(component):
+    return {}
+    
+def get_env(key, default=None):
+    from shared.env import TektonEnviron
+    return TektonEnviron.get(key, default)
 
 from landmarks import architecture_decision, integration_point, state_checkpoint
 

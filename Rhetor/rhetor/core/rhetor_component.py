@@ -102,6 +102,11 @@ class RhetorComponent(StandardComponentBase):
             self.model_router = ModelRouter(self.llm_client, budget_manager=self.budget_manager)
             logger.info("Model router initialized")
             
+            # Eagerly initialize the model registry to avoid lazy loading delay
+            from rhetor.core.model_registry import get_model_registry
+            model_registry = get_model_registry()
+            logger.info(f"Model registry initialized with {len(model_registry.model_catalog.get('providers', {}))} providers")
+            
             # CI specialist management is now handled by the CI Registry
             logger.info("Using CI Registry for specialist management")
             

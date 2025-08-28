@@ -302,11 +302,7 @@ Configure CI provider (defaults to ollama):
 TEKTON_AI_PROVIDER=ollama  # or anthropic
 ```
 
-CI specialists use `gpt-oss:20b` by default. Override per component:
-```bash
-ATHENA_AI_MODEL=gpt-oss:20b
-RHETOR_AI_MODEL=qwen2.5-coder:32b
-```
+CI specialists use `gpt-oss:20b` by default.
 
 #### Port Allocation
 CI specialists use a fixed port system based on component ports:

@@ -43,7 +43,6 @@ REQUIRED_DEPS = [
     "scikit-learn",
     "sqlalchemy",
     "httpx",
-    "tekton_llm_client",
 ]
 
 # Shared utilities

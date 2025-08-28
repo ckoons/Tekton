@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """
-Example of migrating from custom LLM integration to the enhanced tekton-llm-client.
+Example of migrating from custom LLM integration to using Rhetor.
 
 This example shows how to migrate an existing component's LLM integration to use
-the enhanced tekton-llm-client, including prompt templates, response handlers,
-and configuration utilities.
+the unified Rhetor service for all LLM operations.
 """
 
 import os
@@ -98,79 +97,55 @@ async def before_migration():
         logger.info("(Simulating custom LLM client for the example)")
 
 ###########################################
-# AFTER: Enhanced tekton-llm-client
+# AFTER: Using Rhetor unified LLM service
 ###########################################
 
 async def after_migration():
-    """Example of LLM integration after migration to tekton-llm-client."""
-    logger.info("AFTER MIGRATION - Enhanced tekton-llm-client")
+    """Example of LLM integration after migration to Rhetor."""
+    logger.info("AFTER MIGRATION - Rhetor unified LLM service")
     
-    from tekton_llm_client import (
-        TektonLLMClient,
-        PromptTemplateRegistry,
-        parse_json,
-        StructuredOutputParser,
-        OutputFormat,
-        load_settings,
-        ClientSettings,
-        LLMSettings
-    )
+    from shared.rhetor_client import RhetorClient
+    import json
     
     try:
-        # 1. Load configuration from environment and file
-        settings = load_settings(
-            component_id="code-reviewer",
-            file_path="/tmp/llm_settings.json",
-            load_from_env=True
-        )
+        # 1. Create Rhetor client - automatically uses the right model
+        client = RhetorClient(component="code-reviewer")
         
-        # 2. Create LLM client with settings
-        client = TektonLLMClient(
-            component_id=settings.component_id,
-            provider_id=settings.llm.provider,
-            model_id=settings.llm.model,
-            timeout=settings.llm.timeout
-        )
-        
-        # 3. Initialize the client
-        await client.initialize()
-        
-        # 4. Use prompt templates
-        registry = PromptTemplateRegistry()
-        
-        # Register custom template
-        registry.register({
-            "name": "code_review",
-            "template": """Review this {{ language }} code for issues:
+        # 2. Prepare the prompt - combine system and user prompts
+        full_prompt = f"""{system_prompt}
 
-```{{ language }}
-{{ code }}
+Review this Python code for issues:
+
+```python
+def calculate_sum(items):
+    result = 0
+    for i in range(len(items)):
+        result += items[i]
+    return result
 ```
 
-Focus on: {{ focus_areas }}.
+Focus on: performance, readability, and best practices.
 Return your feedback as JSON with the following structure:
-{"issues": [{"description": "...", "severity": "high/medium/low", "line": 123}], "overall_quality": "good/fair/poor", "suggestions": [{"description": "..."}]}
-""",
-            "description": "Template for code review tasks"
-        })
+{{"issues": [{{"description": "...", "severity": "high/medium/low", "line": 123}}], "overall_quality": "good/fair/poor", "suggestions": [{{"description": "..."}}]}}
+"""
         
-        # Render the template with variables
-        prompt = registry.render(
-            "code_review",
-            language="python",
-            code="def calculate_sum(items):\n    result = 0\n    for i in range(len(items)):\n        result += items[i]\n    return result",
-            focus_areas="performance, readability, and best practices"
+        # 3. Generate response using Rhetor
+        response = await client.generate(
+            prompt=full_prompt,
+            capability="code",  # Rhetor will select the best model for code analysis
+            temperature=0.7,
+            max_tokens=2000
         )
         
-        # 5. Generate text with the client
-        response = await client.generate_text(
-            prompt=prompt,
-            system_prompt="You are a helpful code review assistant. Provide detailed feedback on code quality."
-        )
-        
-        # 6. Parse the response with error handling
+        # 4. Parse the response
         try:
-            data = parse_json(response.content)
+            # Extract JSON from response if needed
+            json_str = response.strip()
+            if "```json" in json_str:
+                json_str = json_str.split("```json", 1)[1]
+                json_str = json_str.split("```", 1)[0]
+                
+            data = json.loads(json_str)
             
             # Process the structured data
             issues = data.get("issues", [])
@@ -181,100 +156,104 @@ Return your feedback as JSON with the following structure:
             for suggestion in suggestions:
                 logger.info(f"Suggestion: {suggestion.get('description', '')}")
                 
-        except Exception as e:
-            logger.error(f"Error parsing response: {e}")
+        except json.JSONDecodeError:
+            logger.info("Response was not JSON, treating as plain text:")
+            logger.info(response)
         
-        # 7. Use structured output parser for other formats
-        list_prompt = "List 3 ways to improve the function."
-        list_response = await client.generate_text(
-            prompt=list_prompt,
-            system_prompt="You are a coding assistant. Respond with numbered lists."
+        # 5. Use different capabilities for different tasks
+        
+        # For task decomposition
+        task_steps = await client.decompose_task(
+            "Refactor the calculate_sum function to use built-in Python features"
         )
+        logger.info(f"Task decomposition: {task_steps}")
         
-        parser = StructuredOutputParser(format=OutputFormat.LIST)
-        improvements = parser.parse(list_response.content)
+        # For general chat/explanation
+        explanation = await client.chat(
+            "Explain why using enumerate() is better than range(len()) in Python"
+        )
+        logger.info(f"Explanation: {explanation}")
         
-        logger.info("Improvement suggestions:")
-        for i, improvement in enumerate(improvements, 1):
-            logger.info(f"{i}. {improvement}")
-        
-        # 8. Clean up
-        await client.shutdown()
+        # For code analysis with specific focus
+        analysis = await client.analyze(
+            "def calculate_sum(items): return sum(items)",
+            focus="performance and memory usage"
+        )
+        logger.info(f"Analysis: {analysis}")
         
     except Exception as e:
-        logger.error(f"Error in enhanced LLM client example: {e}")
+        logger.error(f"Error using Rhetor client: {e}")
 
 ###########################################
-# Migration benefits example
+# Migration benefits demonstration
 ###########################################
 
-async def demo_streaming_handler():
-    """Demonstrate streaming handler benefits."""
-    logger.info("MIGRATION BENEFIT - Advanced streaming handler")
+async def benefits_demo():
+    """Demonstrate the benefits of using Rhetor."""
+    logger.info("BENEFITS OF RHETOR MIGRATION")
     
-    try:
-        from tekton_llm_client import TektonLLMClient, StreamHandler
-        
-        # Initialize client
-        client = TektonLLMClient(component_id="demo")
-        await client.initialize()
-        
-        # Create a stream handler
-        handler = StreamHandler()
-        
-        # Stream processing with transformation
-        prompt = "Write a haiku about Python programming."
-        stream = client.generate_text(
-            prompt=prompt,
-            system_prompt="You are a creative writing assistant.",
-            streaming=True
+    from shared.rhetor_client import RhetorClient
+    
+    # 1. Automatic model selection based on task
+    client = RhetorClient(component="example")
+    
+    # Rhetor automatically picks the best model for each capability
+    capabilities = ["code", "planning", "reasoning", "chat"]
+    
+    for capability in capabilities:
+        logger.info(f"\nCapability: {capability}")
+        response = await client.generate(
+            prompt=f"Test prompt for {capability}",
+            capability=capability
         )
-        
-        # Process the stream with a transformation (capitalizing text)
-        print("Streaming response with transformation:")
-        await handler.process_stream(
-            stream,
-            transform=lambda text: text.upper()
-        )
-        
-        # Stream with buffering until condition is met
-        prompt = "Write a numbered list of 5 Python best practices."
-        stream = client.generate_text(
-            prompt=prompt,
-            system_prompt="You are a Python expert.",
-            streaming=True
-        )
-        
-        # Buffer until we have a complete item
-        print("\nBuffered streaming (complete items):")
-        async for segment in handler.buffer_until(
-            stream,
-            condition=lambda text: text.count("\n") > 0
-        ):
-            print(f"COMPLETE ITEM: {segment.strip()}")
-        
-        await client.shutdown()
-        
-    except Exception as e:
-        logger.error(f"Error in streaming demo: {e}")
-        print(f"(Simulating streaming example)")
+        logger.info(f"Rhetor selected appropriate model for {capability}")
+    
+    # 2. Centralized configuration management
+    logger.info("\nCentralized model configuration - no need to manage API keys or model names")
+    
+    # 3. Built-in fallback and retry logic
+    logger.info("Built-in error handling and fallbacks")
+    
+    # 4. Consistent API across all components
+    logger.info("Same API for all Tekton components")
+
+###########################################
+# Main execution
+###########################################
 
 async def main():
     """Run the migration examples."""
-    # Show before migration
+    logger.info("=" * 50)
+    logger.info("LLM CLIENT MIGRATION EXAMPLE")
+    logger.info("=" * 50)
+    
+    # Show before migration approach
     await before_migration()
     
-    print("\n" + "="*50 + "\n")
+    logger.info("\n" + "=" * 50 + "\n")
     
-    # Show after migration
+    # Show after migration approach
     await after_migration()
     
-    print("\n" + "="*50 + "\n")
+    logger.info("\n" + "=" * 50 + "\n")
     
-    # Show migration benefits
-    await demo_streaming_handler()
+    # Show benefits
+    await benefits_demo()
     
-    logger.info("Migration example complete")
+    logger.info("\n" + "=" * 50)
+    logger.info("MIGRATION SUMMARY")
+    logger.info("=" * 50)
+    logger.info("""
+Key advantages of using Rhetor:
+1. Automatic model selection based on task type
+2. Centralized configuration and API key management
+3. Built-in error handling and retries
+4. Consistent API across all Tekton components
+5. Easy switching between models without code changes
+6. Support for multiple capabilities (code, planning, reasoning, chat)
+7. No need to manage prompt templates or parsing logic separately
+""")
 
 if __name__ == "__main__":
+    # Run the example
     asyncio.run(main())

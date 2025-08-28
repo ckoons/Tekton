@@ -1,7 +1,7 @@
 """
 Tekton LLM Client Integration for Sophia
 
-This module provides integration with the tekton-llm-client for standardized
+This module provides integration with Rhetor for standardized
 access to LLM capabilities following the Tekton shared architecture patterns.
 """
 
@@ -10,28 +10,95 @@ import json
 import logging
 import asyncio
 from typing import Dict, List, Any, Optional, Union, Callable, AsyncIterator
+from dataclasses import dataclass
 
-# Import enhanced tekton-llm-client features
-from tekton_llm_client import (
-    TektonLLMClient,
-    PromptTemplateRegistry, PromptTemplate, load_template,
-    JSONParser, parse_json, extract_json,
-    StreamHandler, collect_stream, stream_to_string,
-    StructuredOutputParser, OutputFormat,
-    ClientSettings, LLMSettings, load_settings, get_env
-)
-from tekton_llm_client.models import (
-    ChatMessage, 
-    ChatCompletionOptions,
-    StreamingChunk
-)
+# Use Rhetor client instead of tekton-llm-client
+from shared.rhetor_client import RhetorClient
 
 # Import Sophia utilities
 from sophia.utils.tekton_utils import get_config, get_logger
 from shared.urls import rhetor_url as get_rhetor_url
+from shared.env import TektonEnviron
 
 # Set up logging
 logger = get_logger("sophia.utils.llm_integration")
+
+# Create compatibility classes for smooth transition
+@dataclass
+class ChatMessage:
+    role: str
+    content: str
+
+@dataclass
+class ChatCompletionOptions:
+    temperature: float = 0.7
+    max_tokens: int = 4000
+    
+@dataclass
+class StreamingChunk:
+    content: str
+    
+class PromptTemplateRegistry:
+    def __init__(self):
+        self.templates = {}
+    
+    def load_templates_from_directory(self, path):
+        pass
+        
+    def register_template(self, name, template):
+        self.templates[name] = template
+        
+    def get_template(self, name):
+        return self.templates.get(name)
+        
+class PromptTemplate:
+    def __init__(self, template, output_format=None):
+        self.template = template
+        self.output_format = output_format
+        
+    def format(self, **kwargs):
+        return self.template.format(**kwargs)
+        
+class OutputFormat:
+    JSON = "json"
+    JSON_ARRAY = "json_array"
+    TEXT = "text"
+    
+class JSONParser:
+    def parse(self, text):
+        try:
+            return json.loads(text)
+        except:
+            return {"raw": text}
+    
+    def parse_array(self, text):
+        try:
+            return json.loads(text)
+        except:
+            return []
+            
+class StreamHandler:
+    def __init__(self, callback_fn=None):
+        self.callback_fn = callback_fn
+        
+    async def process_stream(self, stream):
+        async for chunk in stream:
+            if self.callback_fn:
+                self.callback_fn(chunk)
+                
+class ClientSettings:
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
+        
+class LLMSettings:
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
+        
+def load_settings(component):
+    return {}
+    
+def get_env(key, default=None):
+    return TektonEnviron.get(key, default)
 
 # System prompts for different task types
 SYSTEM_PROMPTS = {
@@ -98,7 +165,7 @@ MODEL_CONFIGURATION = {
 
 class SophiaLLMIntegration:
     """
-    LLM integration for Sophia using the enhanced tekton-llm-client.
+    LLM integration for Sophia using Rhetor.
     
     This class provides methods for all LLM-related tasks in Sophia,
     ensuring standardized access to LLM capabilities with proper
@@ -147,32 +214,8 @@ class SophiaLLMIntegration:
         try:
             # Initialize task-specific clients
             for task_type, config in MODEL_CONFIGURATION.items():
-                # Create client settings
-                client_settings = ClientSettings(
-                    component_id=f"{self.component_id}-{task_type}",
-                    base_url=self.base_url,
-                    provider_id=self.default_provider,
-                    model_id=config["preferred_model"],
-                    timeout=60,
-                    max_retries=3,
-                    use_fallback=True
-                )
-                
-                # Create LLM settings
-                llm_settings = LLMSettings(
-                    temperature=config["temperature"],
-                    max_tokens=config["max_tokens"],
-                    top_p=0.95
-                )
-                
-                # Create client
-                client = TektonLLMClient(
-                    settings=client_settings,
-                    llm_settings=llm_settings
-                )
-                
-                # Initialize the client to verify connection
-                await client.initialize()
+                # Create Rhetor client for this task
+                client = RhetorClient(component="sophia")
                 
                 self.clients[task_type] = client
                 logger.info(f"Initialized LLM client for {task_type}")
@@ -263,7 +306,7 @@ class SophiaLLMIntegration:
         self.is_initialized = False
         logger.info("Sophia LLM Integration shut down")
         
-    async def get_client(self, task_type: Optional[str] = None) -> TektonLLMClient:
+    async def get_client(self, task_type: Optional[str] = None) -> RhetorClient:
         """
         Get an LLM client for a specific task type.
         
@@ -271,7 +314,7 @@ class SophiaLLMIntegration:
             task_type: Type of task (analysis, recommendation, etc.)
             
         Returns:
-            TektonLLMClient for the task
+            RhetorClient for the task
         """
         if not self.is_initialized:
             await self.initialize()
@@ -283,32 +326,8 @@ class SophiaLLMIntegration:
         if client is None:
             config = MODEL_CONFIGURATION.get(task_type, MODEL_CONFIGURATION["analysis"])
             
-            # Create client settings
-            client_settings = ClientSettings(
-                component_id=f"{self.component_id}-{task_type or 'default'}",
-                base_url=self.base_url,
-                provider_id=self.default_provider,
-                model_id=config["preferred_model"],
-                timeout=60,
-                max_retries=3,
-                use_fallback=True
-            )
-            
-            # Create LLM settings
-            llm_settings = LLMSettings(
-                temperature=config["temperature"],
-                max_tokens=config["max_tokens"],
-                top_p=0.95
-            )
-            
-            # Create client
-            client = TektonLLMClient(
-                settings=client_settings,
-                llm_settings=llm_settings
-            )
-            
-            # Initialize the client
-            await client.initialize()
+            # Create Rhetor client
+            client = RhetorClient(component="sophia")
             
             # Store the client for future use
             if task_type:
@@ -346,11 +365,21 @@ class SophiaLLMIntegration:
             # Create system prompt
             system_prompt = SYSTEM_PROMPTS["analysis"]
             
-            # Generate response
-            response = await client.generate_text(
-                prompt=template.format(**template_values),
-                system_prompt=system_prompt
+            # Generate response using Rhetor
+            formatted_prompt = f"{system_prompt}\n\n{template.format(**template_values)}"
+            response_text = await client.generate(
+                prompt=formatted_prompt,
+                capability="reasoning",
+                temperature=0.2,
+                max_tokens=2000
             )
+            
+            # Create response object for compatibility
+            response = type('Response', (), {
+                'content': response_text,
+                'model': 'rhetor-managed',
+                'provider': 'rhetor'
+            })
             
             # Parse JSON response using JSONParser
             parser = JSONParser()
@@ -417,11 +446,17 @@ class SophiaLLMIntegration:
                 "'title', 'description', 'impact', 'effort', and 'implementation_steps' fields."
             )
             
-            # Generate response
-            response = await client.generate_text(
-                prompt=template.format(**template_values),
-                system_prompt=system_prompt
+            # Generate response using Rhetor
+            formatted_prompt = f"{system_prompt}\n\n{template.format(**template_values)}"
+            response_text = await client.generate(
+                prompt=formatted_prompt,
+                capability="reasoning",
+                temperature=0.4,
+                max_tokens=1000
             )
+            
+            # Create response object for compatibility
+            response = type('Response', (), {'content': response_text})
             
             # Parse JSON array using JSONParser
             parser = JSONParser()
@@ -487,11 +522,17 @@ class SophiaLLMIntegration:
                 "'test_condition', and 'success_criteria' fields."
             )
             
-            # Generate response with structured output parser
-            response = await client.generate_text(
-                prompt=template.format(**template_values),
-                system_prompt=system_prompt
+            # Generate response using Rhetor
+            formatted_prompt = f"{system_prompt}\n\n{template.format(**template_values)}"
+            response_text = await client.generate(
+                prompt=formatted_prompt,
+                capability="planning",
+                temperature=0.3,
+                max_tokens=1500
             )
+            
+            # Create response object for compatibility
+            response = type('Response', (), {'content': response_text})
             
             # Parse JSON using JSONParser
             parser = JSONParser()
@@ -531,13 +572,16 @@ class SophiaLLMIntegration:
             prompt = (f"Explain the following analysis results in a way appropriate for a {audience} "
                       f"audience:\n\n{json.dumps(analysis_data, indent=2)}")
             
-            # Generate response
-            response = await client.generate_text(
-                prompt=prompt,
-                system_prompt=system_prompt
+            # Generate response using Rhetor
+            formatted_prompt = f"{system_prompt}\n\n{prompt}"
+            response_text = await client.generate(
+                prompt=formatted_prompt,
+                capability="chat",
+                temperature=0.7,
+                max_tokens=1500
             )
             
-            return response.content
+            return response_text
             
         except Exception as e:
             logger.error(f"Error explaining analysis with LLM: {e}")
@@ -574,11 +618,15 @@ class SophiaLLMIntegration:
                 "query": query
             }
             
-            # Generate response
-            response = await client.generate_text(
-                prompt=template.format(**template_values),
-                system_prompt=SYSTEM_PROMPTS["default"]
+            # Generate response using Rhetor
+            formatted_prompt = f"{SYSTEM_PROMPTS['default']}\n\n{template.format(**template_values)}"
+            response_text = await client.generate(
+                prompt=formatted_prompt,
+                capability="chat"
             )
+            
+            # Create response object for compatibility
+            response = type('Response', (), {'content': response_text})
             
             return {
                 "query": query,
@@ -634,11 +682,17 @@ class SophiaLLMIntegration:
                 "ratings and justifications for each intelligence dimension."
             )
             
-            # Generate structured response
-            response = await client.generate_text(
-                prompt=template.format(**template_values),
-                system_prompt=system_prompt
+            # Generate response using Rhetor
+            formatted_prompt = f"{system_prompt}\n\n{template.format(**template_values)}"
+            response_text = await client.generate(
+                prompt=formatted_prompt,
+                capability="reasoning",
+                temperature=0.3,
+                max_tokens=2000
             )
+            
+            # Create response object for compatibility
+            response = type('Response', (), {'content': response_text})
             
             # Parse JSON using JSONParser
             parser = JSONParser()
@@ -674,18 +728,18 @@ class SophiaLLMIntegration:
             prompt = (f"Explain analysis {analysis_id} in detail, covering the methods used, "
                       f"findings, and recommendations.")
             
-            # Create StreamHandler with the callback
-            stream_handler = StreamHandler(callback_fn=callback)
-            
-            # Start streaming with the handler
-            response_stream = await client.generate_text(
-                prompt=prompt,
-                system_prompt=system_prompt,
-                streaming=True
+            # For now, get full response and simulate streaming
+            formatted_prompt = f"{system_prompt}\n\n{prompt}"
+            response_text = await client.generate(
+                prompt=formatted_prompt,
+                capability="chat"
             )
             
-            # Process the stream with the handler
-            await stream_handler.process_stream(response_stream)
+            # Simulate streaming by breaking into chunks
+            chunk_size = 100
+            for i in range(0, len(response_text), chunk_size):
+                callback(response_text[i:i+chunk_size])
+                await asyncio.sleep(0.01)
                 
         except Exception as e:
             logger.error(f"Error streaming explanation with LLM: {e}")

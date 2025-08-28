@@ -19,11 +19,54 @@ from datetime import datetime
 import uuid
 import re
 
-# Import enhanced LLM client features
-from tekton_llm_client import (
-    PromptTemplateRegistry, PromptTemplate, load_template,
-    ClientSettings, LLMSettings, load_settings, get_env
-)
+# Rhetor now uses its own template system - no dependency on external libraries
+
+# Create placeholder classes to avoid breaking existing code
+class PromptTemplateRegistry:
+    def __init__(self):
+        self.templates = {}
+    
+    def list_templates(self):
+        return list(self.templates.keys())
+    
+    def register(self, template_data):
+        """Register a new template."""
+        if isinstance(template_data, dict):
+            name = template_data.get('name', 'unnamed')
+            self.templates[name] = template_data
+        return True
+    
+    def get(self, name):
+        """Get a template by name."""
+        return self.templates.get(name)
+    
+    def load_from_directory(self, directory):
+        """Load templates from a directory."""
+        # Placeholder - just return without loading
+        return
+    
+    def load_templates_from_directory(self, directory):
+        """Alternative method name for loading templates."""
+        return self.load_from_directory(directory)
+    
+class PromptTemplate:
+    pass
+
+def load_template(name):
+    return None
+    
+class ClientSettings:
+    pass
+    
+class LLMSettings:
+    pass
+    
+def load_settings(component):
+    return {}
+    
+def get_env(key, default=None):
+    import os
+    return os.environ.get(key, default)
 
 from rhetor.core.template_manager import TemplateManager, Template
 

@@ -994,18 +994,16 @@ async def handle_llm_step(parameters: Dict[str, Any], context: ExecutionContext)
                     errors=["Failed to initialize LLM client"]
                 )
             
-            # Create messages for chat
-            from tekton_llm_client.models import ChatMessage, ChatRole, ChatCompletionOptions
-            
+            # Create messages for chat - use simple dict format
             messages = [
-                ChatMessage(
-                    role=ChatRole.SYSTEM,
-                    content=system_prompt
-                ),
-                ChatMessage(
-                    role=ChatRole.USER,
-                    content=prompt
-                )
+                {
+                    "role": "system",
+                    "content": system_prompt
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
             ]
             
             # Add additional context if provided
@@ -1018,17 +1016,17 @@ async def handle_llm_step(parameters: Dict[str, Any], context: ExecutionContext)
                 
                 if context_data:
                     # Insert context before user message
-                    messages.insert(1, ChatMessage(
-                        role=ChatRole.USER,
-                        content=f"Context information:\n{json.dumps(context_data, indent=2)}"
-                    ))
+                    messages.insert(1, {
+                        "role": "user",
+                        "content": f"Context information:\n{json.dumps(context_data, indent=2)}"
+                    })
             
-            # Set options
-            options = ChatCompletionOptions(
-                temperature=temperature,
-                max_tokens=max_tokens,
-                stream=streaming
-            )
+            # Set options - use simple dict
+            options = {
+                "temperature": temperature,
+                "max_tokens": max_tokens,
+                "stream": streaming
+            }
             
             try:
                 # Handle streaming if needed

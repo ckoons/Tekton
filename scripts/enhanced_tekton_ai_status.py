@@ -19,7 +19,8 @@ script_path = os.path.realpath(__file__)
 tekton_root = os.path.dirname(os.path.dirname(script_path))
 sys.path.insert(0, tekton_root)
 
-# Registry client removed - using fixed port discovery
+# Import TektonEnviron for proper port loading
+from shared.env import TektonEnviron
 from shared.utils.env_config import get_component_config
 from shared.utils.logging_setup import setup_component_logging
 import socket
@@ -163,12 +164,26 @@ class CIStatus:
         status_data = []
         
         for component in self.ai_components:
-            ai_id = f"{component}-ci"
-            component_port = self.config.get_port(component)
-            if not component_port:
-                continue
+            ai_id = f"{component}-ai"  # Changed from -ci to -ai to match convention
+            
+            # Get AI port directly from environment
+            ai_port_env = f"{component.upper()}_AI_PORT"
+            ai_port = TektonEnviron.get(ai_port_env)
+            
+            if not ai_port:
+                # Fallback: try to calculate if component port exists
+                component_port = self.config.get_port(component)
+                if component_port:
+                    # Use the formula from .env.local comment:
+                    # AI_PORT = 44000 + (COMPONENT_PORT - 8100)
+                    base_component_port = int(TektonEnviron.get("TEKTON_PORT_BASE", 8100))
+                    base_ai_port = int(TektonEnviron.get("TEKTON_AI_PORT_BASE", 44000))
+                    ai_port = base_ai_port + (component_port - base_component_port)
+                else:
+                    continue
+            else:
+                ai_port = int(ai_port)
                 
-            ai_port = (component_port - 8000) + 45000
             socket_info = {'host': 'localhost', 'port': ai_port}
             
             # Check health and get info
@@ -179,12 +194,13 @@ class CIStatus:
             else:
                 model = 'unknown'
             
-            # Get process info by searching for the CI process
+            # Get process info by searching for the AI process
             pid = None
             for proc in psutil.process_iter(['pid', 'cmdline']):
                 try:
                     cmdline = proc.info['cmdline']
-                    if cmdline and 'generic_specialist' in ' '.join(cmdline) and f'--ci-id {ai_id}' in ' '.join(cmdline):
+                    # Check for both --ci-id and --ai-id for compatibility
+                    if cmdline and 'generic_specialist' in ' '.join(cmdline) and (f'--ci-id {ai_id}' in ' '.join(cmdline) or f'--ai-id {ai_id}' in ' '.join(cmdline)):
                         pid = proc.info['pid']
                         break
                 except:
@@ -279,13 +295,25 @@ class CIStatus:
     async def _display_ai_details(self, ai_id: str):
         """Display detailed information for a specific AI."""
         # Extract component from ai_id
-        component = ai_id.replace('-ci', '')
-        component_port = self.config.get_port(component)
-        if not component_port:
-            print(f"\nComponent {component} not found")
-            return
+        component = ai_id.replace('-ai', '').replace('-ci', '')  # Support both formats
+        
+        # Get AI port directly from environment
+        ai_port_env = f"{component.upper()}_AI_PORT"
+        ai_port = TektonEnviron.get(ai_port_env)
+        
+        if not ai_port:
+            # Fallback: try to calculate if component port exists
+            component_port = self.config.get_port(component)
+            if not component_port:
+                print(f"\nComponent {component} not found")
+                return
+            # Use the formula from .env.local:
+            base_component_port = int(TektonEnviron.get("TEKTON_PORT_BASE", 8100))
+            base_ai_port = int(TektonEnviron.get("TEKTON_AI_PORT_BASE", 44000))
+            ai_port = base_ai_port + (component_port - base_component_port)
+        else:
+            ai_port = int(ai_port)
             
-        ai_port = (component_port - 8000) + 45000
         socket_info = {'host': 'localhost', 'port': ai_port}
         
         # Check if CI is running
@@ -327,7 +355,7 @@ async def main():
 Examples:
   %(prog)s                    Show all CI specialists
   %(prog)s -c rhetor          Show CI for Rhetor component  
-  %(prog)s -a rhetor-ci       Show specific CI by ID
+  %(prog)s -a rhetor-ai       Show specific AI by ID
   %(prog)s -f                 Show full details for all CIs
   %(prog)s -c apollo -f       Show full details for Apollo AI
         """
