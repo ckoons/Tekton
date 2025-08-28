@@ -925,7 +925,11 @@ async def main():
         if args.ui_dev_tools:
             killer.log("🛠️  Killing UI DevTools MCP server", "info")
             # Get port from environment
-            port = int(TektonEnviron.get('HEPHAESTUS_MCP_PORT', '8088'))
+            port_str = TektonEnviron.get('HEPHAESTUS_MCP_PORT')
+            if not port_str:
+                self.logger.warning(f"HEPHAESTUS_MCP_PORT not set in .env.local at {TektonEnviron.get('TEKTON_ROOT', '.')}")
+                return 0
+            port = int(port_str)
             # Use the force kill approach since MCP doesn't have graceful shutdown
             process_info = killer.get_detailed_process_info(port)
             if process_info:
@@ -993,8 +997,15 @@ async def main():
             
             # Check if UI DevTools MCP is running
             # Get port from environment
-            ui_port = int(TektonEnviron.get('HEPHAESTUS_MCP_PORT', '8088'))
-            ui_devtools_process = killer.get_detailed_process_info(ui_port)
+            ui_port_str = TektonEnviron.get('HEPHAESTUS_MCP_PORT')
+            if not ui_port_str:
+                killer.log(f"HEPHAESTUS_MCP_PORT not set in .env.local", "warning")
+                ui_port = None
+            else:
+                ui_port = int(ui_port_str)
+            ui_devtools_process = None
+            if ui_port:
+                ui_devtools_process = killer.get_detailed_process_info(ui_port)
             if ui_devtools_process:
                 killer.log(f"🛠️  UI DevTools MCP detected on port {ui_port} - will be killed", "info")
             
@@ -1032,8 +1043,15 @@ async def main():
         # Kill UI DevTools MCP if no args or killing hephaestus
         if not args.components or args.components.lower() == 'all' or 'hephaestus' in components:
             # Get port from environment
-            ui_port = int(TektonEnviron.get('HEPHAESTUS_MCP_PORT', '8088'))
-            ui_devtools_process = killer.get_detailed_process_info(ui_port)
+            ui_port_str = TektonEnviron.get('HEPHAESTUS_MCP_PORT')
+            if not ui_port_str:
+                killer.log(f"HEPHAESTUS_MCP_PORT not set in .env.local", "warning")
+                ui_port = None
+            else:
+                ui_port = int(ui_port_str)
+            ui_devtools_process = None
+            if ui_port:
+                ui_devtools_process = killer.get_detailed_process_info(ui_port)
             if ui_devtools_process:
                 print("\n🛠️  Cleaning up UI DevTools MCP server...")
                 success, message = await killer.force_kill_process(ui_devtools_process, "ui_dev_tools")

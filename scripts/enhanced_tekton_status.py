@@ -314,8 +314,18 @@ class EnhancedStatusChecker:
         """Check UI DevTools MCP status"""
         # UI DevTools is a special case - it's an MCP server
         # Get port from environment
-        env_value = TektonEnviron.get('HEPHAESTUS_MCP_PORT', '8088')
-        port = int(env_value)
+        port_str = TektonEnviron.get('HEPHAESTUS_MCP_PORT')
+        if not port_str:
+            # Port not configured, can't check status
+            return ComponentMetrics(
+                name="ui_dev_tools",
+                port=0,
+                status="❓ No port configured",
+                health={"status": "unknown", "info": "HEPHAESTUS_MCP_PORT not set"},
+                process_info={},
+                ai_status="N/A"
+            )
+        port = int(port_str)
         metrics = ComponentMetrics(
             name="ui_dev_tools",
             port=port,

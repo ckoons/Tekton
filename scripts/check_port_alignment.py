@@ -80,7 +80,13 @@ def main():
     print(f"Total CI components: {total_count}")
     print(f"Running: {running_count}")
     print(f"Not running: {total_count - running_count}")
-    print(f"\nPort formula: CI port = {TektonEnviron.get('TEKTON_AI_PORT_BASE', '45000')} + (main_port - {TektonEnviron.get('TEKTON_PORT_BASE', '8000')})")
+    # Show actual port bases from this Tekton instance
+    port_base = TektonEnviron.get('TEKTON_PORT_BASE', 'NOT SET')
+    ai_port_base = TektonEnviron.get('TEKTON_AI_PORT_BASE', 'NOT SET')
+    print(f"\nTEKTON_ROOT: {TektonEnviron.get('TEKTON_ROOT', 'NOT SET')}")
+    print(f"Port formula: CI port = {ai_port_base} + (main_port - {port_base})")
+    if port_base == 'NOT SET' or ai_port_base == 'NOT SET':
+        print("WARNING: Port bases not configured in .env.local!")
 
 if __name__ == '__main__':
     main()

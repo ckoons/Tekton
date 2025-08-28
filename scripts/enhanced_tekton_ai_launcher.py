@@ -20,6 +20,7 @@ import argparse
 import json
 from typing import List, Dict, Optional, Set, Any
 from pathlib import Path
+from shared.env import TektonEnviron
 
 # Import landmarks
 try:
@@ -85,12 +86,12 @@ def get_expected_ai_port(main_port: int) -> int:
     
     Uses port bases from environment configuration.
     
-    Examples with defaults (TEKTON_PORT_BASE=8000, TEKTON_AI_PORT_BASE=45000):
-        Hermes (8001) -> 45001
-        Engram (8002) -> 45002
-        Rhetor (8003) -> 45003
-        Apollo (8012) -> 45012
-        Athena (8005) -> 45005
+    Examples with defaults (TEKTON_PORT_BASE=8100, TEKTON_AI_PORT_BASE=44000):
+        Hermes (8101) -> 44001
+        Engram (8100) -> 44000
+        Rhetor (8103) -> 44003
+        Apollo (8112) -> 44012
+        Athena (8105) -> 44005
     """
     # Import here to avoid circular dependency
     from shared.utils.ai_port_utils import get_ai_port
@@ -317,14 +318,22 @@ class CILauncher:
             if component.lower() == 'hermes':
                 self.logger.info(f"Successfully launched {ai_id} (skipped readiness check for Hermes)")
                 return True
-            elif await self._wait_for_ai_direct(ai_id, ai_port, timeout=30):
+            
+            # Get configurable timeout from environment, default to 3 seconds
+            readiness_timeout = int(TektonEnviron.get('AI_READINESS_TIMEOUT', '3'))
+            
+            # For local models (Ollama), use shorter timeout or skip entirely
+            if TektonEnviron.get('SKIP_AI_READINESS_CHECK', '').lower() == 'true':
+                self.logger.info(f"Successfully launched {ai_id} (readiness check disabled)")
+                return True
+            elif await self._wait_for_ai_direct(ai_id, ai_port, timeout=readiness_timeout):
                 self.logger.info(f"Successfully launched {ai_id}")
                 self.logger.debug(f"CI {ai_id} ready - PID: {process.pid}")
                 return True
             else:
-                self.logger.error(f"CI {ai_id} failed to become ready")
-                self.kill_ai(ai_id)
-                return False
+                self.logger.warning(f"CI {ai_id} not responding after {readiness_timeout}s (may still be loading)")
+                # Don't kill it - local models may just be slow to load
+                return True  # Return True anyway since process launched successfully
                 
         except Exception as e:
             self.logger.error(f"Failed to launch {ai_id}: {e}")

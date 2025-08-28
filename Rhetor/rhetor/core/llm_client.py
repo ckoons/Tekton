@@ -42,6 +42,15 @@ class CIResponse:
 class PromptTemplateRegistry:
     def __init__(self):
         self.templates = {}
+    
+    def load_templates_from_directory(self, directory):
+        """Placeholder for loading templates from directory."""
+        # Could implement actual loading if needed
+        pass
+    
+    def load_from_directory(self, directory):
+        """Alias for load_templates_from_directory."""
+        self.load_templates_from_directory(directory)
         
 class PromptTemplate:
     pass
@@ -164,17 +173,12 @@ class LLMClient:
         logger.info("Initialized unified LLM client with CI Registry")
     
     async def initialize(self):
-        """Initialize the client and discover CIs."""
-        try:
-            # Discover available CIs
-            ais = await self.registry.discover()
-            logger.info(f"Discovered {len(ais)} CI specialists")
-            
-            # Create compatibility provider mapping
-            self._create_provider_mapping()
-            
-        except Exception as e:
-            logger.warning(f"Failed to discover CIs: {e}")
+        """Initialize the client - no discovery needed with fixed ports."""
+        # No longer using registry - CIs use fixed ports from .env.local
+        logger.info("LLM Client initialized - using fixed port mapping from .env.local")
+        
+        # Create compatibility provider mapping
+        self._create_provider_mapping()
     
     def _create_provider_mapping(self):
         """Create compatibility mapping for old provider names."""
@@ -321,11 +325,9 @@ class LLMClient:
         return 'general'
     
     async def get_default_model(self):
-        """Get default model - returns first available AI."""
-        ais = await self.registry.discover()
-        if ais:
-            return ais[0].id
-        return "none-available"
+        """Get default model - returns default based on configuration."""
+        # With fixed ports, we always have numa-ai as default general purpose AI
+        return "numa-ai"
     
     def set_default_model(self, model_id, provider_id=None):
         """Set default model - no-op for compatibility."""

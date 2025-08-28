@@ -401,7 +401,12 @@ class EnhancedComponentLauncher:
         """Launch the UI DevTools MCP server"""
         launch_start = time.time()
         # Get port from environment
-        port = int(TektonEnviron.get('HEPHAESTUS_MCP_PORT', '8088'))
+        port_str = TektonEnviron.get('HEPHAESTUS_MCP_PORT')
+        if not port_str:
+            self.logger.warning(f"HEPHAESTUS_MCP_PORT not set in .env.local at {TektonEnviron.get('TEKTON_ROOT', '.')}")
+            self.logger.warning("Cannot launch UI DevTools MCP server without port configuration")
+            return False
+        port = int(port_str)
         
         # Check if already running
         if not self.check_port_available(port):
@@ -1124,7 +1129,8 @@ class EnhancedComponentLauncher:
                 os.path.join(self.tekton_root, 'scripts', 'enhanced_tekton_ai_launcher.py'),
                 component_name,
                 '-v',  # Verbose for better logging
-                '--no-cleanup'  # Don't kill the CI when script exits
+                '--no-cleanup',  # Don't kill the CI when script exits
+                '--no-wait'  # Don't wait for readiness check (avoids 30s timeout)
             ]
             
             self.log(f"Launching CI specialist...", "launch", component_name)

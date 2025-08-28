@@ -41,12 +41,13 @@ class CIKiller:
         log_level = 'DEBUG' if verbose else 'INFO'
         self.logger = setup_component_logging('ai_killer', log_level)
         
-        # Get environment-specific CI port range using TektonEnviron
-        if TektonEnviron.is_loaded():
-            self.ai_port_base = int(TektonEnviron.get('TEKTON_AI_PORT_BASE', 45000))
-        else:
-            # Fallback to os.environ when running as subprocess
-            self.ai_port_base = int(TektonEnviron.get('TEKTON_AI_PORT_BASE', 45000))
+        # Get environment-specific CI port range - NO DEFAULTS!
+        ai_port_base = TektonEnviron.get('TEKTON_AI_PORT_BASE')
+        if not ai_port_base:
+            self.logger.error(f"TEKTON_AI_PORT_BASE not set in .env.local at {TektonEnviron.get('TEKTON_ROOT', '.')}")
+            self.logger.error("Each Tekton instance has unique port ranges. Cannot proceed without proper configuration.")
+            raise ValueError("TEKTON_AI_PORT_BASE must be set in .env.local")
+        self.ai_port_base = int(ai_port_base)
         self.logger.info(f"CI killer initialized for port base: {self.ai_port_base}")
         
     def kill_ai_by_id(self, ai_id: str) -> bool:
@@ -104,7 +105,7 @@ class CIKiller:
     def _is_port_in_environment(self, port: int) -> bool:
         """Check if port belongs to this environment's CI port range."""
         # CI ports are typically TEKTON_AI_PORT_BASE + offset (0-99 range)
-        # Main Tekton: 45000-45099, Coder-C: 42000-42099
+        # Main Tekton: 44000-44099, Coder-A: 44000-44099, Coder-C: 42000-42099
         return self.ai_port_base <= port < self.ai_port_base + 100
     
     def kill_ai_by_component(self, component: str) -> bool:

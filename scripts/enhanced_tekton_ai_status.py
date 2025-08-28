@@ -174,10 +174,14 @@ class CIStatus:
                 # Fallback: try to calculate if component port exists
                 component_port = self.config.get_port(component)
                 if component_port:
-                    # Use the formula from .env.local comment:
-                    # AI_PORT = 44000 + (COMPONENT_PORT - 8100)
-                    base_component_port = int(TektonEnviron.get("TEKTON_PORT_BASE", 8100))
-                    base_ai_port = int(TektonEnviron.get("TEKTON_AI_PORT_BASE", 44000))
+                    # Use the formula from .env.local - NO DEFAULTS!
+                    base_component_port = TektonEnviron.get("TEKTON_PORT_BASE")
+                    base_ai_port = TektonEnviron.get("TEKTON_AI_PORT_BASE")
+                    if not base_component_port or not base_ai_port:
+                        self.logger.error(f"Port bases not set in .env.local for {TektonEnviron.get('TEKTON_ROOT', '.')}")
+                        continue
+                    base_component_port = int(base_component_port)
+                    base_ai_port = int(base_ai_port)
                     ai_port = base_ai_port + (component_port - base_component_port)
                 else:
                     continue
@@ -240,7 +244,14 @@ class CIStatus:
             component_port = self.config.get_port(component)
             running = False
             if component_port:
-                ai_port = (component_port - 8000) + 45000
+                # Use proper calculation from environment - NO DEFAULTS!
+                base_component_port = TektonEnviron.get("TEKTON_PORT_BASE")
+                base_ai_port = TektonEnviron.get("TEKTON_AI_PORT_BASE")
+                if not base_component_port or not base_ai_port:
+                    continue  # Skip if port bases not configured
+                base_component_port = int(base_component_port)
+                base_ai_port = int(base_ai_port)
+                ai_port = base_ai_port + (component_port - base_component_port)
                 try:
                     # Quick connection test
                     s = socket.socket()
@@ -307,9 +318,14 @@ class CIStatus:
             if not component_port:
                 print(f"\nComponent {component} not found")
                 return
-            # Use the formula from .env.local:
-            base_component_port = int(TektonEnviron.get("TEKTON_PORT_BASE", 8100))
-            base_ai_port = int(TektonEnviron.get("TEKTON_AI_PORT_BASE", 44000))
+            # Use the formula from .env.local - NO DEFAULTS!
+            base_component_port = TektonEnviron.get("TEKTON_PORT_BASE")
+            base_ai_port = TektonEnviron.get("TEKTON_AI_PORT_BASE")
+            if not base_component_port or not base_ai_port:
+                print(f"\nPort bases not set in .env.local for {TektonEnviron.get('TEKTON_ROOT', '.')}")
+                return
+            base_component_port = int(base_component_port)
+            base_ai_port = int(base_ai_port)
             ai_port = base_ai_port + (component_port - base_component_port)
         else:
             ai_port = int(ai_port)

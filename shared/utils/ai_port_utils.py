@@ -7,9 +7,19 @@ Uses configurable port bases from environment variables.
 import os
 from shared.env import TektonEnviron
 
-# Get port bases from environment, with defaults for backwards compatibility
-TEKTON_PORT_BASE = int(TektonEnviron.get('TEKTON_PORT_BASE', '8000'))
-TEKTON_AI_PORT_BASE = int(TektonEnviron.get('TEKTON_AI_PORT_BASE', '45000'))
+# Get port bases from environment - NO DEFAULTS! Each Tekton has its own .env.local
+# Main Tekton might be 8000/45000, Coder-A might be 8100/44000, Coder-B 8200/43000, etc.
+_port_base = TektonEnviron.get('TEKTON_PORT_BASE')
+_ai_port_base = TektonEnviron.get('TEKTON_AI_PORT_BASE')
+
+if not _port_base or not _ai_port_base:
+    raise ValueError(
+        f"TEKTON_PORT_BASE and TEKTON_AI_PORT_BASE must be set in {os.environ.get('TEKTON_ROOT', '.')}/.env.local\n"
+        "Each Tekton instance has unique port ranges. No defaults are allowed."
+    )
+
+TEKTON_PORT_BASE = int(_port_base)
+TEKTON_AI_PORT_BASE = int(_ai_port_base)
 
 
 def get_ai_port(component_port: int) -> int:
@@ -18,11 +28,11 @@ def get_ai_port(component_port: int) -> int:
     
     Formula: CI port = TEKTON_AI_PORT_BASE + (component_port - TEKTON_PORT_BASE)
     
-    Examples with defaults (TEKTON_PORT_BASE=8000, TEKTON_AI_PORT_BASE=45000):
-        Engram (8000) -> 45000
-        Hermes (8001) -> 45001
-        Rhetor (8003) -> 45003
-        Apollo (8012) -> 45012
+    Examples with defaults (TEKTON_PORT_BASE=8100, TEKTON_AI_PORT_BASE=44000):
+        Engram (8100) -> 44000
+        Hermes (8101) -> 44001
+        Rhetor (8103) -> 44003
+        Apollo (8112) -> 44012
         
     Args:
         component_port: The main component port
