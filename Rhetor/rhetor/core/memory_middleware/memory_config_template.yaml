@@ -1,0 +1,155 @@
+# Tekton CI Memory System Configuration
+# This file configures memory behavior for all CIs
+
+global:
+  enabled: true                    # Master switch for memory system
+  auto_initialize: true            # Automatically initialize on startup
+  default_training_stage: explicit  # Default habit training stage
+  consolidation_interval: 300      # Seconds between memory consolidation
+
+# Configuration for specific CIs
+ci_configs:
+  
+  apollo:
+    injection_style: natural        # How memories are injected (natural/structured/minimal)
+    training_stage: minimal         # Habit training stage (explicit/shortened/minimal/occasional/autonomous)
+    memory_tiers:                   # Which memory tiers to use
+      - short
+      - medium
+      - long
+      - latent
+    focus: decisions and priorities # What Apollo focuses on remembering
+    auto_extract: true             # Automatically extract memories from responses
+    
+  prometheus:
+    injection_style: structured
+    training_stage: minimal
+    memory_tiers:
+      - short
+      - medium
+      - long
+      - latent
+    focus: patterns and predictions
+    auto_extract: true
+    
+  ergon:
+    injection_style: natural
+    training_stage: occasional      # Ergon is getting good at this!
+    memory_tiers:
+      - short
+      - medium
+      - long
+      - latent
+    focus: solutions and patterns
+    auto_extract: true
+    
+  sophia:
+    injection_style: structured
+    training_stage: autonomous      # Sophia naturally uses memory
+    memory_tiers:
+      - short
+      - medium
+      - long
+      - latent
+    focus: all memories            # Sophia remembers everything
+    auto_extract: true
+    memory_retention: extended     # Keep memories longer
+    
+  hermes:
+    injection_style: minimal       # Hermes is lightweight
+    training_stage: explicit
+    memory_tiers:
+      - short
+      - medium
+    focus: federation and connections
+    auto_extract: false           # Manual extraction for efficiency
+    
+  rhetor:
+    injection_style: minimal
+    training_stage: explicit
+    memory_tiers:
+      - short
+    focus: model management
+    auto_extract: false
+    
+  terma:
+    injection_style: natural
+    training_stage: minimal
+    memory_tiers:
+      - short
+      - medium
+    focus: user interactions
+    auto_extract: true
+    
+  athena:
+    injection_style: structured
+    training_stage: minimal
+    memory_tiers:
+      - short
+      - medium
+      - long
+      - latent
+    focus: knowledge relationships
+    auto_extract: true
+
+# Default configuration for new/unknown CIs
+default:
+  injection_style: natural
+  training_stage: explicit
+  memory_tiers:
+    - short
+    - medium
+  focus: general
+  auto_extract: true
+
+# Memory tier configurations
+memory_tiers:
+  short:
+    retention: 3600              # 1 hour in seconds
+    max_entries: 20
+    
+  medium:
+    retention: 86400            # 24 hours
+    max_entries: 100
+    
+  long:
+    retention: 604800           # 7 days
+    max_entries: 500
+    
+  latent:
+    retention: 2592000          # 30 days
+    max_entries: 1000
+    vector_dimensions: 768      # For similarity search
+
+# Privacy levels for memory sharing
+privacy:
+  private:
+    share_with: []              # Only the CI itself
+    
+  team:
+    share_with: [team_members]  # CIs working together
+    
+  tribal:
+    share_with: [all]           # All CIs in Tekton
+
+# Training progression thresholds
+training:
+  advancement_criteria:
+    interactions_required: 10   # Minimum interactions before advancing
+    success_rate: 0.6           # Required memory usage rate
+    
+  stages:
+    explicit:
+      prompt: "[Please recall and reference any relevant memories from our previous discussions]"
+      
+    shortened:
+      prompt: "/r"
+      
+    minimal:
+      prompt: "/"
+      
+    occasional:
+      prompt_frequency: 0.5     # 50% of the time
+      
+    autonomous:
+      prompt: ""                # No prompt needed

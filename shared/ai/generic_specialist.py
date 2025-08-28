@@ -255,7 +255,7 @@ def main():
     
     # Create and run specialist
     specialist = GenericAISpecialist(
-        ai_id=args.ai_id,
+        ai_id=args.ci_id,  # Use ci_id from args
         component=args.component,
         port=args.port
     )

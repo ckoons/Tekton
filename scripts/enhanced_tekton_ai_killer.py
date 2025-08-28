@@ -67,8 +67,8 @@ class CIKiller:
                 cmdline = proc.info.get('cmdline', [])
                 cmdline_str = ' '.join(cmdline) if cmdline else ''
                 
-                # Look for generic_specialist with this specific CI id
-                if 'generic_specialist' in cmdline_str and f'--ci-id {ai_id}' in cmdline_str:
+                # Look for generic_specialist with this specific CI/AI id (both naming conventions)
+                if 'generic_specialist' in cmdline_str and (f'--ci-id {ai_id}' in cmdline_str or f'--ai-id {ai_id}' in cmdline_str):
                     # Extract port from command line to check environment
                     port = self._extract_port_from_cmdline(cmdline)
                     if port and self._is_port_in_environment(port):
@@ -136,7 +136,7 @@ class CIKiller:
                 cmdline = proc.info.get('cmdline', [])
                 cmdline_str = ' '.join(cmdline) if cmdline else ''
                 
-                if 'generic_specialist' in cmdline_str and '--ci-id' in cmdline_str:
+                if 'generic_specialist' in cmdline_str and ('--ci-id' in cmdline_str or '--ai-id' in cmdline_str):
                     # Extract port and check environment
                     port = self._extract_port_from_cmdline(cmdline)
                     if port and self._is_port_in_environment(port):

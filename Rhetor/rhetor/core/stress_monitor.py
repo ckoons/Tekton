@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 # Add paths for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+# Removed path manipulation - imports should work without it
 
 logger = logging.getLogger(__name__)
 

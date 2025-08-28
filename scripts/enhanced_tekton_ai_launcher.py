@@ -20,6 +20,12 @@ import argparse
 import json
 from typing import List, Dict, Optional, Set, Any
 from pathlib import Path
+
+# Add Tekton root to path BEFORE importing from shared
+script_path = os.path.realpath(__file__)
+tekton_root = os.path.dirname(os.path.dirname(script_path))
+sys.path.insert(0, tekton_root)
+
 from shared.env import TektonEnviron
 
 # Import landmarks
@@ -64,12 +70,8 @@ except ImportError:
             return func
         return decorator
 
-# Add Tekton root to path
-script_path = os.path.realpath(__file__)
-tekton_root = os.path.dirname(os.path.dirname(script_path))
-sys.path.insert(0, tekton_root)
-
 # Registry client removed - using fixed ports
+# (Tekton root already added to path at top of file)
 from shared.utils.env_config import get_component_config
 from shared.utils.logging_setup import setup_component_logging
 
@@ -296,7 +298,18 @@ class CILauncher:
             
             # @integration_point: Greek Chorus Sender Identification for AI CIs
             # Set TEKTON_NAME to identify forwarded CIs too
-            env = {**os.environ, 'PYTHONPATH': tekton_root}
+            # Use TektonEnviron.all() to get the proper frozen environment
+            env = TektonEnviron.all().copy()
+            
+            # Ensure PYTHONPATH includes tekton_root
+            existing_pythonpath = env.get('PYTHONPATH', '')
+            if existing_pythonpath:
+                env['PYTHONPATH'] = f"{tekton_root}{os.pathsep}{existing_pythonpath}"
+            else:
+                env['PYTHONPATH'] = tekton_root
+            
+            # Debug logging for PYTHONPATH
+            self.logger.debug(f"Setting PYTHONPATH for {ai_id}: {env['PYTHONPATH']}")
             
             # Set TEKTON_NAME to the AI's component name
             # This allows forwarded CIs to know their identity
