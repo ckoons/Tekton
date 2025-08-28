@@ -24,7 +24,7 @@ function createChatInterface(container, options = {}) {
         // LLM configuration
         llmAdapterClient: options.llmAdapterClient,
         webSocket: options.webSocket || null,
-        defaultModel: options.defaultModel || (window.DEFAULT_LLM_MODEL || 'claude-3-sonnet-20240229'),
+        defaultModel: options.defaultModel || 'via-rhetor',  // Model selection handled by Rhetor
         modelOptions: options.modelOptions || [
             { id: 'claude-3-haiku-20240307', name: 'Claude 3 Haiku' },
             { id: 'claude-3-sonnet-20240229', name: 'Claude 3 Sonnet' },

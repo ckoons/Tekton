@@ -267,13 +267,13 @@ class ModelRouter:
         else:
             # For non-streaming, track completion and cost
             response = await self.llm_client.complete(
-                message=message,
+                prompt=message,  # LLMClient expects 'prompt' as first arg
+                model=model_id,
+                provider_id=provider_id,
                 context_id=context_id,
                 system_prompt=system_prompt,
-                provider_id=provider_id,
-                model_id=model_id,
                 streaming=streaming,
-                options=options
+                **options  # Pass options as kwargs
             )
             
             # Track completion after request is done

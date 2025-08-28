@@ -7,6 +7,11 @@ tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'
 if tekton_root not in sys.path:
     sys.path.insert(0, tekton_root)
 
+# Also add Rhetor directory to path for relative imports
+rhetor_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if rhetor_dir not in sys.path:
+    sys.path.insert(0, rhetor_dir)
+
 # Initialize Tekton environment before other imports
 try:
     from shared.utils.tekton_startup import tekton_component_startup

@@ -458,11 +458,13 @@ async def get_llm_providers():
     try:
         # Check if LLM Adapter service is available
         async with aiohttp.ClientSession() as session:
-            async with session.get(f"{# llm_adapter.adapter_url}/health", timeout=2.0) as response:
+            # TODO: Replace with Rhetor health check
+            async with session.get("http://localhost:8103/health", timeout=2.0) as response:
                 if response.status == 200:
                     # Get providers from LLM Adapter
-                    providers = await # llm_adapter.get_available_providers()
-                    current_provider, current_model = # llm_adapter.get_current_provider_and_model()
+                    # TODO: Replace with Rhetor client
+                    providers = []
+                    current_provider, current_model = None, None
                     
                     return {
                         "providers": providers,
@@ -473,8 +475,9 @@ async def get_llm_providers():
         logger.warning(f"Error connecting to LLM Adapter service: {e}")
     
     # Fallback to default values if LLM Adapter is not available
-    providers = await # llm_adapter.get_available_providers() # This will fallback to config
-    current_provider, current_model = # llm_adapter.get_current_provider_and_model()
+    # TODO: Replace with Rhetor client
+    providers = []  # This will fallback to config
+    current_provider, current_model = None, None  # TODO: get from Rhetor
     
     return {
         "providers": providers,
@@ -492,7 +495,8 @@ async def get_llm_models(provider_id: str):
         raise HTTPException(status_code=404, detail=f"Provider {provider_id} not found")
     
     llm_adapter = LLMAdapter()
-    current_provider, current_model = # llm_adapter.get_current_provider_and_model()
+    # TODO: Replace with Rhetor client
+    current_provider, current_model = None, None
     models = LLM_PROVIDERS[provider_id]["models"]
     
     return {
@@ -516,7 +520,8 @@ async def set_llm_provider_model(request: LLMSetRequest):
     
     # Set the provider and model
     llm_adapter = LLMAdapter()
-    # llm_adapter.set_provider_and_model(request.provider, request.model)
+    # TODO: Replace with Rhetor client
+    # rhetor.set_provider_and_model(request.provider, request.model)
     
     return {"status": "success"}
 

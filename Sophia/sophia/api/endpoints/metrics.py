@@ -27,18 +27,15 @@ router = APIRouter()
 @router.post("/explain", response_model=Dict[str, Any])
 async def explain_metrics(
     metrics_data: Dict[str, Any] = Body(..., description="Metrics data to explain"),
-    audience: str = Query("technical", description="Target audience: technical, executive, or general"),
-    llm_adapter = Depends(get_llm_adapter)
+    audience: str = Query("technical", description="Target audience: technical, executive, or general")
 ):
     """
     Generate natural language explanation of metrics data.
     Translates technical metrics into clear, accessible explanations.
     """
     try:
-        explanation = await # llm_adapter.explain_analysis(
-            analysis_data=metrics_data,
-            audience=audience
-        )
+        # TODO: Replace with Rhetor client
+        explanation = "LLM explanation not available - needs Rhetor integration"
         return {
             "explanation": explanation,
             "metrics": metrics_data,

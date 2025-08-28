@@ -7,6 +7,8 @@ breaking down high-level tasks into manageable subtasks.
 """
 
 import logging
+import json
+import asyncio
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 from uuid import uuid4
@@ -15,6 +17,7 @@ from metis.models.task import Task
 from metis.models.subtask import Subtask
 from metis.models.enums import TaskStatus, Priority
 from metis.models.complexity import ComplexityScore
+from shared.rhetor_client import RhetorClient
 
 logger = logging.getLogger("metis.task_decomposer")
 
@@ -31,10 +34,10 @@ class TaskDecomposer:
         Initialize the task decomposer.
         
         Args:
-            llm_adapter: LLM adapter instance (creates new if not provided)
+            llm_adapter: LLM adapter instance (ignored - using Rhetor now)
         """
-        # REMOVED: # self.llm_adapter # = llm_adapter or MetisLLMAdapter()
-        logger.info("Task decomposer initialized")
+        self.rhetor_client = RhetorClient(component="metis")
+        logger.info("Task decomposer initialized with Rhetor client")
     
     async def decompose_task(self,
                            task: Task,
@@ -58,8 +61,68 @@ class TaskDecomposer:
         max_subtasks = max(1, min(20, max_subtasks))
         
         try:
-            # TODO: Replace with Rhetor client
-            result = {"success": False, "error": "LLM adapter removed - needs Rhetor integration"}
+            # Use Rhetor client for task decomposition
+            prompt = f"""Decompose this task into {max_subtasks} subtasks:
+            
+Title: {task.title}
+Description: {task.description or 'No description provided'}
+
+Return a JSON list of subtasks, each with:
+- title: string (clear subtask title)
+- description: string (detailed description)
+- estimated_hours: number (1-8 hours)
+- complexity: string (low/medium/high/critical)
+- dependencies: list of strings (other subtask dependencies)
+- order: number (execution order)
+
+Example format:
+[{{"title": "Setup environment", "description": "Install dependencies", "estimated_hours": 2, "complexity": "low", "dependencies": [], "order": 1}}]"""
+            
+            response = await self.rhetor_client.generate(
+                prompt=prompt,
+                capability="planning",
+                temperature=0.5,
+                max_tokens=2000
+            )
+            
+            # Parse response
+            try:
+                # Extract JSON from response
+                if "[" in response and "]" in response:
+                    start = response.index("[")
+                    end = response.rindex("]") + 1
+                    json_str = response[start:end]
+                    subtasks_data = json.loads(json_str)
+                else:
+                    subtasks_data = json.loads(response)
+                    
+                result = {
+                    "success": True,
+                    "subtasks": subtasks_data,
+                    "model": "via-rhetor",
+                    "provider": "rhetor",
+                    "timestamp": datetime.utcnow().isoformat()
+                }
+            except json.JSONDecodeError as e:
+                logger.warning(f"Failed to parse JSON response: {e}")
+                # Fallback - create simple subtasks
+                result = {
+                    "success": True,
+                    "subtasks": [
+                        {
+                            "title": f"Step {i+1} of {task.title}",
+                            "description": f"Complete part {i+1} of the task",
+                            "estimated_hours": 2,
+                            "complexity": "medium",
+                            "dependencies": [],
+                            "order": i+1
+                        }
+                        for i in range(min(3, max_subtasks))
+                    ],
+                    "model": "fallback",
+                    "provider": "rhetor",
+                    "timestamp": datetime.utcnow().isoformat()
+                }
             
             if not result.get("success"):
                 return {

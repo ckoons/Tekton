@@ -16,11 +16,8 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException, De
 from fastapi.responses import StreamingResponse
 from tekton.models import TektonBaseModel
 
-# Import enhanced tekton-llm-client features
-from tekton_llm_client import (
-    StreamHandler, LLMSettings,
-    collect_stream, stream_to_string
-)
+# Import Rhetor client
+from shared.rhetor_client import RhetorClient
 
 # Configure logging
 logging.basicConfig(
@@ -71,15 +68,15 @@ router = APIRouter(
     tags=["LLM"],
 )
 
-# Dependency to get LLM adapter - PLACEHOLDER
-async def get_llm_adapter():
-    # TODO: Replace with Rhetor client
-    return None
+# Dependency to get Rhetor client
+async def get_rhetor_client():
+    """Get Rhetor client instance."""
+    return RhetorClient(component="engram")
 
 @router.post("/chat", response_model=ChatResponse)
 async def chat(
     request: ChatRequest,
-    llm_adapter = None,  # TODO: Replace with Rhetor client
+    rhetor_client: RhetorClient = Depends(get_rhetor_client),
     memory_manager: MemoryManager = Depends(get_memory_manager)
 ):
     """
@@ -104,21 +101,12 @@ async def chat(
     
     # Get chat response
     try:
-        # Create custom settings
-        custom_settings = LLMSettings(
+        # Use Rhetor for chat
+        response_text = await rhetor_client.chat(
+            messages=messages,
+            capability="chat",
             temperature=request.temperature,
-            max_tokens=request.max_tokens,
-            model=request.model
-        )
-        
-        # Get LLM client
-        client = await # llm_adapter._get_client()
-        
-        # Generate text
-        response = await client.generate_text(
-            prompt=user_message,
-            system_prompt=system_prompt,
-            settings=custom_settings
+            max_tokens=request.max_tokens
         )
         
         # Store in memory if requested
@@ -139,15 +127,15 @@ async def chat(
                 namespace=request.memory_namespace,
                 metadata={
                     "type": "conversation",
-                    "model": response.model,
-                    "provider": response.provider
+                    "model": "via-rhetor",
+                    "provider": "rhetor"
                 }
             )
         
         return {
-            "content": response.content,
-            "model": response.model,
-            "provider": response.provider
+            "content": response_text,
+            "model": "via-rhetor",
+            "provider": "rhetor"
         }
     except Exception as e:
         logger.error(f"Chat error: {str(e)}")
@@ -195,7 +183,8 @@ async def stream_chat(
         full_response = ""
         
         # Get LLM client
-        client = await # llm_adapter._get_client()
+        # TODO: Replace with Rhetor client
+        client = None
         
         try:
             # Start streaming
@@ -310,7 +299,8 @@ async def websocket_chat(
             )
             
             # Get LLM client
-            client = await # llm_adapter._get_client()
+            # TODO: Replace with Rhetor client
+        client = None
             
             if stream:
                 # Create a websocket callback
@@ -453,11 +443,8 @@ async def analyze_content(
     Analyze content using the LLM with enhanced features.
     """
     try:
-        result = await # llm_adapter.analyze_memory(
-            content=request.content,
-            context=request.context,
-            model=request.model
-        )
+        # TODO: Replace with Rhetor client
+        result = {"error": "LLM analysis not available - needs Rhetor integration"}
         return result
     except Exception as e:
         logger.error(f"Analysis error: {str(e)}")
@@ -475,7 +462,8 @@ async def get_models(
     Get available LLM models using the enhanced client features.
     """
     try:
-        models = await # llm_adapter.get_available_models()
+        # TODO: Replace with Rhetor client
+        models = []
         return models
     except Exception as e:
         logger.error(f"Error getting models: {str(e)}")

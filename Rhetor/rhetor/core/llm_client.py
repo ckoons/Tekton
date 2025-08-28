@@ -19,6 +19,8 @@ tekton_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(sc
 if tekton_root not in sys.path:
     sys.path.insert(0, tekton_root)
 
+from shared.env import TektonEnviron
+
 from landmarks import architecture_decision, integration_point
 
 from shared.ai.simple_ai import ai_send, ai_send_sync
@@ -171,15 +173,30 @@ class LLMClient:
         temperature = kwargs.get('temperature', 0.7)
         max_tokens = kwargs.get('max_tokens', 4000)
         
-        # Map role to CI and port
-        ai_map = {
-            'orchestration': ('rhetor-ci', 'localhost', 45003),
-            'code-analysis': ('apollo-ci', 'localhost', 45012),
-            'knowledge': ('athena-ci', 'localhost', 45005),
-            'general': ('numa-ci', 'localhost', 45016)
+        # Map role to CI component name
+        role_to_component = {
+            'orchestration': 'rhetor',
+            'code-analysis': 'apollo',
+            'knowledge': 'athena',
+            'general': 'numa'
         }
         
-        ai_id, host, port = ai_map.get(role, ('numa-ci', 'localhost', 45016))
+        component = role_to_component.get(role, 'numa')
+        
+        # Get AI port from TektonEnviron
+        ai_port = TektonEnviron.get(f"{component.upper()}_AI_PORT")
+        if not ai_port:
+            # Fallback to default if not found
+            ai_port = 44016  # NUMA default
+            logger.warning(f"No AI port found for {component}, using default {ai_port}")
+        else:
+            ai_port = int(ai_port)
+        
+        # Build AI ID and connection info
+        # Use -ai suffix for the AI specialists (not -ci)
+        ai_id = f"{component}-ai"
+        host = 'localhost'
+        port = ai_port
         
         # Send message using simple_ai
         try:

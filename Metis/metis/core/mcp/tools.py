@@ -37,7 +37,7 @@ def get_task_decomposer() -> TaskDecomposer:
     """Get or create TaskDecomposer instance."""
     global _task_decomposer
     if _task_decomposer is None:
-        _task_decomposer = TaskDecomposer(get_llm_adapter())
+        _task_decomposer = TaskDecomposer(llm_adapter=None)
     return _task_decomposer
 
 # Task Management Tools
@@ -113,7 +113,7 @@ async def analyze_task_complexity(
     """
     try:
         task_manager = get_task_manager()
-        llm_adapter = get_llm_adapter()
+        # llm_adapter = get_llm_adapter()  # TODO: Replace with Rhetor client
         
         # Get the task (storage method is sync)
         task = task_manager.storage.get_task(task_id)
@@ -137,11 +137,8 @@ async def analyze_task_complexity(
             ]
         
         # Analyze complexity
-        result = await # llm_adapter.analyze_task_complexity(
-            task_title=task.title,
-            task_description=task.description or "",
-            subtasks=subtasks
-        )
+        # TODO: Replace with Rhetor client
+        result = {"success": False, "error": "LLM analysis not available - needs Rhetor integration"}
         
         # If successful, update task complexity
         if result.get("success") and result.get("analysis"):
@@ -177,7 +174,7 @@ async def suggest_task_order(
     """
     try:
         task_manager = get_task_manager()
-        llm_adapter = get_llm_adapter()
+        # llm_adapter = get_llm_adapter()  # TODO: Replace with Rhetor client
         
         # Get tasks
         if task_ids:
@@ -222,10 +219,8 @@ async def suggest_task_order(
                 })
         
         # Get ordering suggestions
-        result = await # llm_adapter.suggest_task_order(
-            tasks=task_data,
-            dependencies=all_deps
-        )
+        # TODO: Replace with Rhetor client
+        result = {"success": False, "error": "LLM suggestions not available - needs Rhetor integration"}
         
         return result
         
@@ -256,7 +251,7 @@ async def generate_subtasks(
     """
     try:
         task_manager = get_task_manager()
-        llm_adapter = get_llm_adapter()
+        # llm_adapter = get_llm_adapter()  # TODO: Replace with Rhetor client
         
         # If parent task ID provided, verify it exists
         if parent_task_id:
@@ -280,12 +275,8 @@ async def generate_subtasks(
             parent_task_id = new_task.id
         
         # Generate subtasks using LLM
-        result = await # llm_adapter.decompose_task(
-            task_title=title,
-            task_description=description,
-            depth=2,
-            max_subtasks=10
-        )
+        # TODO: Replace with Rhetor client
+        result = {"success": False, "error": "LLM decomposition not available - needs Rhetor integration"}
         
         # If successful and we have a parent task, create the subtasks
         if result.get("success") and parent_task_id and result.get("subtasks"):

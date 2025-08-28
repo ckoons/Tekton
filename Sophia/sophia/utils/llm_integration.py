@@ -28,6 +28,7 @@ from tekton_llm_client.models import (
 
 # Import Sophia utilities
 from sophia.utils.tekton_utils import get_config, get_logger
+from shared.urls import rhetor_url as get_rhetor_url
 
 # Set up logging
 logger = get_logger("sophia.utils.llm_integration")
@@ -122,9 +123,9 @@ class SophiaLLMIntegration:
         self.settings = load_settings("sophia")
         
         # Get default URL and provider from settings or config
-        self.base_url = get_env("TEKTON_LLM_URL", "http://localhost:8003")
+        self.base_url = get_env("RHETOR_URL") or get_rhetor_url()  # Use Rhetor
         self.default_provider = get_env("TEKTON_LLM_PROVIDER", "anthropic")
-        self.default_model = get_env("TEKTON_LLM_MODEL", "claude-3-sonnet-20240229")
+        # Let Rhetor handle model selection based on component and capability
         
         logger.info(f"Initialized Sophia LLM Integration with URL {self.base_url}")
         

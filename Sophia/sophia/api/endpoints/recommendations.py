@@ -31,17 +31,14 @@ router = APIRouter()
 async def analyze_with_llm(
     analysis_data: Dict[str, Any],
     component_id: Optional[str] = Query(None, description="Optional component ID to focus analysis on"),
-    llm_adapter = Depends(get_llm_adapter)
 ):
     """
     Analyze data with LLM to generate insights.
     Useful for getting deeper understanding of metrics or patterns.
     """
     try:
-        analysis_result = await # llm_adapter.analyze_metrics(
-            metrics_data=analysis_data,
-            component_id=component_id
-        )
+        # TODO: Replace with Rhetor client
+        analysis_result = {"error": "LLM analysis not available - needs Rhetor integration"}
         return analysis_result
     except Exception as e:
         raise HTTPException(
@@ -54,18 +51,14 @@ async def generate_recommendations_with_llm(
     analysis_results: Dict[str, Any],
     component_id: Optional[str] = Query(None, description="Optional component ID to focus recommendations on"),
     count: int = Query(3, description="Number of recommendations to generate"),
-    llm_adapter = Depends(get_llm_adapter)
 ):
     """
     Generate recommendations using LLM based on analysis results.
     Produces structured, actionable recommendations with implementation steps.
     """
     try:
-        recommendations = await # llm_adapter.generate_recommendations(
-            analysis_results=analysis_results,
-            target_component=component_id,
-            count=count
-        )
+        # TODO: Replace with Rhetor client
+        recommendations = []  # TODO: await rhetor.generate_recommendations()
         return recommendations
     except Exception as e:
         raise HTTPException(

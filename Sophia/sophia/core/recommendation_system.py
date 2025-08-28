@@ -19,8 +19,8 @@ from enum import Enum
 from .metrics_engine import get_metrics_engine
 from .analysis_engine import get_analysis_engine
 from .database import get_database
-# Note: LLM adapter and experiment framework may not be available yet
-# We'll handle their absence gracefully
+# Import Rhetor client for LLM operations
+from shared.rhetor_client import RhetorClient
 
 logger = logging.getLogger("sophia.recommendation_system")
 
@@ -588,22 +588,52 @@ class RecommendationSystem:
             try:
                 logger.info(f"Generating LLM-based recommendations for component {component_id}")
                 
-                # Try to get LLM adapter (may not be available)
+                # Use Rhetor client for LLM operations
                 try:
-        # REMOVED: llm_adapter = await get_llm_adapter()
+                    rhetor = RhetorClient(component="sophia")
                     
                     # Generate LLM-enhanced analysis
-                    llm_analysis = await # llm_adapter.analyze_metrics(
-                        metrics_data=analysis,
-                        component_id=component_id
+                    analysis_prompt = f"""Analyze these metrics for component {component_id}:
+{json.dumps(analysis, indent=2)}
+
+Provide insights about performance, bottlenecks, and areas for improvement."""
+                    
+                    llm_analysis = await rhetor.generate(
+                        prompt=analysis_prompt,
+                        capability="reasoning",
+                        temperature=0.5
                     )
                     
                     # Generate recommendations based on LLM analysis
-                    llm_recommendations = await # llm_adapter.generate_recommendations(
-                        analysis_results=llm_analysis,
-                        target_component=component_id,
-                        count=5  # Request 5 recommendations
+                    rec_prompt = f"""Based on this analysis for component {component_id}:
+{llm_analysis}
+
+Generate 5 actionable recommendations. Return as JSON array with fields:
+- title: string
+- description: string
+- impact: high/medium/low
+- effort: high/medium/low
+- implementation_steps: array of strings
+- impact_areas: array of strings
+- supporting_metrics: array of strings"""
+                    
+                    rec_response = await rhetor.generate(
+                        prompt=rec_prompt,
+                        capability="planning",
+                        temperature=0.6
                     )
+                    
+                    # Parse recommendations
+                    try:
+                        if "[" in rec_response and "]" in rec_response:
+                            start = rec_response.index("[")
+                            end = rec_response.rindex("]") + 1
+                            llm_recommendations = json.loads(rec_response[start:end])
+                        else:
+                            llm_recommendations = json.loads(rec_response)
+                    except json.JSONDecodeError:
+                        logger.warning("Failed to parse LLM recommendations as JSON")
+                        llm_recommendations = []
                 except ImportError:
                     logger.warning("LLM adapter not available, using rule-based recommendations only")
                     llm_recommendations = []
@@ -778,19 +808,36 @@ class RecommendationSystem:
             try:
                 logger.info(f"Generating LLM-enhanced recommendation for experiment {experiment_id}")
                 
-                # Try to get LLM adapter (may not be available)
+                # Use Rhetor client for experiment design
                 try:
-        # REMOVED: llm_adapter = await get_llm_adapter()
+                    rhetor = RhetorClient(component="sophia")
                     
                     # Create hypothesis from experiment details
                     hypothesis = f"Implementing the changes tested in experiment '{report['name']}' will improve {', '.join(report['metrics'])}"
                     
                     # Generate a well-designed experiment with LLM
-                    experiment_design = await # llm_adapter.design_experiment(
-                        hypothesis=hypothesis,
-                        available_components=report["components"],
-                        metrics_summary={"metrics": report["metrics"], "conclusion": report["conclusion"]}
+                    design_prompt = f"""Design an experiment for this hypothesis:
+{hypothesis}
+
+Available components: {report['components']}
+Metrics: {report['metrics']}
+Conclusion: {report['conclusion']}
+
+Return a JSON object with:
+- implementation_steps: array of detailed steps
+- methodology: array of test procedures
+- expected_outcomes: object with metric improvements"""
+                    
+                    design_response = await rhetor.generate(
+                        prompt=design_prompt,
+                        capability="planning",
+                        temperature=0.5
                     )
+                    
+                    try:
+                        experiment_design = json.loads(design_response)
+                    except json.JSONDecodeError:
+                        experiment_design = None
                 except ImportError:
                     logger.warning("LLM adapter not available, using basic experiment-based recommendation")
                     experiment_design = None
@@ -819,17 +866,22 @@ class RecommendationSystem:
                         f"4. Compare performance before and after implementation to verify expected improvements"
                     )
                     
-                # Enhance the description with LLM if available
-                if 'llm_adapter' in locals() and llm_adapter:
+                # Enhance the description with Rhetor
+                if True:  # Always available with Rhetor
                     try:
-                        llm_explanation = await # llm_adapter.explain_analysis(
-                            analysis_data={
-                                "experiment": report["name"],
-                                "conclusion": report["conclusion"],
-                                "metrics": report["metrics"],
-                                "components": report["components"]
-                            },
-                            audience="technical"
+                        rhetor = RhetorClient(component="sophia")
+                        analysis_data = {
+                            "experiment": report["name"],
+                            "conclusion": report["conclusion"],
+                            "metrics": report["metrics"],
+                            "components": report["components"]
+                        }
+                        explain_prompt = f"""Explain the value of this experiment:
+{json.dumps(analysis_data, indent=2)}"""
+                        
+                        llm_explanation = await rhetor.generate(
+                            prompt=explain_prompt,
+                            capability="reasoning"
                         )
                         description = llm_explanation if llm_explanation else None
                     except Exception as e:

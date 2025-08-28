@@ -6,6 +6,7 @@ the memory system for the Tekton ecosystem.
 
 import os
 from shared.env import TektonEnviron
+from shared.urls import engram_url as get_engram_url
 import logging
 import json
 import asyncio
@@ -27,13 +28,11 @@ class EngramClient:
         """Initialize connection to Engram.
         
         Args:
-            engram_url: URL for the Engram API (defaults to localhost:8000)
+            engram_url: URL for the Engram API (uses tekton_url if not provided)
             engram_api_key: API key for authentication (if required)
             offline_mode: Whether to operate in offline mode
         """
-        self.engram_url = engram_url or TektonEnviron.get(
-            "ENGRAM_URL", "http://localhost:8000"
-        )
+        self.engram_url = engram_url or get_engram_url()
         self.engram_api_key = engram_api_key or TektonEnviron.get("ENGRAM_API_KEY")
         self.offline_mode = offline_mode
         self.session = None
@@ -586,7 +585,7 @@ async def get_engram_client() -> EngramClient:
     """
     # Read configuration from environment
     offline_mode = TektonEnviron.get("RHETOR_ENGRAM_OFFLINE", "").lower() in ("true", "1", "yes")
-    engram_url = TektonEnviron.get("ENGRAM_URL", "http://localhost:8000")
+    engram_url = get_engram_url()
     engram_api_key = TektonEnviron.get("ENGRAM_API_KEY")
     
     # Create client

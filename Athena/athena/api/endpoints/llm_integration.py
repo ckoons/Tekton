@@ -58,7 +58,7 @@ llm_client = TektonLLMClient(
     component_id="athena.knowledge",
     rhetor_url=get_env("TEKTON_LLM_URL", default_rhetor_url),
     provider_id=get_env("TEKTON_LLM_PROVIDER", "anthropic"),
-    model_id=get_env("TEKTON_LLM_MODEL", "claude-3-sonnet-20240229"),
+    # Model selection handled by Rhetor based on component and capability
     timeout=60,
     max_retries=3,
     use_fallback=True

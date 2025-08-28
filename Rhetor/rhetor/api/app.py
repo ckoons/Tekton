@@ -73,6 +73,8 @@ class ChatRequest(TektonBaseModel):
     tool_choice: Optional[Union[str, Dict[str, Any]]] = Field(None, description="Tool choice configuration")
     response_format: Optional[Dict[str, Any]] = Field(None, description="Response format configuration")
     request_metadata: Optional[Dict[str, Any]] = Field(None, description="Additional request metadata")
+    component: Optional[str] = Field(None, description="Component making the request")
+    capability: Optional[str] = Field("chat", description="Capability type")
 
 
 class ChatResponse(TektonBaseModel):
@@ -82,6 +84,7 @@ class ChatResponse(TektonBaseModel):
     usage: Optional[Dict[str, Any]] = None
     context_id: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
+    response: Optional[str] = None  # Alias for content for backward compatibility
 
 
 class TemplateRequest(TektonBaseModel):
@@ -99,6 +102,24 @@ class PromptRequest(TektonBaseModel):
     template_name: str
     variables: Optional[Dict[str, Any]] = None
     context_id: Optional[str] = None
+
+
+class GenerateRequest(TektonBaseModel):
+    """Generate request model for simple text generation"""
+    prompt: str
+    model: Optional[str] = Field(None, description="Model to use")
+    temperature: Optional[float] = Field(0.7, ge=0.0, le=2.0)
+    max_tokens: Optional[int] = Field(2000, gt=0)
+    system_prompt: Optional[str] = Field(None, description="System prompt")
+    component: Optional[str] = Field(None, description="Component making the request")
+    capability: Optional[str] = Field("reasoning", description="Capability type")
+
+
+class GenerateResponse(TektonBaseModel):
+    """Generate response model"""
+    response: str
+    model: str
+    usage: Optional[Dict[str, Any]] = None
 
 
 class PromptRegistryRequest(TektonBaseModel):
@@ -308,6 +329,53 @@ async def discovery():
     return await discovery_check()
 
 
+# Generate endpoint (simple text generation)
+@routers.v1.post("/generate", response_model=GenerateResponse)
+@api_contract(
+    title="Text Generation API",
+    endpoint="/api/v1/generate",
+    method="POST",
+    request_schema={"prompt": "string", "model": "string", "temperature": "float", "max_tokens": "int"}
+)
+async def generate(request: GenerateRequest):
+    """Generate text from a prompt."""
+    if not component or not component.initialized:
+        raise HTTPException(status_code=503, detail="Rhetor not initialized")
+    
+    try:
+        # Create a unique context ID for this request
+        import uuid
+        context_id = str(uuid.uuid4())
+        
+        # Route the request
+        result = await component.model_router.route_request(
+            message=request.prompt,
+            context_id=context_id,
+            task_type=request.capability or "reasoning",
+            component=request.component,
+            system_prompt=request.system_prompt,
+            streaming=False,
+            override_config={
+                "temperature": request.temperature,
+                "max_tokens": request.max_tokens,
+                "model": request.model
+            } if request.model else None
+        )
+        
+        # Extract response from result - it may have 'content' or 'message' key
+        response_text = result.get("content") or result.get("message", "")
+        
+        return GenerateResponse(
+            response=response_text,
+            model=result.get("model", "unknown"),
+            usage=result.get("usage")
+        )
+        
+    except Exception as e:
+        logger.error(f"Error processing generate request: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # Chat endpoints
 @routers.v1.post("/chat", response_model=ChatResponse)
 @api_contract(
@@ -335,16 +403,32 @@ async def chat(request: ChatRequest):
             if not context:
                 raise HTTPException(status_code=404, detail=f"Context not found: {request.context_id}")
         
+        # Extract the last user message for routing
+        user_message = ""
+        system_prompt = None
+        for msg in request.messages:
+            if msg["role"] == "user":
+                user_message = msg["content"]
+            elif msg["role"] == "system":
+                system_prompt = msg["content"]
+        
+        # Create context ID if not provided
+        import uuid
+        context_id = request.context_id or str(uuid.uuid4())
+        
         # Route the request
         result = await component.model_router.route_request(
-            messages=request.messages,
-            model=request.model,
-            temperature=request.temperature,
-            max_tokens=request.max_tokens,
-            tools=request.tools,
-            tool_choice=request.tool_choice,
-            response_format=request.response_format,
-            request_metadata=request.request_metadata
+            message=user_message,
+            context_id=context_id,
+            task_type=request.capability or "chat",
+            component=request.component,
+            system_prompt=system_prompt,
+            streaming=False,
+            override_config={
+                "temperature": request.temperature,
+                "max_tokens": request.max_tokens,
+                "model": request.model
+            } if request.model else None
         )
         
         # Update context if provided
@@ -354,11 +438,15 @@ async def chat(request: ChatRequest):
                 request.messages + [{"role": "assistant", "content": result["content"]}]
             )
         
+        # Extract response from result - it may have 'content' or 'message' key
+        response_content = result.get("content") or result.get("message", "")
+        
         return ChatResponse(
-            content=result["content"],
-            model=result["model"],
+            content=response_content,
+            response=response_content,  # Include for backward compatibility
+            model=result.get("model", "unknown"),
             usage=result.get("usage"),
-            context_id=request.context_id,
+            context_id=context_id,
             metadata=result.get("metadata")
         )
         

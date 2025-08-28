@@ -207,11 +207,12 @@ class RhetorComponent(StandardComponentBase):
                 MCPToolsIntegrationSimple,
                 set_mcp_tools_integration
             )
+            from shared.urls import hermes_url as get_hermes_url
             
-            hermes_url = TektonEnviron.get("HERMES_URL", "http://localhost:8001")
+            hermes_url = TektonEnviron.get("HERMES_URL") or get_hermes_url()
             
             # Create simple MCP integration
-            self.mcp_integration = MCPToolsIntegrationSimple(hermes_url=hermes_url)
+            self.mcp_integration = MCPToolsIntegrationSimple(hermes_url_param=hermes_url)
             set_mcp_tools_integration(self.mcp_integration)
             
             logger.info("MCP Tools Integration initialized with CI Registry")

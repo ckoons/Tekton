@@ -31,18 +31,14 @@ async def design_experiment_with_llm(
     hypothesis: str = Body(..., description="The hypothesis to test in the experiment"),
     available_components: Optional[List[str]] = Body(None, description="List of components available for the experiment"),
     metrics_summary: Optional[Dict[str, Any]] = Body(None, description="Summary of recent metrics relevant to the experiment"),
-    llm_adapter = Depends(get_llm_adapter)
 ):
     """
     Design an experiment using LLM to test a specified hypothesis.
     Generates detailed experiment methodology, variables, and success criteria.
     """
     try:
-        experiment_design = await # llm_adapter.design_experiment(
-            hypothesis=hypothesis,
-            available_components=available_components,
-            metrics_summary=metrics_summary
-        )
+        # TODO: Replace with Rhetor client
+        experiment_design = {"error": "LLM design not available - needs Rhetor integration"}
         return experiment_design
     except Exception as e:
         raise HTTPException(

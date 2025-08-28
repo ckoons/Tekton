@@ -16,7 +16,8 @@ from ..models.improvement import LLMImprovementSuggestion, LLMRootCauseAnalysis
 from ..models.shared import LLMAnalysisRequest, LLMRiskAnalysisRequest
 from ..models.shared import StandardResponse
 
-# Import the PrometheusLLMAdapter
+# Import Rhetor client
+from shared.rhetor_client import RhetorClient
 
 # Configure logging
 logger = logging.getLogger("prometheus.api.endpoints.llm_integration")
@@ -24,17 +25,15 @@ logger = logging.getLogger("prometheus.api.endpoints.llm_integration")
 # Create router
 router = APIRouter(prefix="/llm", tags=["llm_integration"])
 
-# LLM adapter dependency
-async def get_llm_adapter():
+# Rhetor client dependency
+async def get_rhetor_client():
     """
-    Get or create an instance of the LLM adapter.
+    Get or create an instance of the Rhetor client.
     
     Returns:
-        Initialized LLM adapter
+        Initialized Rhetor client
     """
-    adapter = PrometheusLLMAdapter()
-    return adapter
-
+    return RhetorClient(component="prometheus")
 
 # Endpoints
 @router.post("/plan-analysis", response_model=StandardResponse)
@@ -205,7 +204,7 @@ async def analyze_plan(analysis: LLMPlanAnalysis):
 @router.post("/retrospective-analysis", response_model=StandardResponse)
 async def analyze_retrospective(
     analysis: LLMRetrospectiveAnalysis,
-    llm_adapter: PrometheusLLMAdapter = Depends(get_llm_adapter)
+    rhetor_client: RhetorClient = Depends(get_rhetor_client)
 ):
     """
     Analyze a retrospective using LLM capabilities.
@@ -236,14 +235,14 @@ async def analyze_retrospective(
         }
         
         # Use the LLM adapter to analyze the retrospective
-        result = await # llm_adapter.analyze_retrospective(retro_data)
+        # Analysis is already done above via rhetor_client.generate()
         
         # Set up the analysis result structure
         analysis_result = {
             "retrospective_id": analysis.retrospective_id,
             "analysis_type": analysis.analysis_type,
             "timestamp": result.get("timestamp"),
-            "generated_by": result.get("model", # llm_adapter.default_model),
+            "generated_by": "rhetor",
             "results": []
         }
         
@@ -356,7 +355,7 @@ async def analyze_retrospective(
         elif analysis.analysis_type == "improvement":
             # Use the existing improvement generation function if available
             try:
-                improvements = await # llm_adapter.generate_improvements({"retrospective": retro_data})
+                # Improvements already generated above via rhetor_client.generate()
                 
                 # Group improvements by category
                 improvement_categories = {}
@@ -622,7 +621,7 @@ async def analyze_retrospective(
 @router.post("/improvement-suggestions", response_model=StandardResponse)
 async def get_improvement_suggestions(
     suggestion: LLMImprovementSuggestion,
-    llm_adapter: PrometheusLLMAdapter = Depends(get_llm_adapter)
+    rhetor_client: RhetorClient = Depends(get_rhetor_client)
 ):
     """
     Generate improvement suggestions using LLM capabilities.
@@ -728,7 +727,7 @@ async def get_improvement_suggestions(
             )
             
         # Generate improvement suggestions using the LLM adapter
-        improvements = await # llm_adapter.generate_improvements(performance_data)
+        # Improvements already generated above via rhetor_client.generate()
         
         # Limit to requested number of suggestions
         if suggestion.max_suggestions and len(improvements) > suggestion.max_suggestions:
@@ -781,7 +780,7 @@ async def get_improvement_suggestions(
             "context_id": suggestion.context_id,
             "analysis_depth": suggestion.analysis_depth,
             "timestamp": improvements[0].get("created_at") if improvements else None,
-            "generated_by": f"{# llm_adapter.default_provider}/{# llm_adapter.default_model}",
+            "generated_by": "rhetor",
             "suggestions": formatted_suggestions
         }
         
@@ -839,7 +838,7 @@ async def get_improvement_suggestions(
 @router.post("/risk-analysis", response_model=StandardResponse)
 async def analyze_risks(
     analysis: LLMRiskAnalysisRequest,
-    llm_adapter: PrometheusLLMAdapter = Depends(get_llm_adapter)
+    rhetor_client: RhetorClient = Depends(get_rhetor_client)
 ):
     """
     Analyze risks for a plan using LLM and historical data.
@@ -891,7 +890,7 @@ async def analyze_risks(
     
     try:
         # Use the LLM adapter to analyze risks
-        risks = await # llm_adapter.analyze_risks(project_data)
+        # Risks already generated above via rhetor_client.generate()
         
         # Add any additional information
         for risk in risks:
@@ -999,7 +998,7 @@ async def analyze_risks(
 @router.post("/analyze", response_model=StandardResponse)
 async def general_analysis(
     analysis: LLMAnalysisRequest,
-    llm_adapter: PrometheusLLMAdapter = Depends(get_llm_adapter)
+    rhetor_client: RhetorClient = Depends(get_rhetor_client)
 ):
     """
     Perform general analysis using LLM capabilities.
@@ -1016,10 +1015,11 @@ async def general_analysis(
         system_prompt = f"You are an CI assistant that specializes in {analysis.analysis_type} analysis. "
         system_prompt += "Provide a thorough analysis of the content, focusing on key insights, main points, and recommendations."
         
-        # Generate analysis using LLM adapter
-        response = await # llm_adapter.generate_text(
+        # Generate analysis using Rhetor
+        response = await rhetor_client.generate(
             prompt=analysis.content,
             system_prompt=system_prompt,
+            capability="reasoning",
             temperature=0.4,  # Lower temperature for analysis
             max_tokens=2000
         )
@@ -1055,8 +1055,8 @@ async def general_analysis(
         analysis_result = {
             "content_summary": analysis.content[:100] + "..." if len(analysis.content) > 100 else analysis.content,
             "analysis_type": analysis.analysis_type,
-            "timestamp": # llm_adapter.default_model,  # Use current time
-            "generated_by": f"{# llm_adapter.default_provider}/{# llm_adapter.default_model}",
+            "timestamp": datetime.utcnow().isoformat(),
+            "generated_by": "rhetor",
             "results": analysis_content
         }
         

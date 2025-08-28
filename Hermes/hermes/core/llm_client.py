@@ -64,7 +64,8 @@ class LLMClient:
         
         self.adapter_url = adapter_url or TektonEnviron.get("LLM_ADAPTER_URL", default_adapter_url)
         self.provider = provider or TektonEnviron.get("LLM_PROVIDER", "anthropic")
-        self.model = model or TektonEnviron.get("LLM_MODEL", "claude-3-haiku-20240307")
+        # Model selection handled by Rhetor based on component and capability
+        self.model = model  # Will be determined by Rhetor
         
         # Initialize client settings
         self.client_settings = ClientSettings(

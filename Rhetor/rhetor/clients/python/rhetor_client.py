@@ -7,6 +7,7 @@ with the Rhetor LLM Management System.
 
 import os
 from shared.env import TektonEnviron
+from shared.urls import rhetor_url as get_rhetor_url
 import json
 import logging
 import asyncio
@@ -50,14 +51,14 @@ class RhetorClient:
         """Initialize Rhetor client.
         
         Args:
-            rhetor_url: URL for Rhetor API (defaults to http://localhost:8003)
+            rhetor_url: URL for Rhetor API (uses tekton_url if not provided)
             component_id: ID of the component using the client
             default_context: Default context ID for messages
             auto_reconnect: Whether to automatically attempt reconnection
             max_retries: Maximum number of retry attempts for operations
             retry_delay: Delay between retry attempts in seconds
         """
-        self.rhetor_url = rhetor_url or TektonEnviron.get("RHETOR_URL", "http://localhost:8003")
+        self.rhetor_url = rhetor_url or TektonEnviron.get("RHETOR_URL") or get_rhetor_url()
         self.component_id = component_id or TektonEnviron.get("COMPONENT_ID", "component")
         self.default_context = default_context or f"{self.component_id}:default"
         self.auto_reconnect = auto_reconnect

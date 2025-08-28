@@ -926,7 +926,8 @@ async def handle_llm_step(parameters: Dict[str, Any], context: ExecutionContext)
                     system_prompt = system_prompt.replace(placeholder, str(var_value))
         
         # Get the LLM adapter
-        llm_adapter = await get_llm_adapter()
+        # TODO: Replace with Rhetor client
+        # llm_adapter = await get_rhetor_client()
         
         # Check if we need to use chat interface
         mode = parameters.get("mode", "chat")
@@ -934,7 +935,8 @@ async def handle_llm_step(parameters: Dict[str, Any], context: ExecutionContext)
         if mode == "enhance_plan":
             # Generate enhanced execution plan
             plan_data = parameters.get("plan", {})
-            result = await # llm_adapter.enhance_execution_plan(plan_data)
+            # TODO: Replace with Rhetor client
+            result = {"error": "LLM enhancement not available - needs Rhetor integration"}
             
             # Store result in variable if specified
             if store_variable:
@@ -952,11 +954,8 @@ async def handle_llm_step(parameters: Dict[str, Any], context: ExecutionContext)
             result_data = parameters.get("result", {})
             plan_data = parameters.get("plan", {})
             
-            analysis = await # llm_adapter.analyze_execution_result(
-                execution_id=execution_id,
-                result=result_data,
-                plan=plan_data
-            )
+            # TODO: Replace with Rhetor client
+            analysis = {"success": False, "error": "LLM analysis not available - needs Rhetor integration"}
             
             # Store result in variable if specified
             if store_variable:
@@ -972,10 +971,8 @@ async def handle_llm_step(parameters: Dict[str, Any], context: ExecutionContext)
             # Generate dynamic command
             instruction = parameters.get("instruction", prompt)
             
-            command = await # llm_adapter.generate_dynamic_command(
-                context=context.variables,
-                instruction=instruction
-            )
+            # TODO: Replace with Rhetor client
+            command = {"success": False, "error": "LLM generation not available - needs Rhetor integration"}
             
             # Store result in variable if specified
             if store_variable:
@@ -989,7 +986,8 @@ async def handle_llm_step(parameters: Dict[str, Any], context: ExecutionContext)
             
         else:  # Default chat mode
             # Initialize LLM client
-            if not await # llm_adapter.ensure_initialized():
+            # TODO: Replace with Rhetor client initialization
+            if False:  # not await rhetor.ensure_initialized():
                 return ExecutionResult(
                     success=False,
                     message="Failed to initialize LLM client",
@@ -1041,7 +1039,8 @@ async def handle_llm_step(parameters: Dict[str, Any], context: ExecutionContext)
                     
                     if event_emitter:
                         # If we have an event emitter, send events for each chunk
-                        async for chunk in # llm_adapter.client.stream_chat_completion(messages=messages, options=options):
+                        # TODO: Replace with Rhetor client streaming
+                        for chunk in []:  # async for chunk in rhetor.stream_chat_completion(messages=messages, options=options):
                             content = chunk.choices[0].delta.content
                             if content:
                                 full_response += content
@@ -1059,7 +1058,8 @@ async def handle_llm_step(parameters: Dict[str, Any], context: ExecutionContext)
                         })
                     else:
                         # No event emitter, just collect chunks
-                        async for chunk in # llm_adapter.client.stream_chat_completion(messages=messages, options=options):
+                        # TODO: Replace with Rhetor client streaming
+                        for chunk in []:  # async for chunk in rhetor.stream_chat_completion(messages=messages, options=options):
                             content = chunk.choices[0].delta.content
                             if content:
                                 full_response += content
@@ -1076,7 +1076,8 @@ async def handle_llm_step(parameters: Dict[str, Any], context: ExecutionContext)
                     
                 else:
                     # Non-streaming response
-                    response = await # llm_adapter.client.chat_completion(messages=messages, options=options)
+                    # TODO: Replace with Rhetor client
+                    response = None  # await rhetor.chat_completion(messages=messages, options=options)
                     content = response.choices[0].message.content
                     
                     # Store result in variable if specified

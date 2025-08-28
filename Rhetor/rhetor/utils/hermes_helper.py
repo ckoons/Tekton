@@ -4,6 +4,7 @@ Helper module for registering with Hermes service registry.
 
 import os
 from shared.env import TektonEnviron
+from shared.urls import hermes_url as get_hermes_url
 import sys
 import logging
 import json
@@ -20,7 +21,7 @@ from shared.utils.env_config import get_component_config
 
 logger = logging.getLogger(__name__)
 
-HERMES_API_URL = TektonEnviron.get("HERMES_API_URL", "http://localhost:8000")
+HERMES_API_URL = TektonEnviron.get("HERMES_API_URL") or get_hermes_url()
 config = get_component_config()
 RHETOR_PORT = config.rhetor.port if hasattr(config, 'rhetor') else int(TektonEnviron.get("RHETOR_PORT"))
 

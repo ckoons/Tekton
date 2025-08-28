@@ -154,10 +154,10 @@ class CISpecialistWorker(ABC):
             'chat': self._handle_chat,
         }
         
-        # CI configuration
+        # CI configuration - Model selection handled by Rhetor
         self.model_provider = TektonEnviron.get('TEKTON_AI_PROVIDER', 'ollama')
-        self.model_name = TektonEnviron.get(f'{component.upper()}_AI_MODEL', 
-                                        self.get_default_model())
+        # Model will be determined by Rhetor based on component and capability
+        self.model_name = None  # Rhetor will select appropriate model
         
         # Initialize model manager
         self.model_manager = ModelManager()
