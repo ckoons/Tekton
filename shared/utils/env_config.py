@@ -159,7 +159,6 @@ class RhetorConfig(BaseComponentConfig):
         """Create RhetorConfig from environment variables."""
         return cls(
             port=cls._get_required_env('RHETOR_PORT', 'int'),
-            default_model=cls._get_env_value('TEKTON_DEFAULT_MODEL', 'claude-4-sonnet', 'str'),
             default_provider=cls._get_env_value('TEKTON_DEFAULT_PROVIDER', 'anthropic', 'str'),
             request_timeout=cls._get_env_value('RHETOR_TIMEOUT', 120, 'int'),
             max_retries=cls._get_env_value('RHETOR_MAX_RETRIES', 3, 'int')

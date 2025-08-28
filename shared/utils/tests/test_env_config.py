@@ -58,7 +58,6 @@ def test_rhetor_config():
     """Test RhetorConfig with LLM settings."""
     with patch.dict(os.environ, {
         'RHETOR_PORT': '8003',
-        'TEKTON_DEFAULT_MODEL': 'gpt-4',
         'TEKTON_DEFAULT_PROVIDER': 'openai',
         'RHETOR_TIMEOUT': '120'
     }):

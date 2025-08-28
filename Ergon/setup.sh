@@ -57,7 +57,6 @@ ANTHROPIC_API_KEY=\${ANTHROPIC_API_KEY:-""}
 OLLAMA_BASE_URL=\${OLLAMA_BASE_URL:-"http://localhost:11434"}
 
 # Model settings
-DEFAULT_MODEL=\${DEFAULT_MODEL:-"claude-3-7-sonnet-20250219"}
 USE_LOCAL_MODELS=\${USE_LOCAL_MODELS:-false}
 EMBEDDING_MODEL=\${EMBEDDING_MODEL:-"sentence-transformers/all-MiniLM-L6-v2"}
 
@@ -78,7 +77,6 @@ if [ \! -f ".env.local" ]; then
 OLLAMA_BASE_URL=http://localhost:11434
 
 # Model settings - using Phi-3 model for local development
-DEFAULT_MODEL=ollama/phi3-mini
 USE_LOCAL_MODELS=true
 EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
 

@@ -282,8 +282,6 @@ The client uses these environment variables if set:
 
 - `RHETOR_URL`: URL for the Rhetor API (default: `http://localhost:8003`)
 - `RHETOR_WS_URL`: WebSocket URL for Rhetor (default: derived from `RHETOR_URL`)
-- `RHETOR_DEFAULT_PROVIDER`: Default provider ID (default: `anthropic`)
-- `RHETOR_DEFAULT_MODEL`: Default model ID
 - `RHETOR_AUTH_TOKEN`: Authentication token for Rhetor API
 - `RHETOR_TIMEOUT`: Default timeout in seconds (default: `30`)
 - `RHETOR_MAX_RETRIES`: Default number of retries (default: `3`)
