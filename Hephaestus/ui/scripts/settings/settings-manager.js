@@ -517,7 +517,7 @@ class SettingsManager {
                 case 'penia': return 'Penia<span class="nav-label-sub"> - Cost</span>';
                 case 'hermes': return 'Hermes<span class="nav-label-sub"> - Federation</span>';
                 case 'ergon': return 'Ergon<span class="nav-label-sub"> - Solutions</span>';
-                case 'terma': return 'Terma<span class="nav-label-sub"> - Terminal</span>';
+                case 'terma': return 'Terma<span class="nav-label-sub"> - Terminals</span>';
                 case 'profile': return 'Profile';
                 case 'settings': return 'Settings';
                 default: return component;
@@ -540,7 +540,7 @@ class SettingsManager {
                 case 'rhetor': return 'Models';
                 case 'hermes': return 'Federation';
                 case 'ergon': return 'Solutions';
-                case 'terma': return 'Terminal';
+                case 'terma': return 'Terminals';
                 case 'budget': return 'Cost';
                 case 'penia': return 'Cost';
                 case 'profile': return 'Profile';
