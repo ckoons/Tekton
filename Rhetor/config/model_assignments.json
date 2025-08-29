@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
-  "last_updated": "2025-08-27T12:46:15.942601",
+  "last_updated": "2025-08-29T11:47:26.586216",
   "description": "Model assignments matrix for Tekton components",
   "defaults": {
-    "code": "claude-sonnet-4-20250827",
-    "planning": "claude-sonnet-4-20250827",
-    "reasoning": "claude-sonnet-4-20250827",
-    "chat": "claude-3-5-haiku-20241022"
+    "code": "claude-sonnet-4-20250514",
+    "planning": "claude-sonnet-4-20250514",
+    "reasoning": "claude-sonnet-4-20250514",
+    "chat": "claude-sonnet-4-20250514"
   },
   "components": {
     "apollo": {
@@ -39,10 +39,10 @@
     "ergon": {
       "description": "Solutions",
       "assignments": {
-        "code": "claude-opus-4-20250827",
+        "code": "claude-opus-4-1-20250805",
         "planning": "use_default",
         "reasoning": "use_default",
-        "chat": "llama3.3:70b"
+        "chat": "claude-sonnet-4-20250514"
       }
     },
     "harmonia": {
@@ -67,7 +67,7 @@
       "description": "Workflows",
       "assignments": {
         "code": "use_default",
-        "planning": "claude-sonnet-4-20250827",
+        "planning": "claude-sonnet-4-20250514",
         "reasoning": "use_default",
         "chat": "use_default"
       }
@@ -77,7 +77,7 @@
       "assignments": {
         "code": "use_default",
         "planning": "use_default",
-        "reasoning": "claude-sonnet-4-20250827",
+        "reasoning": "claude-sonnet-4-20250514",
         "chat": "use_default"
       }
     },
@@ -87,7 +87,7 @@
         "code": "use_default",
         "planning": "use_default",
         "reasoning": "use_default",
-        "chat": "claude-sonnet-4-20250827"
+        "chat": "claude-sonnet-4-20250514"
       }
     },
     "penia": {
@@ -96,25 +96,25 @@
         "code": "use_default",
         "planning": "use_default",
         "reasoning": "use_default",
-        "chat": "gpt-5-nano-20250827"
+        "chat": "gpt-3.5-turbo"
       }
     },
     "prometheus": {
       "description": "Planning",
       "assignments": {
         "code": "use_default",
-        "planning": "claude-sonnet-4-20250827",
-        "reasoning": "claude-sonnet-4-20250827",
+        "planning": "claude-sonnet-4-20250514",
+        "reasoning": "claude-sonnet-4-20250514",
         "chat": "use_default"
       }
     },
     "rhetor": {
       "description": "Models",
       "assignments": {
-        "code": "claude-sonnet-4-20250827",
-        "planning": "claude-sonnet-4-20250827",
-        "reasoning": "claude-sonnet-4-20250827",
-        "chat": "claude-sonnet-4-20250827"
+        "code": "claude-sonnet-4-20250514",
+        "planning": "claude-sonnet-4-20250514",
+        "reasoning": "claude-sonnet-4-20250514",
+        "chat": "claude-sonnet-4-20250514"
       }
     },
     "sophia": {
@@ -122,14 +122,14 @@
       "assignments": {
         "code": "use_default",
         "planning": "use_default",
-        "reasoning": "claude-sonnet-4-20250827",
+        "reasoning": "claude-sonnet-4-20250514",
         "chat": "use_default"
       }
     },
     "synthesis": {
       "description": "Integration",
       "assignments": {
-        "code": "claude-sonnet-4-20250827",
+        "code": "claude-sonnet-4-20250514",
         "planning": "use_default",
         "reasoning": "use_default",
         "chat": "use_default"
@@ -148,7 +148,7 @@
       "description": "Requirements",
       "assignments": {
         "code": "use_default",
-        "planning": "claude-sonnet-4-20250827",
+        "planning": "claude-sonnet-4-20250514",
         "reasoning": "use_default",
         "chat": "use_default"
       }
@@ -159,7 +159,7 @@
         "code": "use_default",
         "planning": "use_default",
         "reasoning": "use_default",
-        "chat": "claude-3-5-haiku-20241022"
+        "chat": "gpt-oss:20b"
       }
     }
   }

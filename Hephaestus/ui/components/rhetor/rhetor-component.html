@@ -937,7 +937,7 @@
           <div class="rhetor__models-section-header">
             <h3 class="rhetor__models-section-title">Model Assignment Matrix</h3>
             <div class="rhetor__matrix-actions">
-              <button class="rhetor__button rhetor__button--error" onclick="rhetor_saveModelConfig()"
+              <button class="rhetor__button rhetor__button--error" onclick="window.rhetor_saveModelConfig()"
                       id="rhetor-save-models-btn"
                       data-tekton-action="save-models">Save</button>
               <span id="rhetor-save-status" class="rhetor__save-status"></span>
@@ -4246,6 +4246,21 @@ window.updateSelectOptions = function(select, models, currentValue, allowDefault
     }
 }
 
+// Helper function to show save status
+window.showSaveStatus = function(message, type = 'info') {
+    const statusElement = document.getElementById('rhetor-save-status');
+    if (statusElement) {
+        statusElement.textContent = message;
+        statusElement.className = `rhetor__save-status rhetor__save-status--${type}`;
+        
+        // Clear status after 3 seconds
+        setTimeout(() => {
+            statusElement.textContent = '';
+            statusElement.className = 'rhetor__save-status';
+        }, 3000);
+    }
+}
+
 // Save model configuration
 window.rhetor_saveModelConfig = async function() {
     console.log('[RHETOR] Saving model configuration');
@@ -4257,7 +4272,16 @@ window.rhetor_saveModelConfig = async function() {
     }
     
     try {
-        const service = window.rhetorService || new RhetorService();
+        
+        if (!originalAssignments) {
+            console.error('[RHETOR] originalAssignments is null - loading first');
+            await rhetor_loadModelAssignments();
+            if (!originalAssignments) {
+                throw new Error('Failed to load original assignments');
+            }
+        }
+        
+        // We don't need RhetorService - we're making direct API calls
         const updates = [];
         
         // Collect all changes from the matrix
@@ -4324,7 +4348,7 @@ window.rhetor_saveModelConfig = async function() {
                 }
             } else {
                 // Update component assignment
-                const response = await fetch('http://localhost:8103/api/models/assignments', {
+                const response = await fetch('http://localhost:8103/api/models/assignments/component', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -4345,11 +4369,11 @@ window.rhetor_saveModelConfig = async function() {
         // Reload to confirm changes
         await rhetor_loadModelAssignments();
         
-        showSaveStatus('Model assignments saved successfully', 'success');
+        window.showSaveStatus('Model assignments saved successfully', 'success');
         
     } catch (error) {
         console.error('[RHETOR] Error saving model configuration:', error);
-        showSaveStatus('Failed to save model assignments', 'error');
+        window.showSaveStatus('Failed to save model assignments', 'error');
     } finally {
         if (saveBtn) {
             saveBtn.disabled = false;
@@ -4432,7 +4456,7 @@ window.updateProviderCards = async function() {
             if (card) {
                 const modelsSpan = card.querySelector('.rhetor__provider-models');
                 if (modelsSpan) {
-                    modelsSpan.textContent = `${info.model_count} models`;
+                    modelsSpan.textContent = `${info.models.length} models`;
                 }
                 
                 const statusSpan = card.querySelector('.rhetor__provider-status');
@@ -6098,23 +6122,7 @@ function rhetor_saveConfiguration() {
     }
 }
 
-function rhetor_saveModelConfig() {
-    if (window.RhetorService) {
-        const config = {
-            orchestrator: document.querySelector('[name="orchestrator"]')?.value || 'claude-3-opus-20240229',
-            memory: document.querySelector('[name="memory"]')?.value || 'claude-3-haiku-20240307',
-            coordinator: document.querySelector('[name="coordinator"]')?.value || 'claude-3-sonnet-20240229'
-        };
-        
-        window.RhetorService.saveModelConfig(config)
-            .then(result => {
-                console.log('[RHETOR] Model configuration saved:', result);
-            })
-            .catch(error => {
-                console.error('[RHETOR] Error saving model configuration:', error);
-            });
-    }
-}
+// Removed duplicate function - using the window.rhetor_saveModelConfig at line 4250 instead
 
 function rhetor_resetModelConfig() {
     const defaults = {

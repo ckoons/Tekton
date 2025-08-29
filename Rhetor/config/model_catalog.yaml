@@ -9,19 +9,27 @@ providers:
     status: "active"
     api_key_env: "ANTHROPIC_API_KEY"
     models:
-      - id: claude-opus-4-20250827
-        name: Claude Opus 4
-        aliases: ["opus-4", "claude-opus-4", "opus4", "claude-opus"]
+      - id: claude-opus-4-1-20250805
+        name: Claude Opus 4.1
+        aliases: ["opus-4.1", "claude-opus-4-1", "opus", "claude-opus"]
         capabilities: ["code", "planning", "reasoning", "chat", "vision", "functions"]
-        context_window: 500000
-        max_output: 16384
+        context_window: 200000
+        max_output: 8192
         deprecated: false
         
-      - id: claude-sonnet-4-20250827
+      - id: claude-sonnet-4-20250514
         name: Claude Sonnet 4
-        aliases: ["sonnet-4", "claude-sonnet-4", "sonnet4", "claude-latest", "sonnet"]
+        aliases: ["sonnet-4", "claude-sonnet-4-0", "sonnet", "claude-sonnet"]
         capabilities: ["code", "planning", "reasoning", "chat", "vision", "functions"]
-        context_window: 300000
+        context_window: 1000000
+        max_output: 8192
+        deprecated: false
+        
+      - id: claude-opus-4-20250514
+        name: Claude Opus 4
+        aliases: ["opus-4", "claude-opus-4-0"]
+        capabilities: ["code", "planning", "reasoning", "chat", "vision", "functions"]
+        context_window: 200000
         max_output: 8192
         deprecated: false
         
@@ -38,36 +46,36 @@ providers:
     status: "active"
     api_key_env: "OPENAI_API_KEY"
     models:
-      - id: gpt-5-20250827
-        name: GPT-5
-        aliases: ["gpt5", "gpt-5"]
+      - id: gpt-4o
+        name: GPT-4o
+        aliases: ["gpt-4-omni", "gpt4o"]
         capabilities: ["code", "planning", "reasoning", "chat", "vision", "functions"]
-        context_window: 256000
-        max_output: 16384
-        deprecated: false
-        
-      - id: gpt-5-mini-20250827
-        name: GPT-5 Mini
-        aliases: ["gpt5-mini", "gpt-5-mini"]
-        capabilities: ["code", "reasoning", "chat"]
         context_window: 128000
-        max_output: 8192
-        deprecated: false
-        
-      - id: gpt-5-nano-20250827
-        name: GPT-5 Nano
-        aliases: ["gpt5-nano", "gpt-5-nano"]
-        capabilities: ["chat", "reasoning"]
-        context_window: 32000
         max_output: 4096
         deprecated: false
         
-      - id: gpt-4-1-20250827
-        name: GPT-4.1
-        aliases: ["gpt4.1", "gpt-4.1"]
+      - id: gpt-4o-mini
+        name: GPT-4o Mini
+        aliases: ["gpt-4o-mini", "gpt4o-mini"]
+        capabilities: ["code", "reasoning", "chat"]
+        context_window: 128000
+        max_output: 16384
+        deprecated: false
+        
+      - id: gpt-3.5-turbo
+        name: GPT-3.5 Turbo
+        aliases: ["gpt-3.5", "gpt35"]
+        capabilities: ["chat", "reasoning"]
+        context_window: 16385
+        max_output: 4096
+        deprecated: false
+        
+      - id: gpt-4-turbo
+        name: GPT-4 Turbo
+        aliases: ["gpt-4-turbo", "gpt4-turbo"]
         capabilities: ["code", "planning", "reasoning", "chat", "vision", "functions"]
         context_window: 128000
-        max_output: 8192
+        max_output: 4096
         deprecated: false
 
   xai:

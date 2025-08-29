@@ -302,9 +302,12 @@ class MemoryInjector:
             insight = memories.latent_associations[0]
             parts.append(f"(Relevant context: {insight.get('content', '')})")
         
-        # Combine naturally
+        # Combine naturally with size limit
         if parts:
             memory_context = ' '.join(parts)
+            # Enforce size limit
+            if len(memory_context) > self.max_injection_size:
+                memory_context = memory_context[:self.max_injection_size-20] + "...[truncated]"
             return f"{memory_context}\n\n{message}"
         
         return message
@@ -312,21 +315,41 @@ class MemoryInjector:
     def _inject_structured(self, message: str, memories: MemoryContext, context: Dict) -> str:
         """Inject memories in a structured format."""
         sections = []
+        total_size = 0
+        max_per_section = self.max_injection_size // 4  # Divide limit among sections
         
         if memories.short_term:
-            sections.append(f"[Recent Context]\n{json.dumps(memories.short_term[0], indent=2)}")
+            content = json.dumps(memories.short_term[0], indent=2)
+            if len(content) > max_per_section:
+                content = content[:max_per_section-20] + "...[truncated]"
+            sections.append(f"[Recent Context]\n{content}")
+            total_size += len(content)
         
-        if memories.medium_term:
-            sections.append(f"[Project Context]\n{json.dumps(memories.medium_term[0], indent=2)}")
+        if memories.medium_term and total_size < self.max_injection_size:
+            content = json.dumps(memories.medium_term[0], indent=2)
+            if len(content) > max_per_section:
+                content = content[:max_per_section-20] + "...[truncated]"
+            sections.append(f"[Project Context]\n{content}")
+            total_size += len(content)
         
-        if memories.long_term:
-            sections.append(f"[Relevant Knowledge]\n{json.dumps(memories.long_term[0], indent=2)}")
+        if memories.long_term and total_size < self.max_injection_size:
+            content = json.dumps(memories.long_term[0], indent=2)
+            if len(content) > max_per_section:
+                content = content[:max_per_section-20] + "...[truncated]"
+            sections.append(f"[Relevant Knowledge]\n{content}")
+            total_size += len(content)
         
-        if memories.latent_associations:
-            sections.append(f"[Related Memories]\n{json.dumps(memories.latent_associations[0], indent=2)}")
+        if memories.latent_associations and total_size < self.max_injection_size:
+            content = json.dumps(memories.latent_associations[0], indent=2)
+            if len(content) > max_per_section:
+                content = content[:max_per_section-20] + "...[truncated]"
+            sections.append(f"[Related Memories]\n{content}")
         
         if sections:
             memory_block = '\n\n'.join(sections)
+            # Final size check
+            if len(memory_block) > self.max_injection_size:
+                memory_block = memory_block[:self.max_injection_size-20] + "...[truncated]"
             return f"=== Memory Context ===\n{memory_block}\n\n=== Current Request ===\n{message}"
         
         return message

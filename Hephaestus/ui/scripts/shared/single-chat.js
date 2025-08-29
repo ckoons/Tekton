@@ -309,7 +309,7 @@ window.SingleChat = {
                     // Terma uses different CSS structure
                     errorHtml = `
                         <div class="chat-message system-message">
-                            <strong>System:</strong> Failed to connect to ${config.displayName} AI
+                            <strong>System:</strong> Failed to Connect to ${config.displayName}
                         </div>
                     `;
                 } else {
@@ -317,7 +317,7 @@ window.SingleChat = {
                         <div class="${cssPrefix}__message ${cssPrefix}__message--system">
                             <div class="${cssPrefix}__message-content">
                                 <div class="${cssPrefix}__message-text">
-                                    <strong>System:</strong> Failed to connect to ${config.displayName} AI
+                                    <strong>System:</strong> Failed to Connect to ${config.displayName}
                                 </div>
                             </div>
                         </div>

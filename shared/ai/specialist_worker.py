@@ -142,6 +142,9 @@ class CISpecialistWorker(ABC):
         self.port = port
         self.description = description
         
+        # Set up logging first - before any logging calls
+        self.logger = logging.getLogger(f"{self.__class__.__name__}.{ai_id}")
+        
         # Socket server
         self.server = None
         self.clients = []
@@ -155,22 +158,95 @@ class CISpecialistWorker(ABC):
         }
         
         # CI configuration - Model selection handled by Rhetor
-        self.model_provider = TektonEnviron.get('TEKTON_AI_PROVIDER', 'ollama')
-        # Model will be determined by Rhetor based on component and capability
-        self.model_name = None  # Rhetor will select appropriate model
+        # Import Rhetor's ModelRegistry to get model assignments
+        try:
+            from Rhetor.rhetor.core.model_registry import ModelRegistry
+            self.model_registry = ModelRegistry()
+            
+            # Get the CI name without -ci suffix for lookup
+            component_name = self.ai_id.replace('-ci', '')
+            
+            # Fuzzy match logic for component names:
+            # 1. tekton_core-ci -> tekton_core (after stripping -ci)
+            # 2. tekton_core -> tekton (special case for Greek Chorus orchestrator)
+            # 3. Also handle underscore/hyphen variants
+            
+            # Special case: tekton_core (with underscore) maps to 'tekton' in assignments
+            if component_name == 'tekton_core' or component_name == 'tekton-core':
+                component_name = 'tekton'
+            # Try fuzzy match with underscore->hyphen for other components
+            elif '_' in component_name:
+                # Check if hyphenated version exists in model assignments
+                fuzzy_name = component_name.replace('_', '-')
+                # Check if this component exists in model assignments
+                test_id = self.model_registry.get_model_for_component(fuzzy_name, 'chat')
+                if test_id:
+                    component_name = fuzzy_name
+            
+            # Get model assignment for this component (default to 'chat' capability)
+            # This will be overridden per-message based on detected capability
+            model_id = self.model_registry.get_model_for_component(
+                component_name, 
+                'chat'  # Default capability
+            )
+            
+            if model_id:
+                # Get full model info including provider
+                model_info = self.model_registry.get_model_info(model_id)
+                if model_info:
+                    self.model_provider = model_info.provider
+                    self.model_name = model_info.id
+                    self.logger.info(f"Rhetor assigned {self.model_name} from {self.model_provider} for {self.ai_id}")
+                else:
+                    self.logger.error(f"Model info not found for {model_id}")
+                    self.model_provider = None
+                    self.model_name = None
+            else:
+                self.logger.warning(f"No model assignment found for {component_name}")
+                self.model_provider = None
+                self.model_name = None
+                
+        except ImportError:
+            self.logger.error("Rhetor ModelRegistry not available")
+            self.model_provider = None
+            self.model_name = None
+        except Exception as e:
+            self.logger.error(f"Error getting model assignment from Rhetor: {e}")
+            self.model_provider = None
+            self.model_name = None
         
         # Initialize model manager
         self.model_manager = ModelManager()
         self.model_adapter = None
         self.model_ready = False
         
-        # Setup logging
-        self.logger = logging.getLogger(f"{self.__class__.__name__}.{ai_id}")
+        # Initialize the model if we have the required info
+        # BUT: If using Claude models, we use Claude Code, not API
+        if self.model_provider and self.model_name:
+            if self.model_provider == 'anthropic':
+                # Claude models use Claude Code, not API
+                self.logger.info(f"Claude model {self.model_name} will use Claude Code forwarding, not API")
+                self.model_ready = True  # Mark as ready since Claude Code handles it
+            else:
+                # Non-Claude models need initialization
+                import asyncio
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                try:
+                    init_result = loop.run_until_complete(self.initialize_model())
+                    if init_result:
+                        self.logger.info(f"Model initialized successfully during startup for {self.ai_id}")
+                    else:
+                        self.logger.error(f"Model initialization returned False for {self.ai_id}")
+                except Exception as e:
+                    self.logger.error(f"Failed to initialize model during startup: {e}")
+                    import traceback
+                    self.logger.error(f"Traceback: {traceback.format_exc()}")
+                finally:
+                    loop.close()
         
-    def get_default_model(self) -> str:
-        """Get default model for this CI specialist."""
-        return 'gpt-oss:20b'
-    
+        # Logger already initialized above
+        
     def detect_thinking_level(self, text: str) -> tuple[str, float, int]:
         """
         Detect required thinking level based on keywords in the text.
@@ -182,31 +258,68 @@ class CISpecialistWorker(ABC):
         
         text_lower = text.lower()
         
-        # Level 4: Extended Context & Deep Reasoning
-        if any(phrase in text_lower for phrase in [
-            "deeply think", "carefully consider", "contemplate", "reason through",
-            "comprehensive analysis", "thorough examination", "full review", 
-            "explore all", "extensive analysis"
-        ]):
-            return 'gpt-oss:120b', 0.9, 4096
+        # Determine capability based on keywords
+        capability = 'chat'  # default
         
-        # Level 3: Analytical Thinking
-        if any(phrase in text_lower for phrase in [
-            "think about", "consider this", "analyze", "explain why", 
-            "understand", "debug", "investigate", "examine", "evaluate"
-        ]):
-            return 'gpt-oss:120b', 0.7, 3072
-        
-        # Level 2: Code Generation & Problem Solving
+        # Code-related keywords
         if any(phrase in text_lower for phrase in [
             "write code", "implement", "create function", "generate", 
-            "solve", "fix", "optimize", "refactor"
+            "fix bug", "optimize", "refactor", "debug"
         ]):
-            return 'gpt-oss:120b', 0.6, 2048
+            capability = 'code'
+        # Planning keywords
+        elif any(phrase in text_lower for phrase in [
+            "plan", "design", "architect", "structure", "organize",
+            "roadmap", "strategy", "approach"
+        ]):
+            capability = 'planning'
+        # Reasoning keywords
+        elif any(phrase in text_lower for phrase in [
+            "think about", "consider", "analyze", "explain why",
+            "understand", "investigate", "examine", "evaluate",
+            "reason through", "contemplate"
+        ]):
+            capability = 'reasoning'
         
-        # Level 1: Quick/Simple Tasks (Default)
-        # Keywords: quick, simple, list, show, status, check, what, where, when
-        return 'gpt-oss:20b', 0.5, 1536
+        # Get the appropriate model from Rhetor for this capability
+        if hasattr(self, 'model_registry') and self.model_registry:
+            component_name = self.ai_id.replace('-ci', '')
+            
+            # Fuzzy match logic - same as in __init__
+            if component_name == 'tekton_core' or component_name == 'tekton-core':
+                component_name = 'tekton'
+            elif '_' in component_name:
+                fuzzy_name = component_name.replace('_', '-')
+                test_id = self.model_registry.get_model_for_component(fuzzy_name, capability)
+                if test_id:
+                    component_name = fuzzy_name
+            model_id = self.model_registry.get_model_for_component(
+                component_name,
+                capability
+            )
+            
+            if model_id:
+                # Get full model info including provider
+                model_info = self.model_registry.get_model_info(model_id)
+                if model_info:
+                    # Update provider if it changed
+                    if model_info.provider != self.model_provider:
+                        self.model_provider = model_info.provider
+                        # Will need to reinitialize adapter
+                        self.model_ready = False
+                    
+                    # Adjust temperature and tokens based on capability
+                    if capability == 'code':
+                        return model_info.id, 0.3, 4096
+                    elif capability == 'planning':
+                        return model_info.id, 0.7, 3072
+                    elif capability == 'reasoning':
+                        return model_info.id, 0.5, 2048
+                    else:  # chat
+                        return model_info.id, 0.5, 1536
+        
+        # Fallback to current model if Rhetor lookup fails
+        return self.model_name or 'claude-sonnet-4-20250827', 0.5, 1536
     
     def _get_thinking_level_name(self, model: str, temperature: float) -> str:
         """Get human-readable thinking level name."""
@@ -230,6 +343,11 @@ class CISpecialistWorker(ABC):
     async def initialize_model(self):
         """Initialize the model adapter based on provider configuration."""
         try:
+            # Check if we have model/provider from Rhetor
+            if not self.model_provider or not self.model_name:
+                self.logger.error(f"No model/provider assigned for {self.ai_id}")
+                return False
+                
             self.logger.info(f"Starting model initialization for {self.ai_id}")
             self.logger.info(f"Provider: {self.model_provider}, Model: {self.model_name}")
             
@@ -260,8 +378,22 @@ class CISpecialistWorker(ABC):
             if self.model_provider.lower() in ['ollama', 'local']:
                 config['endpoint'] = TektonEnviron.get('OLLAMA_ENDPOINT', 'http://localhost:11434')
                 self.logger.info(f"Ollama endpoint: {config['endpoint']}")
+            elif self.model_provider.lower() == 'anthropic':
+                # Get Anthropic API key from environment
+                api_key = TektonEnviron.get('ANTHROPIC_API_KEY')
+                if not api_key:
+                    self.logger.error("ANTHROPIC_API_KEY not found in environment")
+                    return False
+                config['api_key'] = api_key
+            elif self.model_provider.lower() == 'openai':
+                # Get OpenAI API key from environment  
+                api_key = TektonEnviron.get('OPENAI_API_KEY')
+                if not api_key:
+                    self.logger.error("OPENAI_API_KEY not found in environment")
+                    return False
+                config['api_key'] = api_key
             else:
-                # Get API key from environment
+                # Generic API key lookup for other providers
                 api_key_var = f"{self.model_provider.upper()}_API_KEY"
                 api_key = TektonEnviron.get(api_key_var)
                 if not api_key:
@@ -353,16 +485,48 @@ class CISpecialistWorker(ABC):
     )
     async def _handle_chat(self, message: Dict[str, Any]) -> Dict[str, Any]:
         """Handle chat message using the configured model."""
-        # Check if this CI is forwarded to Claude
+        # Check if this CI uses Claude models OR is forwarded to Claude
         from shared.ai.claude_handler import process_with_claude
         ci_name = f"{self.component}-ci"
         
-        # Try Claude first if forwarded
+        # Always use Claude Code for Claude models
         user_content = message.get('content', message.get('message', ''))
-        claude_response = await process_with_claude(ci_name, user_content)
         
+        # If using Claude models, ALWAYS use Claude Code
+        if self.model_provider == 'anthropic':
+            model_info = {'provider': self.model_provider, 'model': self.model_name}
+            claude_response = await process_with_claude(ci_name, user_content, model_info)
+            
+            if claude_response:
+                # Claude handled it - also update registry for monitoring
+                from shared.aish.src.registry.ci_registry import get_registry
+                registry = get_registry()
+                registry.update_ci_last_output(ci_name, {
+                    'user_message': user_content,
+                    'content': claude_response,
+                    'timestamp': message.get('timestamp'),
+                    'model': 'claude'
+                })
+                
+                return {
+                    'type': 'response',
+                    'ai_id': self.ai_id,
+                    'content': claude_response,
+                    'model': 'claude',
+                    'forwarded': True
+                }
+            else:
+                # Claude Code not available or failed
+                return {
+                    'type': 'error',
+                    'ai_id': self.ai_id,
+                    'error': 'Claude Code not available - please ensure Claude Code is running'
+                }
+        
+        # For non-Claude models, check if forwarded to Claude Code
+        claude_response = await process_with_claude(ci_name, user_content)
         if claude_response:
-            # Claude handled it - also update registry for monitoring
+            # Forwarded to Claude Code
             from shared.aish.src.registry.ci_registry import get_registry
             registry = get_registry()
             registry.update_ci_last_output(ci_name, {
@@ -380,17 +544,18 @@ class CISpecialistWorker(ABC):
                 'forwarded': True
             }
         
-        # Not forwarded or Claude unavailable, use normal model
+        # Not forwarded, use normal model
         if not self.model_ready:
             self.logger.warning(f"Model not ready for {self.ai_id}, attempting to reinitialize...")
             # Try to reinitialize once
             reinit_success = await self.initialize_model()
             if not reinit_success:
                 self.logger.error(f"Reinitialization failed for {self.ai_id}")
+                error_msg = f'Model not initialized - {self.model_provider or "provider"} may not be accessible'
                 return {
                     'type': 'error',
                     'ai_id': self.ai_id,
-                    'error': 'Model not initialized - Ollama may not be accessible'
+                    'error': error_msg
                 }
             self.logger.info(f"Reinitialization successful for {self.ai_id}")
         
@@ -553,10 +718,14 @@ class CISpecialistWorker(ABC):
     )
     async def start(self):
         """Start the CI specialist server."""
-        # Initialize model adapter
-        model_initialized = await self.initialize_model()
-        if not model_initialized:
-            self.logger.warning(f"Model initialization failed for {self.ai_id}, continuing without LLM support")
+        # Initialize model adapter (skip for Claude models - they use Claude Code)
+        if self.model_provider == 'anthropic':
+            self.logger.info(f"Skipping model initialization for Claude model - will use Claude Code")
+            model_initialized = True
+        else:
+            model_initialized = await self.initialize_model()
+            if not model_initialized:
+                self.logger.warning(f"Model initialization failed for {self.ai_id}, continuing without LLM support")
         
         # Pre-initialize connection pool if available
         try:

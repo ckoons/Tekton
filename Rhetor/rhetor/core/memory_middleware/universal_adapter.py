@@ -267,9 +267,14 @@ class UniversalMemoryAdapter:
         try:
             # Import Engram if available
             from Engram.engram.core.memory_manager import MemoryManager
+            from .engram_wrapper import EngramMemoryWrapper
             
-            # Create client for this CI
-            return MemoryManager(client_id=ci_name)
+            # Create MemoryManager instance
+            # MemoryManager uses data_dir parameter, not client_id
+            manager = MemoryManager()
+            
+            # Wrap it to provide the expected interface
+            return EngramMemoryWrapper(manager)
         except ImportError:
             logger.warning(f"Engram not available for {ci_name}")
             return None

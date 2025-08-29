@@ -171,7 +171,7 @@ class TektonMemorySystem:
             return
         
         # Get all registered CIs
-        all_cis = self.registry.list_cis()
+        all_cis = list(self.registry.get_all().keys())
         
         initialized = []
         for ci_name in all_cis:

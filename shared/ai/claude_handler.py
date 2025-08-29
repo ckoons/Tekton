@@ -67,15 +67,16 @@ class ClaudeHandler:
         checkpoint_type="validation",
         description="Validates token budget before message processing"
     )
-    async def handle_forwarded_message(self, ci_name: str, message: str) -> str:
+    async def handle_forwarded_message(self, ci_name: str, message: str, model_info: Optional[Dict[str, str]] = None) -> str:
         """
-        Handle a message for a forwarded CI.
+        Handle a message for a forwarded CI OR a CI using Claude models.
         
         NEW: Checks for sunset/sunrise prompts first!
         
         Args:
             ci_name: Name of the CI (e.g., 'numa-ci')
             message: Message to send to Claude
+            model_info: Optional dict with 'provider' and 'model' keys
             
         Returns:
             Claude's response
@@ -124,30 +125,46 @@ class ClaudeHandler:
         # Normal forwarding check
         forward_state = registry.get_forward_state(ci_name)
         
-        if not forward_state:
-            return None
+        # Check if we should use Claude (either forwarded OR using Claude model)
+        if forward_state:
+            # Has explicit forward state
+            model = forward_state.get('model', '').lower()
+            is_claude = ('claude' in model or 
+                        'anthropic' in model or
+                        model in ['sonnet', 'opus', 'haiku'])
             
-        # Check if model is a Claude variant
-        model = forward_state.get('model', '').lower()
-        is_claude = ('claude' in model or 
-                    'anthropic' in model or
-                    model in ['sonnet', 'opus', 'haiku'])
-        
-        if not is_claude:
-            # Not forwarded to Claude, return None to use default
+            if not is_claude:
+                # Forwarded to non-Claude model
+                return None
+                
+            model_name = forward_state.get('model', 'claude')
+            args = forward_state.get('args', '')
+        elif model_info and model_info.get('provider') == 'anthropic':
+            # No forward state, but using Claude model as default
+            model_name = model_info.get('model', 'claude')
+            args = ''
+            is_claude = True
+            forward_state = None  # No forward state when using default model
+        else:
+            # Neither forwarded nor using Claude
             return None
             
         # Build Claude command based on model
-        model_name = forward_state.get('model', 'claude')
-        args = forward_state.get('args', '')
         
         # Map model names to Claude CLI arguments
-        if 'claude-3-5-sonnet' in model_name:
+        if 'claude-sonnet-4' in model_name:
+            # Claude Sonnet 4 (default for Claude Code)
+            claude_cmd = 'claude --print'
+        elif 'claude-opus-4-1' in model_name:
+            # Claude Opus 4.1 (specific model)
+            claude_cmd = 'claude --model claude-opus-4-1-20250805 --print'
+        elif 'claude-opus-4' in model_name:
+            # Claude Opus 4 
+            claude_cmd = 'claude --model claude-opus-4-20250514 --print'
+        elif 'claude-3-5-sonnet' in model_name:
             claude_cmd = 'claude --model claude-3-5-sonnet-latest --print'
         elif 'claude-3-5-haiku' in model_name:
             claude_cmd = 'claude --model claude-3-5-haiku-latest --print'
-        elif 'claude-opus-4' in model_name:
-            claude_cmd = 'claude --model claude-opus-4-1-20250805 --print'
         elif args:
             # Use provided args if any
             claude_cmd = args
@@ -331,6 +348,8 @@ class ClaudeHandler:
             # Get forward state to extract terminal_name
             # NOTE: forward_state should already be available from line 125
             if not forward_state:
+                from shared.aish.src.registry.ci_registry import get_registry
+                registry = get_registry()
                 forward_state = registry.get_forward_state(ci_name)
             
             if forward_state and 'terminal_name' in forward_state:
@@ -416,16 +435,17 @@ def get_claude_handler() -> ClaudeHandler:
     return _claude_handler
 
 
-async def process_with_claude(ci_name: str, message: str) -> Optional[str]:
+async def process_with_claude(ci_name: str, message: str, model_info: Optional[Dict[str, str]] = None) -> Optional[str]:
     """
-    Process a message with Claude if the CI is forwarded.
+    Process a message with Claude if the CI is forwarded OR uses Claude models.
     
     Args:
         ci_name: CI name
         message: Message to process
+        model_info: Optional dict with 'provider' and 'model' keys
         
     Returns:
-        Claude's response or None if not forwarded
+        Claude's response or None if not forwarded/not Claude
     """
     handler = get_claude_handler()
-    return await handler.handle_forwarded_message(ci_name, message)
+    return await handler.handle_forwarded_message(ci_name, message, model_info)

@@ -31,10 +31,37 @@ class AnthropicAdapter(ModelAdapter):
         super().__init__(config)
         self.api_key = config.get("api_key") or TektonEnviron.get("ANTHROPIC_API_KEY")
         self.model = config.get("model", "claude-3-opus-20240229")
+        
         self.client = None
         
         # Set capabilities
         model_capabilities = {
+            # Claude 4 models
+            "claude-opus-4-1-20250805": {
+                "max_tokens": 8192,
+                "context_window": 200000,
+                "supports_streaming": True,
+                "supports_vision": True,
+                "supports_embeddings": False,
+                "supports_json_mode": True
+            },
+            "claude-sonnet-4-20250514": {
+                "max_tokens": 8192,
+                "context_window": 1000000,
+                "supports_streaming": True,
+                "supports_vision": True,
+                "supports_embeddings": False,
+                "supports_json_mode": True
+            },
+            "claude-opus-4-20250514": {
+                "max_tokens": 8192,
+                "context_window": 200000,
+                "supports_streaming": True,
+                "supports_vision": True,
+                "supports_embeddings": False,
+                "supports_json_mode": True
+            },
+            # Claude 3.5 models (keeping for compatibility)
             "claude-3-opus-20240229": {
                 "max_tokens": 4096,
                 "context_window": 200000,
@@ -67,11 +94,11 @@ class AnthropicAdapter(ModelAdapter):
                 "supports_embeddings": False,
                 "supports_json_mode": True
             },
-            "claude-3-7-sonnet-20240620": {
-                "max_tokens": 4096,
+            "claude-3-5-haiku-20241022": {
+                "max_tokens": 8192,
                 "context_window": 200000,
                 "supports_streaming": True,
-                "supports_vision": True,
+                "supports_vision": False,
                 "supports_embeddings": False,
                 "supports_json_mode": True
             }
