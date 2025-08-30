@@ -5,6 +5,13 @@
  * including recommendation cards, filtering, status management, and implementation tracking.
  */
 
+// Load Tekton config if available
+if (typeof window.TektonConfig === 'undefined' && document.querySelector('script[src*="tekton-config.js"]') === null) {
+  const script = document.createElement('script');
+  script.src = '/scripts/shared/tekton-config.js';
+  document.head.appendChild(script);
+}
+
 // Initialize the recommendations system when the DOM is loaded
 document.addEventListener('DOMContentLoaded', initRecommendations);
 
@@ -159,7 +166,8 @@ function loadRecommendations() {
   params.append('offset', '0');
   
   // Fetch recommendations from API
-  return fetch(`${window.env?.SOPHIA_API_URL || 'http://localhost:8006/api'}/recommendations?${params.toString()}`)
+  const baseUrl = window.TektonConfig ? window.TektonConfig.getSophiaUrl('/api') : (window.env?.SOPHIA_API_URL || 'http://localhost:8114/api');
+  return fetch(`${baseUrl}/recommendations?${params.toString()}`)
     .then(response => {
       if (!response.ok) {
         throw new Error(`HTTP error ${response.status}`);
@@ -501,7 +509,8 @@ function showRecommendationDetails(recommendation, showAction = false) {
  * @returns {Promise} A promise that resolves when the status is updated
  */
 function updateRecommendationStatus(id, status) {
-  return fetch(`${window.env?.SOPHIA_API_URL || 'http://localhost:8006/api'}/recommendations/${id}/status/${status}`, {
+  const baseUrl = window.TektonConfig ? window.TektonConfig.getSophiaUrl('/api') : (window.env?.SOPHIA_API_URL || 'http://localhost:8114/api');
+  return fetch(`${baseUrl}/recommendations/${id}/status/${status}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -525,7 +534,8 @@ function updateRecommendationStatus(id, status) {
  * @returns {Promise} A promise that resolves with the created recommendation
  */
 function createRecommendation(recommendation) {
-  return fetch(`${window.env?.SOPHIA_API_URL || 'http://localhost:8006/api'}/recommendations`, {
+  const baseUrl = window.TektonConfig ? window.TektonConfig.getSophiaUrl('/api') : (window.env?.SOPHIA_API_URL || 'http://localhost:8114/api');
+  return fetch(`${baseUrl}/recommendations`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

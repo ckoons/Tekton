@@ -1,6 +1,7 @@
 <!-- Apollo Component - Attention and Prediction System -->
 
 <!-- Load chat dependencies -->
+<script src="/scripts/shared/tekton-config.js"></script>
 <script src="/scripts/shared/ai-chat.js"></script>
 <script src="/scripts/tekton-urls.js"></script>
 <script src="/scripts/shared/single-chat.js"></script>
@@ -9,13 +10,15 @@
 <!-- Load Confidence component -->
 <link rel="stylesheet" href="/styles/apollo/confidence-component.css">
 <script src="/scripts/apollo/confidence-tracker.js"></script>
+<script src="/scripts/apollo/apollo-preparation.js"></script>
 
 <!-- Hidden radio inputs for CSS-first tab functionality -->
 <input type="radio" name="apollo-tab" id="apollo-tab-dashboard" checked style="display: none;">
-<input type="radio" name="apollo-tab" id="apollo-tab-tokens" style="display: none;">
-<input type="radio" name="apollo-tab" id="apollo-tab-protocols" style="display: none;">
-<input type="radio" name="apollo-tab" id="apollo-tab-actions" style="display: none;">
+<input type="radio" name="apollo-tab" id="apollo-tab-preparation" style="display: none;">
 <input type="radio" name="apollo-tab" id="apollo-tab-confidence" style="display: none;">
+<input type="radio" name="apollo-tab" id="apollo-tab-actions" style="display: none;">
+<input type="radio" name="apollo-tab" id="apollo-tab-protocols" style="display: none;">
+<input type="radio" name="apollo-tab" id="apollo-tab-tokens" style="display: none;">
 <input type="radio" name="apollo-tab" id="apollo-tab-attention" style="display: none;">
 <input type="radio" name="apollo-tab" id="apollo-tab-teamchat" style="display: none;">
 
@@ -46,17 +49,17 @@
                    data-tekton-nav-action="switch-tab">
                 <span class="apollo__tab-label">Dashboard</span>
             </label>
-            <label for="apollo-tab-tokens" class="apollo__tab" data-tab="tokens"
-                   data-tekton-nav-item="tokens"
-                   data-tekton-nav-target="apollo-tokens"
+            <label for="apollo-tab-preparation" class="apollo__tab" data-tab="preparation"
+                   data-tekton-nav-item="preparation"
+                   data-tekton-nav-target="apollo-preparation"
                    data-tekton-nav-action="switch-tab">
-                <span class="apollo__tab-label">Token Management</span>
+                <span class="apollo__tab-label">Preparation</span>
             </label>
-            <label for="apollo-tab-protocols" class="apollo__tab" data-tab="protocols"
-                   data-tekton-nav-item="protocols"
-                   data-tekton-nav-target="apollo-protocols"
+            <label for="apollo-tab-confidence" class="apollo__tab" data-tab="confidence"
+                   data-tekton-nav-item="confidence"
+                   data-tekton-nav-target="apollo-confidence"
                    data-tekton-nav-action="switch-tab">
-                <span class="apollo__tab-label">Protocols</span>
+                <span class="apollo__tab-label">Confidence</span>
             </label>
             <label for="apollo-tab-actions" class="apollo__tab" data-tab="actions"
                    data-tekton-nav-item="actions"
@@ -64,11 +67,17 @@
                    data-tekton-nav-action="switch-tab">
                 <span class="apollo__tab-label">Actions</span>
             </label>
-            <label for="apollo-tab-confidence" class="apollo__tab" data-tab="confidence"
-                   data-tekton-nav-item="confidence"
-                   data-tekton-nav-target="apollo-confidence"
+            <label for="apollo-tab-protocols" class="apollo__tab" data-tab="protocols"
+                   data-tekton-nav-item="protocols"
+                   data-tekton-nav-target="apollo-protocols"
                    data-tekton-nav-action="switch-tab">
-                <span class="apollo__tab-label">Confidence</span>
+                <span class="apollo__tab-label">Protocols</span>
+            </label>
+            <label for="apollo-tab-tokens" class="apollo__tab" data-tab="tokens"
+                   data-tekton-nav-item="tokens"
+                   data-tekton-nav-target="apollo-tokens"
+                   data-tekton-nav-action="switch-tab">
+                <span class="apollo__tab-label">Tokens</span>
             </label>
             <label for="apollo-tab-attention" class="apollo__tab" data-tab="attention"
                    data-tekton-nav-item="attention-chat"
@@ -127,6 +136,228 @@
                      data-tekton-refresh-interval="5000">
                     <!-- CI cards will be dynamically inserted here -->
                     <div class="apollo__loading" data-tekton-state="loading">Loading CI data...</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Preparation Panel -->
+        <div class="apollo__panel apollo__panel--preparation" 
+             data-tab-content="preparation"
+             data-tekton-tab-content="preparation"
+             data-tekton-panel="preparation">
+            <div class="apollo__preparation">
+                <div class="apollo__section-header">
+                    <h3 class="apollo__section-title">Context Brief Preparation</h3>
+                    <div class="apollo__preparation-stats">
+                        <span class="apollo__stat-badge">
+                            <span id="total-memories">0</span> Memories
+                        </span>
+                        <span class="apollo__stat-badge">
+                            <span id="total-landmarks">0</span> Landmarks
+                        </span>
+                        <span class="apollo__stat-badge">
+                            <span id="total-tokens">0</span> Tokens
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Search and Filters -->
+                <div class="apollo__preparation-controls">
+                    <div class="apollo__search-bar">
+                        <input type="text" 
+                               id="memory-search" 
+                               class="apollo__search-input" 
+                               placeholder="Search memories..."
+                               onkeyup="apollo_searchMemories(event)">
+                        <button class="apollo__btn apollo__btn-search" onclick="apollo_searchMemories()">
+                            Search
+                        </button>
+                    </div>
+                    
+                    <div class="apollo__filter-row">
+                        <select id="ci-filter" class="apollo__filter-select" onchange="apollo_filterMemories()">
+                            <option value="">All CIs</option>
+                            <option value="apollo-ci">Apollo</option>
+                            <option value="athena-ci">Athena</option>
+                            <option value="ergon-ci">Ergon</option>
+                            <option value="hermes-ci">Hermes</option>
+                            <option value="rhetor-ci">Rhetor</option>
+                        </select>
+                        
+                        <select id="type-filter" class="apollo__filter-select" onchange="apollo_filterMemories()">
+                            <option value="">All Types</option>
+                            <option value="decision">Decisions</option>
+                            <option value="insight">Insights</option>
+                            <option value="error">Errors</option>
+                            <option value="plan">Plans</option>
+                            <option value="context">Context</option>
+                        </select>
+                        
+                        <button class="apollo__btn apollo__btn-refresh" onclick="apollo_refreshMemories()">
+                            Refresh
+                        </button>
+                        <button class="apollo__btn apollo__btn-analyze" onclick="apollo_analyzeRelationships()">
+                            Analyze Relations
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Memory Catalog Table -->
+                <div class="apollo__memory-catalog">
+                    <table class="apollo__memory-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>CI Source</th>
+                                <th>Type</th>
+                                <th>Summary</th>
+                                <th>Priority</th>
+                                <th>Tokens</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="memory-table-body">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Cognitive Guidance Section -->
+                <div class="apollo__cognitive-guidance">
+                    <h3>Cognitive Guidance Builder</h3>
+                    
+                    <!-- Task Context -->
+                    <div class="apollo__task-context">
+                        <h4>Task Context</h4>
+                        <div class="apollo__task-inputs">
+                            <input type="text" id="task-id" class="apollo__task-input" placeholder="Task ID (e.g., TASK-001)">
+                            <input type="text" id="task-name" class="apollo__task-input" placeholder="Task Name">
+                            <input type="text" id="task-phase" class="apollo__task-input" placeholder="Current Phase">
+                            <input type="text" id="task-step" class="apollo__task-input" placeholder="Current Step">
+                            <textarea id="task-focus" class="apollo__task-input apollo__task-focus" 
+                                      placeholder="What should the CI focus on?"></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Memory Workflow Rules -->
+                    <div class="apollo__memory-rules">
+                        <h4>Memory Workflow</h4>
+                        <label class="apollo__memory-rule">
+                            <input type="checkbox" id="rule-short-term" checked>
+                            <span>Update short-term memory every turn</span>
+                        </label>
+                        <label class="apollo__memory-rule">
+                            <input type="checkbox" id="rule-medium-term" checked>
+                            <span>Check medium-term every</span>
+                            <input type="number" id="medium-term-interval" value="3" min="1" max="10">
+                            <span>turns</span>
+                        </label>
+                        <label class="apollo__memory-rule">
+                            <input type="checkbox" id="rule-long-term" checked>
+                            <span>Scan long-term at phase completion</span>
+                        </label>
+                        <label class="apollo__memory-rule">
+                            <input type="checkbox" id="rule-latent" checked>
+                            <span>Contribute to latent space at task end</span>
+                        </label>
+                    </div>
+                    
+                    <!-- Inner Voice Generator -->
+                    <div class="apollo__inner-voice">
+                        <h4>Inner Voice Prompts</h4>
+                        <div class="apollo__prompt-templates">
+                            <button class="apollo__prompt-btn" onclick="apollo_addPrompt('check_pattern')">
+                                + Check Pattern
+                            </button>
+                            <button class="apollo__prompt-btn" onclick="apollo_addPrompt('note_learning')">
+                                + Note Learning
+                            </button>
+                            <button class="apollo__prompt-btn" onclick="apollo_addPrompt('recall_similar')">
+                                + Recall Similar
+                            </button>
+                            <button class="apollo__prompt-btn" onclick="apollo_addPrompt('consolidate')">
+                                + Consolidate
+                            </button>
+                            <button class="apollo__prompt-btn" onclick="apollo_addPrompt('collaborate')">
+                                + Collaborate
+                            </button>
+                        </div>
+                        <div class="apollo__custom-prompt" style="margin-top: 15px; display: flex; gap: 10px;">
+                            <input type="text" id="apollo-prompt-input" 
+                                   placeholder="Enter custom prompt..." 
+                                   style="flex: 1; padding: 8px; background: #1a1a1d; border: 1px solid #FF9500; border-radius: 4px; color: #f0f0f0;">
+                            <button class="apollo__prompt-btn" onclick="apollo_addPrompt('custom')">
+                                + Add Custom
+                            </button>
+                        </div>
+                        <div id="apollo-prompts-list" class="apollo__inner-prompts" style="margin-top: 15px;">
+                            <!-- Inner voice prompts will appear here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Context Brief Section (Enhanced) -->
+                <div class="apollo__brief-section">
+                    <h4>Context Brief Generator</h4>
+                    
+                    <!-- Brief Management -->
+                    <div class="apollo__brief-management">
+                        <div class="apollo__brief-actions">
+                            <button class="apollo__btn" onclick="apollo_saveBrief()">Save Brief</button>
+                            <button class="apollo__btn" onclick="apollo_loadBrief()">Load Brief</button>
+                            <button class="apollo__btn" onclick="apollo_clearBrief()">Clear</button>
+                            <select id="brief-template" class="apollo__filter-select" onchange="apollo_loadTemplate()">
+                                <option value="">Select Template...</option>
+                                <option value="new_feature">New Feature</option>
+                                <option value="debugging">Debugging</option>
+                                <option value="refactoring">Refactoring</option>
+                                <option value="review">Code Review</option>
+                                <option value="planning">Planning</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Saved Briefs List -->
+                        <div id="saved-briefs" class="apollo__saved-briefs">
+                            <!-- Saved briefs will appear here -->
+                        </div>
+                    </div>
+                    
+                    <div class="apollo__brief-controls">
+                        <select id="brief-ci-select" class="apollo__filter-select">
+                            <option value="">Select CI...</option>
+                            <!-- Will be populated dynamically from CI Registry -->
+                        </select>
+                        <input type="text" 
+                               id="brief-context" 
+                               class="apollo__context-input"
+                               placeholder="Enter context for relevance...">
+                        <button class="apollo__btn apollo__btn-generate" onclick="apollo_generateBrief()">
+                            Generate Brief
+                        </button>
+                    </div>
+                    <div class="apollo__brief-preview">
+                        <div class="apollo__token-meter">
+                            <span>Token Usage:</span>
+                            <span id="brief-tokens">0 / 2000</span>
+                            <div class="apollo__token-bar">
+                                <div id="brief-token-fill" class="apollo__token-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <pre id="brief-content" class="apollo__brief-content">
+Select a CI and enter context to generate a Context Brief...
+                        </pre>
+                    </div>
+                </div>
+                
+                <!-- Memory Rhythm Indicator (Floating) -->
+                <div class="apollo__memory-rhythm" id="memory-rhythm-indicator" style="display: none;">
+                    <div class="apollo__rhythm-bar">
+                        <div class="apollo__rhythm-node active" title="Short-term">S</div>
+                        <div class="apollo__rhythm-node" title="Medium-term">M</div>
+                        <div class="apollo__rhythm-node" title="Long-term">L</div>
+                        <div class="apollo__rhythm-node" title="Latent Space">∞</div>
+                    </div>
+                    <div class="apollo__rhythm-hint">Maintaining working memory...</div>
                 </div>
             </div>
         </div>
@@ -478,11 +709,258 @@
     
     // Helper function to construct Apollo API URLs
     function apolloUrl(path) {
-        return `http://localhost:8113${path}`;
+        return window.TektonConfig ? window.TektonConfig.getApolloUrl(path) : `http://localhost:8112${path}`;
     }
+    
+    // Populate all CI selectors with full CI list
+    function apollo_populateCISelectors() {
+        const allCIs = [
+            // Core Specialist CIs
+            { id: 'ergon-ci', name: 'Ergon', role: 'Task Manager', type: 'specialist' },
+            { id: 'rhetor-ci', name: 'Rhetor', role: 'Orchestrator', type: 'specialist' },
+            { id: 'noesis-ci', name: 'Noesis', role: 'Understanding', type: 'specialist' },
+            { id: 'athena-ci', name: 'Athena', role: 'Knowledge Graph', type: 'specialist' },
+            { id: 'hermes-ci', name: 'Hermes', role: 'Communication', type: 'specialist' },
+            { id: 'sophia-ci', name: 'Sophia', role: 'Wisdom', type: 'specialist' },
+            { id: 'apollo-ci', name: 'Apollo', role: 'Preparation', type: 'specialist' },
+            { id: 'hephaestus-ci', name: 'Hephaestus', role: 'UI Builder', type: 'specialist' },
+            { id: 'terma-ci', name: 'Terma', role: 'Contracts', type: 'specialist' },
+            { id: 'neurosyne-ci', name: 'NeuroSyne', role: 'Cognitive', type: 'specialist' },
+            { id: 'penia-ci', name: 'Penia', role: 'Cost Management', type: 'specialist' },
+            { id: 'harmonia-ci', name: 'Harmonia', role: 'Orchestration', type: 'specialist' },
+            { id: 'synthesis-ci', name: 'Synthesis', role: 'Integration', type: 'specialist' },
+            { id: 'metis-ci', name: 'Metis', role: 'Workflows', type: 'specialist' },
+            { id: 'telos-ci', name: 'Telos', role: 'Requirements', type: 'specialist' },
+            { id: 'prometheus-ci', name: 'Prometheus', role: 'Planning', type: 'specialist' },
+            { id: 'numa-ci', name: 'Numa', role: 'Companion', type: 'specialist' },
+            { id: 'tekton-ci', name: 'Tekton', role: 'Projects', type: 'specialist' },
+            
+            // Terminal CIs
+            { id: 'terminal-ergon', name: 'Terminal Ergon', role: 'Task Terminal', type: 'terminal' },
+            { id: 'terminal-rhetor', name: 'Terminal Rhetor', role: 'Orchestration Terminal', type: 'terminal' },
+            { id: 'terminal-noesis', name: 'Terminal Noesis', role: 'Understanding Terminal', type: 'terminal' },
+            { id: 'terminal-athena', name: 'Terminal Athena', role: 'Knowledge Terminal', type: 'terminal' },
+            { id: 'terminal-hermes', name: 'Terminal Hermes', role: 'Communication Terminal', type: 'terminal' },
+            { id: 'terminal-sophia', name: 'Terminal Sophia', role: 'Wisdom Terminal', type: 'terminal' },
+            { id: 'terminal-apollo', name: 'Terminal Apollo', role: 'Preparation Terminal', type: 'terminal' },
+            { id: 'terminal-hephaestus', name: 'Terminal Hephaestus', role: 'UI Terminal', type: 'terminal' },
+            
+            // Project CIs
+            { id: 'project-alpha', name: 'Project Alpha', role: 'Alpha Development', type: 'project' },
+            { id: 'project-beta', name: 'Project Beta', role: 'Beta Testing', type: 'project' },
+            { id: 'project-gamma', name: 'Project Gamma', role: 'Gamma Research', type: 'project' },
+            { id: 'project-delta', name: 'Project Delta', role: 'Delta Integration', type: 'project' }
+        ];
+        
+        // Update CI filter dropdown
+        const ciFilter = document.getElementById('ci-filter');
+        if (ciFilter) {
+            ciFilter.innerHTML = '<option value="">All CIs</option>';
+            allCIs.forEach(ci => {
+                const option = document.createElement('option');
+                option.value = ci.id;
+                option.textContent = ci.name;
+                ciFilter.appendChild(option);
+            });
+        }
+        
+        // Update brief CI selector  
+        const briefCiSelect = document.getElementById('brief-ci-select');
+        if (briefCiSelect) {
+            briefCiSelect.innerHTML = '<option value="">Select CI...</option>';
+            allCIs.forEach(ci => {
+                const option = document.createElement('option');
+                option.value = ci.id;
+                option.textContent = `${ci.name} - ${ci.role}`;
+                briefCiSelect.appendChild(option);
+            });
+        }
+    }
+    
+    // PREPARATION TAB FUNCTIONS
+    window.apollo_searchMemories = async function(event) {
+        if (event && event.type === 'keyup' && event.key !== 'Enter') {
+            return; // Only search on Enter key
+        }
+        
+        const searchInput = document.getElementById('memory-search');
+        const searchTerm = searchInput ? searchInput.value : '';
+        
+        console.log('[APOLLO] Searching memories:', searchTerm);
+        
+        try {
+            const response = await fetch(apolloUrl('/api/preparation/search'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: searchTerm })
+            });
+            
+            if (response.ok) {
+                const memories = await response.json();
+                apollo_displayMemories(memories);
+            }
+        } catch (error) {
+            console.error('[APOLLO] Search error:', error);
+        }
+    };
+    
+    window.apollo_filterMemories = function() {
+        const ciFilter = document.getElementById('ci-filter').value;
+        const typeFilter = document.getElementById('type-filter').value;
+        
+        console.log('[APOLLO] Filtering memories:', { ci: ciFilter, type: typeFilter });
+        
+        // Apply filters to displayed memories
+        const rows = document.querySelectorAll('#memory-table-body tr');
+        rows.forEach(row => {
+            const ciSource = row.getAttribute('data-ci');
+            const memType = row.getAttribute('data-type');
+            
+            let show = true;
+            if (ciFilter && ciSource !== ciFilter) show = false;
+            if (typeFilter && memType !== typeFilter) show = false;
+            
+            row.style.display = show ? '' : 'none';
+        });
+    };
+    
+    window.apollo_refreshMemories = async function() {
+        console.log('[APOLLO] Refreshing memory catalog');
+        
+        try {
+            const response = await fetch(apolloUrl('/api/preparation/memories'));
+            if (response.ok) {
+                const data = await response.json();
+                apollo_displayMemories(data.memories);
+                
+                // Update stats
+                document.getElementById('total-memories').textContent = data.total || 0;
+                document.getElementById('total-tokens').textContent = data.total_tokens || 0;
+            }
+        } catch (error) {
+            console.error('[APOLLO] Refresh error:', error);
+        }
+    };
+    
+    window.apollo_analyzeRelationships = async function() {
+        console.log('[APOLLO] Analyzing memory relationships');
+        
+        try {
+            const response = await fetch(apolloUrl('/api/preparation/analyze'), {
+                method: 'POST'
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                console.log('[APOLLO] Relationships analyzed:', result);
+                
+                // Update landmark stats
+                if (result.landmarks) {
+                    document.getElementById('landmark-nodes').textContent = result.landmarks.nodes || 0;
+                    document.getElementById('landmark-relationships').textContent = result.landmarks.relationships || 0;
+                }
+            }
+        } catch (error) {
+            console.error('[APOLLO] Analysis error:', error);
+        }
+    };
+    
+    window.apollo_generateBrief = async function() {
+        const ciSelect = document.getElementById('brief-ci-select');
+        const contextInput = document.getElementById('brief-context');
+        
+        const ciName = ciSelect.value;
+        const context = contextInput.value;
+        
+        if (!ciName) {
+            alert('Please select a CI');
+            return;
+        }
+        
+        console.log('[APOLLO] Generating Context Brief for', ciName);
+        
+        try {
+            const response = await fetch(apolloUrl('/api/preparation/brief'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ci_name: ciName,
+                    message: context || 'General context',
+                    max_tokens: 2000
+                })
+            });
+            
+            if (response.ok) {
+                const brief = await response.json();
+                apollo_displayBrief(brief);
+            }
+        } catch (error) {
+            console.error('[APOLLO] Brief generation error:', error);
+        }
+    };
+    
+    // Display helper functions
+    window.apollo_displayMemories = function(memories) {
+        const tbody = document.getElementById('memory-table-body');
+        if (!tbody) return;
+        
+        tbody.innerHTML = '';
+        
+        memories.forEach(memory => {
+            const row = document.createElement('tr');
+            row.setAttribute('data-ci', memory.ci_source);
+            row.setAttribute('data-type', memory.type);
+            
+            row.innerHTML = `
+                <td>${new Date(memory.timestamp).toLocaleString()}</td>
+                <td><span class="apollo__ci-badge">${memory.ci_source}</span></td>
+                <td><span class="apollo__type-badge apollo__type-${memory.type}">${memory.type}</span></td>
+                <td>${memory.summary}</td>
+                <td><span class="apollo__priority-badge">${memory.priority}</span></td>
+                <td>${memory.tokens}</td>
+                <td>
+                    <button class="apollo__btn-small" onclick="apollo_viewMemory('${memory.id}')">View</button>
+                </td>
+            `;
+            
+            tbody.appendChild(row);
+        });
+        
+        // Update count
+        const totalElem = document.getElementById('total-memories');
+        if (totalElem) totalElem.textContent = memories.length;
+    };
+    
+    window.apollo_displayBrief = function(brief) {
+        const contentElement = document.getElementById('brief-content');
+        const tokensElement = document.getElementById('brief-tokens');
+        const tokenFillElement = document.getElementById('brief-token-fill');
+        
+        if (contentElement) {
+            contentElement.textContent = brief.content || 'No content available';
+        }
+        
+        if (tokensElement && brief.tokens_used) {
+            const maxTokens = 2000;
+            tokensElement.textContent = `${brief.tokens_used} / ${maxTokens}`;
+            
+            if (tokenFillElement) {
+                const percentage = (brief.tokens_used / maxTokens) * 100;
+                tokenFillElement.style.width = `${Math.min(percentage, 100)}%`;
+            }
+        }
+    };
+    
+    window.apollo_viewMemory = function(memoryId) {
+        console.log('[APOLLO] Viewing memory:', memoryId);
+        // Could open a modal or expand the row to show full content
+    };
     
     function initializeApollo() {
         console.log('Initializing Apollo component');
+        
+        // Populate CI selectors with all CIs
+        apollo_populateCISelectors();
         
         // Elements
         const dashboardTab = document.getElementById('apollo-tab-dashboard');

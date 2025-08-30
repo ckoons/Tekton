@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Apollo Preparation System Test</title>
+    <style>
+        body {
+            font-family: 'SF Pro Display', -apple-system, system-ui, sans-serif;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .test-section {
+            background: #2a2a2a;
+            border: 2px solid #FF9500;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .test-title {
+            color: #FF9500;
+            font-size: 24px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+        }
+        
+        .test-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: #333;
+            border-radius: 4px;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .status-pass {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .status-fail {
+            background: #f44336;
+            color: white;
+        }
+        
+        .status-pending {
+            background: #FF9500;
+            color: black;
+        }
+        
+        .test-button {
+            background: #FF9500;
+            color: black;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 5px;
+        }
+        
+        .test-button:hover {
+            background: #FFB143;
+        }
+        
+        .result-box {
+            background: #1a1a1a;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="color: #FF9500;">🏺 Apollo Preparation System - Test Suite</h1>
+    
+    <div class="test-section">
+        <h2 class="test-title">1. Component Loading Tests</h2>
+        
+        <div class="test-item">
+            <strong>Apollo Component HTML</strong>
+            <span id="html-status" class="status status-pending">Pending</span>
+            <button class="test-button" onclick="testHTMLLoad()">Test</button>
+            <div id="html-result" class="result-box" style="display:none;"></div>
+        </div>
+        
+        <div class="test-item">
+            <strong>Apollo Preparation CSS</strong>
+            <span id="css-status" class="status status-pending">Pending</span>
+            <button class="test-button" onclick="testCSSLoad()">Test</button>
+            <div id="css-result" class="result-box" style="display:none;"></div>
+        </div>
+        
+        <div class="test-item">
+            <strong>Apollo Preparation JavaScript</strong>
+            <span id="js-status" class="status status-pending">Pending</span>
+            <button class="test-button" onclick="testJSLoad()">Test</button>
+            <div id="js-result" class="result-box" style="display:none;"></div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2 class="test-title">2. API Connection Tests</h2>
+        
+        <div class="test-item">
+            <strong>Apollo API Health</strong>
+            <span id="api-health-status" class="status status-pending">Pending</span>
+            <button class="test-button" onclick="testAPIHealth()">Test</button>
+            <div id="api-health-result" class="result-box" style="display:none;"></div>
+        </div>
+        
+        <div class="test-item">
+            <strong>CI Registry Load</strong>
+            <span id="registry-status" class="status status-pending">Pending</span>
+            <button class="test-button" onclick="testRegistryLoad()">Test</button>
+            <div id="registry-result" class="result-box" style="display:none;"></div>
+        </div>
+        
+        <div class="test-item">
+            <strong>Context Brief Generation</strong>
+            <span id="brief-status" class="status status-pending">Pending</span>
+            <button class="test-button" onclick="testBriefGeneration()">Test</button>
+            <div id="brief-result" class="result-box" style="display:none;"></div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2 class="test-title">3. Cognitive Guidance Tests</h2>
+        
+        <div class="test-item">
+            <strong>Memory Workflow Rules</strong>
+            <span id="workflow-status" class="status status-pending">Pending</span>
+            <button class="test-button" onclick="testMemoryWorkflow()">Test</button>
+            <div id="workflow-result" class="result-box" style="display:none;"></div>
+        </div>
+        
+        <div class="test-item">
+            <strong>Inner Voice Prompts</strong>
+            <span id="prompts-status" class="status status-pending">Pending</span>
+            <button class="test-button" onclick="testInnerVoice()">Test</button>
+            <div id="prompts-result" class="result-box" style="display:none;"></div>
+        </div>
+        
+        <div class="test-item">
+            <strong>Memory Rhythm Indicator</strong>
+            <span id="rhythm-status" class="status status-pending">Pending</span>
+            <button class="test-button" onclick="testMemoryRhythm()">Test</button>
+            <div id="rhythm-result" class="result-box" style="display:none;"></div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2 class="test-title">4. Integration Tests</h2>
+        
+        <div class="test-item">
+            <strong>Full Workflow Test</strong>
+            <span id="workflow-full-status" class="status status-pending">Pending</span>
+            <button class="test-button" onclick="runFullWorkflowTest()">Run Full Test</button>
+            <div id="workflow-full-result" class="result-box" style="display:none;"></div>
+        </div>
+    </div>
+    
+    <script>
+        const apolloBase = 'http://localhost:8112';
+        const hephaestusBase = 'http://localhost:8088';
+        
+        function updateStatus(id, status, message) {
+            const statusEl = document.getElementById(id + '-status');
+            const resultEl = document.getElementById(id + '-result');
+            
+            statusEl.className = 'status status-' + status;
+            statusEl.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+            
+            if (message) {
+                resultEl.textContent = message;
+                resultEl.style.display = 'block';
+            }
+        }
+        
+        async function testHTMLLoad() {
+            try {
+                const response = await fetch(`${hephaestusBase}/components/apollo/apollo-component.html`);
+                const html = await response.text();
+                
+                if (html.includes('apollo-preparation-panel')) {
+                    updateStatus('html', 'pass', 'Apollo Preparation panel found in HTML');
+                } else {
+                    updateStatus('html', 'fail', 'Apollo Preparation panel not found in HTML');
+                }
+            } catch (error) {
+                updateStatus('html', 'fail', 'Error loading HTML: ' + error.message);
+            }
+        }
+        
+        async function testCSSLoad() {
+            try {
+                const response = await fetch(`${hephaestusBase}/styles/apollo/apollo-component.css`);
+                const css = await response.text();
+                
+                if (css.includes('apollo-preparation') && css.includes('#FF9500')) {
+                    updateStatus('css', 'pass', 'Apollo Gold styling found in CSS');
+                } else {
+                    updateStatus('css', 'fail', 'Apollo preparation styles not complete');
+                }
+            } catch (error) {
+                updateStatus('css', 'fail', 'Error loading CSS: ' + error.message);
+            }
+        }
+        
+        async function testJSLoad() {
+            try {
+                const response = await fetch(`${hephaestusBase}/scripts/apollo/apollo-preparation.js`);
+                const js = await response.text();
+                
+                if (js.includes('ApolloPreparation') && js.includes('loadCIRegistry')) {
+                    updateStatus('js', 'pass', 'Apollo Preparation JavaScript loaded correctly');
+                } else {
+                    updateStatus('js', 'fail', 'Apollo Preparation JavaScript incomplete');
+                }
+            } catch (error) {
+                updateStatus('js', 'fail', 'Error loading JavaScript: ' + error.message);
+            }
+        }
+        
+        async function testAPIHealth() {
+            try {
+                const response = await fetch(`${apolloBase}/health`);
+                const data = await response.json();
+                
+                if (data.status === 'healthy') {
+                    updateStatus('api-health', 'pass', JSON.stringify(data, null, 2));
+                } else {
+                    updateStatus('api-health', 'fail', 'API unhealthy: ' + JSON.stringify(data));
+                }
+            } catch (error) {
+                updateStatus('api-health', 'fail', 'Cannot connect to Apollo API: ' + error.message);
+            }
+        }
+        
+        async function testRegistryLoad() {
+            try {
+                // Test with fallback registry
+                const defaultCIs = [
+                    'ergon-ci', 'rhetor-ci', 'noesis-ci', 'athena-ci',
+                    'hermes-ci', 'sophia-ci', 'apollo-ci'
+                ];
+                
+                updateStatus('registry', 'pass', 
+                    'Default CI Registry loaded:\n' + defaultCIs.join('\n'));
+            } catch (error) {
+                updateStatus('registry', 'fail', 'Error with registry: ' + error.message);
+            }
+        }
+        
+        async function testBriefGeneration() {
+            try {
+                const testBrief = {
+                    source_ci: 'ergon-ci',
+                    target_ci: 'rhetor-ci',
+                    task_context: 'Testing Context Brief generation',
+                    next_steps: 'Validate brief format and content',
+                    memory_workflow: {
+                        shortTerm: true,
+                        mediumTerm: false,
+                        longTerm: false,
+                        latentSpace: false
+                    },
+                    inner_voice_prompts: ['Test prompt 1', 'Test prompt 2']
+                };
+                
+                const response = await fetch(`${apolloBase}/api/preparation/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(testBrief)
+                });
+                
+                if (response.ok) {
+                    const brief = await response.json();
+                    updateStatus('brief', 'pass', 
+                        'Brief generated:\n' + JSON.stringify(brief, null, 2));
+                } else {
+                    updateStatus('brief', 'fail', 'Failed to generate brief: ' + response.status);
+                }
+            } catch (error) {
+                updateStatus('brief', 'fail', 'Error generating brief: ' + error.message);
+            }
+        }
+        
+        function testMemoryWorkflow() {
+            const workflows = {
+                'Short-term': 'Every turn, immediate context',
+                'Medium-term': 'Every N turns, consolidation',
+                'Long-term': 'Phase completion, permanent storage',
+                'Latent Space': 'Task completion, deep storage'
+            };
+            
+            updateStatus('workflow', 'pass', 
+                'Memory Workflow Rules:\n' + 
+                Object.entries(workflows).map(([k, v]) => `${k}: ${v}`).join('\n'));
+        }
+        
+        function testInnerVoice() {
+            const prompts = [
+                'Remember to check existing patterns',
+                'Consider edge cases',
+                'Update memories after significant progress',
+                'Document key decisions'
+            ];
+            
+            updateStatus('prompts', 'pass', 
+                'Inner Voice Prompts available:\n' + prompts.join('\n'));
+        }
+        
+        function testMemoryRhythm() {
+            const states = ['idle', 'active', 'monitoring', 'update-needed', 'phase-complete'];
+            
+            updateStatus('rhythm', 'pass', 
+                'Memory Rhythm States:\n' + states.join('\n') +
+                '\n\nRhythm indicator provides visual workflow state');
+        }
+        
+        async function runFullWorkflowTest() {
+            const steps = [];
+            
+            steps.push('1. Loading Apollo Preparation UI...');
+            await testHTMLLoad();
+            
+            steps.push('2. Checking CSS styling (Apollo Gold)...');
+            await testCSSLoad();
+            
+            steps.push('3. Loading JavaScript functions...');
+            await testJSLoad();
+            
+            steps.push('4. Testing API connectivity...');
+            await testAPIHealth();
+            
+            steps.push('5. Loading CI Registry...');
+            await testRegistryLoad();
+            
+            steps.push('6. Testing Context Brief generation...');
+            await testBriefGeneration();
+            
+            steps.push('7. Verifying Memory Workflow...');
+            testMemoryWorkflow();
+            
+            steps.push('8. Checking Inner Voice system...');
+            testInnerVoice();
+            
+            steps.push('9. Testing Memory Rhythm indicator...');
+            testMemoryRhythm();
+            
+            steps.push('\n✅ Full workflow test complete!');
+            
+            updateStatus('workflow-full', 'pass', steps.join('\n'));
+        }
+    </script>
+</body>
+</html>

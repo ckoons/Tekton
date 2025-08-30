@@ -65,6 +65,7 @@ from .fastmcp_endpoints import mcp_router
 # Use shared logging setup
 from shared.utils.logging_setup import setup_component_logging
 from shared.utils.hermes_registration import HermesRegistration, heartbeat_loop
+from shared.urls import rhetor_url
 
 # Import shared workflow endpoint
 try:
@@ -458,8 +459,8 @@ async def get_llm_providers():
     try:
         # Check if LLM Adapter service is available
         async with aiohttp.ClientSession() as session:
-            # TODO: Replace with Rhetor health check
-            async with session.get("http://localhost:8103/health", timeout=2.0) as response:
+            # Use shared URL for Rhetor health check
+            async with session.get(rhetor_url("/health"), timeout=2.0) as response:
                 if response.status == 200:
                     # Get providers from LLM Adapter
                     # TODO: Replace with Rhetor client

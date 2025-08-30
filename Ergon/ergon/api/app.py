@@ -40,6 +40,7 @@ from shared.utils.errors import StartupError
 from shared.utils.startup import component_startup, StartupMetrics
 from shared.utils.shutdown import GracefulShutdown
 from shared.utils.health_check import create_health_response
+from shared.urls import hermes_url
 from shared.api import (
     create_standard_routers,
     mount_standard_routers,
@@ -280,7 +281,7 @@ routers.v1.add_api_route(
         ],
         capabilities=ergon_component.get_capabilities(),
         dependencies={
-            "hermes": "http://localhost:8001"
+            "hermes": hermes_url()
         },
         metadata=ergon_component.get_metadata()
     ),

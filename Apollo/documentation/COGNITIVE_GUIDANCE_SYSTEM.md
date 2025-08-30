@@ -1,0 +1,1 @@
+../../MetaData/Documentation/Architecture/COGNITIVE_GUIDANCE_SYSTEM.md

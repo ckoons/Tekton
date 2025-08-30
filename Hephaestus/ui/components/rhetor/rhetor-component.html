@@ -19,7 +19,6 @@
   - Dashboard: Component status and system overview
   - Models: LLM model configuration and testing
   - Prompts: Template management and prompt engineering  
-  - Contexts: Context management for components
   - Specialists: CI specialist configuration and management
   - LLM Chat: Direct LLM interaction interface
   - Team Chat: Multi-agent team communication
@@ -27,22 +26,18 @@
 <!-- @landmark Component: Rhetor - LLM orchestration, prompt engineering, and context management hub -->
 
 <!-- Load chat dependencies -->
+<script src="/scripts/shared/tekton-config.js"></script>
 <script src="/scripts/shared/ai-chat.js"></script>
 <script src="/scripts/shared/single-chat.js"></script>
 <script src="/scripts/shared/team-chat.js"></script>
 
-<!-- Load Evolution component -->
-<link rel="stylesheet" href="/styles/rhetor/evolution-component.css">
-<script src="/scripts/rhetor/evolution-tracker.js"></script>
 
 <!-- Hidden radio inputs for CSS-first tab functionality -->
 <!-- @landmark Navigation: CSS-first radio buttons for tab switching -->
 <input type="radio" name="rhetor-tab" id="tab-dashboard" checked style="display: none;">
 <input type="radio" name="rhetor-tab" id="tab-models" style="display: none;">
 <input type="radio" name="rhetor-tab" id="tab-prompts" style="display: none;">
-<input type="radio" name="rhetor-tab" id="tab-contexts" style="display: none;">
 <input type="radio" name="rhetor-tab" id="tab-specialists" style="display: none;">
-<input type="radio" name="rhetor-tab" id="tab-evolution" style="display: none;">
 <input type="radio" name="rhetor-tab" id="tab-llmchat" style="display: none;">
 <input type="radio" name="rhetor-tab" id="tab-teamchat" style="display: none;">
 <div class="rhetor" 
@@ -88,26 +83,12 @@
              data-tekton-menu-panel="prompts-panel">
         <span class="rhetor__tab-label">Prompts</span>
       </label>
-      <!-- Contexts (new) -->
-      <label for="tab-contexts" class="rhetor__tab" data-tab="contexts" 
-             data-tekton-menu-item="Contexts"
-             data-tekton-menu-component="rhetor"
-             data-tekton-menu-panel="contexts-panel">
-        <span class="rhetor__tab-label">Contexts</span>
-      </label>
       <!-- Specialists (renamed from CI Specialists) -->
       <label for="tab-specialists" class="rhetor__tab" data-tab="specialists" 
              data-tekton-menu-item="Specialists"
              data-tekton-menu-component="rhetor"
              data-tekton-menu-panel="specialists-panel">
         <span class="rhetor__tab-label">Specialists</span>
-      </label>
-      <!-- Evolution (new) -->
-      <label for="tab-evolution" class="rhetor__tab" data-tab="evolution" 
-             data-tekton-menu-item="Evolution"
-             data-tekton-menu-component="rhetor"
-             data-tekton-menu-panel="evolution-panel">
-        <span class="rhetor__tab-label">Evolution</span>
       </label>
       <!-- LLM Chat (moved to right) -->
       <label for="tab-llmchat" class="rhetor__tab" data-tab="llmchat" 
@@ -682,107 +663,6 @@
       </div>
     </div>
     
-    <!-- Evolution Tab -->
-    <!-- @landmark Panel: Evolution - Prompt genealogy and evolution tracking -->
-    <div id="evolution-panel" class="rhetor__panel" 
-         data-tekton-panel="evolution"
-         data-tekton-panel-for="Evolution"
-         data-tekton-panel-component="rhetor">
-      <div class="rhetor__evolution" data-tekton-element="evolution-container">
-        <!-- Evolution Header -->
-        <div class="rhetor__evolution-header">
-          <h2 class="rhetor__evolution-title">Prompt Evolution Tracker</h2>
-          <div class="rhetor__evolution-controls">
-            <select id="evolution-view-mode" class="rhetor__evolution-select">
-              <option value="tree">Genealogy Tree</option>
-              <option value="timeline">Timeline View</option>
-              <option value="metrics">Success Metrics</option>
-            </select>
-            <button id="refresh-evolution" class="rhetor__evolution-btn">Refresh</button>
-          </div>
-        </div>
-        
-        <!-- Evolution Stats -->
-        <div class="rhetor__evolution-stats">
-          <div class="rhetor__evolution-stat">
-            <span class="rhetor__evolution-stat-label">Total Prompts</span>
-            <span class="rhetor__evolution-stat-value" id="total-prompts">--</span>
-          </div>
-          <div class="rhetor__evolution-stat">
-            <span class="rhetor__evolution-stat-label">Generations</span>
-            <span class="rhetor__evolution-stat-value" id="prompt-generations">--</span>
-          </div>
-          <div class="rhetor__evolution-stat">
-            <span class="rhetor__evolution-stat-label">Success Rate</span>
-            <span class="rhetor__evolution-stat-value" id="prompt-success-rate">--</span>
-          </div>
-          <div class="rhetor__evolution-stat">
-            <span class="rhetor__evolution-stat-label">Active Branches</span>
-            <span class="rhetor__evolution-stat-value" id="active-branches">--</span>
-          </div>
-        </div>
-        
-        <!-- Genealogy Tree View -->
-        <div id="genealogy-tree" class="rhetor__genealogy-tree">
-          <!-- Tree will be dynamically populated -->
-          <div class="rhetor__genealogy-loading">
-            <span class="rhetor__loading-spinner">⏳</span>
-            <p>Loading prompt genealogy...</p>
-          </div>
-        </div>
-        
-        <!-- Timeline View (hidden by default) -->
-        <div id="timeline-view" class="rhetor__timeline-view" style="display: none;">
-          <!-- Timeline will be dynamically populated -->
-        </div>
-        
-        <!-- Metrics View (hidden by default) -->
-        <div id="metrics-view" class="rhetor__metrics-view" style="display: none;">
-          <div class="rhetor__metrics-grid">
-            <!-- Success by Category -->
-            <div class="rhetor__metrics-card">
-              <h3>Success by Category</h3>
-              <div class="rhetor__metrics-bars" id="category-success">
-                <!-- Will be populated -->
-              </div>
-            </div>
-            <!-- Evolution Effectiveness -->
-            <div class="rhetor__metrics-card">
-              <h3>Evolution Effectiveness</h3>
-              <div class="rhetor__metrics-chart" id="evolution-chart">
-                <!-- Will be populated -->
-              </div>
-            </div>
-            <!-- Top Performing Prompts -->
-            <div class="rhetor__metrics-card">
-              <h3>Top Performers</h3>
-              <div class="rhetor__metrics-list" id="top-prompts">
-                <!-- Will be populated -->
-              </div>
-            </div>
-            <!-- Mutation Success -->
-            <div class="rhetor__metrics-card">
-              <h3>Mutation Impact</h3>
-              <div class="rhetor__metrics-delta" id="mutation-impact">
-                <!-- Will be populated -->
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Prompt Detail Modal (hidden) -->
-        <div id="prompt-detail-modal" class="rhetor__modal" style="display: none;">
-          <div class="rhetor__modal-content">
-            <span class="rhetor__modal-close">&times;</span>
-            <h3 class="rhetor__modal-title">Prompt Details</h3>
-            <div class="rhetor__modal-body" id="prompt-detail-body">
-              <!-- Will be populated -->
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
     <!-- LLM Chat Tab -->
     <!-- @landmark Panel: LLM Chat - Direct LLM interaction interface -->
     <div id="llmchat-panel" class="rhetor__panel" data-tekton-chat="rhetor-llm" data-tekton-ai="rhetor-orchestrator" data-tekton-ai-ready="false">
@@ -981,6 +861,73 @@
                     </select>
                   </td>
                 </tr>
+                
+                <!-- CI Selector Row (new) -->
+                <tr class="rhetor__matrix-row rhetor__matrix-row--ci-selector">
+                  <td class="rhetor__matrix-component">
+                    <span class="rhetor__component-name">Select CI</span>
+                    <select id="models-ci-selector" class="rhetor__ci-model-selector" onchange="rhetor_loadCIModelAssignment()">
+                      <option value="">Choose CI...</option>
+                      <optgroup label="Specialists">
+                        <option value="ergon">Ergon</option>
+                        <option value="rhetor">Rhetor</option>
+                        <option value="noesis">Noesis</option>
+                        <option value="athena">Athena</option>
+                        <option value="hermes">Hermes</option>
+                        <option value="sophia">Sophia</option>
+                        <option value="apollo">Apollo</option>
+                        <option value="hephaestus">Hephaestus</option>
+                        <option value="terma">Terma</option>
+                        <option value="neurosyne">NeuroSyne</option>
+                        <option value="penia">Penia</option>
+                        <option value="harmonia">Harmonia</option>
+                        <option value="synthesis">Synthesis</option>
+                        <option value="metis">Metis</option>
+                        <option value="telos">Telos</option>
+                        <option value="prometheus">Prometheus</option>
+                        <option value="numa">Numa</option>
+                        <option value="tekton">Tekton</option>
+                      </optgroup>
+                      <optgroup label="Terminals">
+                        <option value="terminal-ergon">Terminal Ergon</option>
+                        <option value="terminal-rhetor">Terminal Rhetor</option>
+                        <option value="terminal-noesis">Terminal Noesis</option>
+                        <option value="terminal-athena">Terminal Athena</option>
+                        <option value="terminal-hermes">Terminal Hermes</option>
+                        <option value="terminal-sophia">Terminal Sophia</option>
+                        <option value="terminal-apollo">Terminal Apollo</option>
+                        <option value="terminal-hephaestus">Terminal Hephaestus</option>
+                      </optgroup>
+                      <optgroup label="Projects">
+                        <option value="project-alpha">Project Alpha</option>
+                        <option value="project-beta">Project Beta</option>
+                        <option value="project-gamma">Project Gamma</option>
+                        <option value="project-delta">Project Delta</option>
+                      </optgroup>
+                    </select>
+                  </td>
+                  <td class="rhetor__matrix-cell">
+                    <select class="rhetor__model-select" data-component="selected-ci" data-task="code" id="selected-ci-code">
+                      <!-- Populated dynamically -->
+                    </select>
+                  </td>
+                  <td class="rhetor__matrix-cell">
+                    <select class="rhetor__model-select" data-component="selected-ci" data-task="planning" id="selected-ci-planning">
+                      <!-- Populated dynamically -->
+                    </select>
+                  </td>
+                  <td class="rhetor__matrix-cell">
+                    <select class="rhetor__model-select" data-component="selected-ci" data-task="reasoning" id="selected-ci-reasoning">
+                      <!-- Populated dynamically -->
+                    </select>
+                  </td>
+                  <td class="rhetor__matrix-cell">
+                    <select class="rhetor__model-select" data-component="selected-ci" data-task="chat" id="selected-ci-chat">
+                      <!-- Populated dynamically -->
+                    </select>
+                  </td>
+                </tr>
+                
                 <!-- Component Rows (Alphabetical) -->
                 <!-- Apollo -->
                 <tr class="rhetor__matrix-row">
@@ -1459,72 +1406,57 @@
          data-tekton-panel-for="Prompts"
          data-tekton-panel-component="rhetor">
       <div class="rhetor__prompts-container" data-tekton-scrollable="true">
-        <!-- Tekton Component Prompts Grid -->
-        <div class="rhetor__prompts-section" data-tekton-section="component-prompts">
-          <h3 class="rhetor__prompts-section-title" data-tekton-element="section-title">Tekton Component Prompts</h3>
-          <div class="rhetor__component-grid" 
-               data-tekton-element="component-prompt-grid"
-               data-tekton-grid="component-prompts">
-            <!-- Row 1 -->
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--apollo" data-component="apollo" 
-                 onclick="rhetor_showComponentPrompts('apollo')"
-                 data-tekton-element="component-prompt-card"
-                 data-tekton-component="apollo"
-                 data-tekton-action="edit-prompts">
-              <div class="rhetor__component-prompt-name" data-tekton-element="component-prompt-name">Apollo - Prediction</div>
+        <!-- Prompt History Section (new) -->
+        <div class="rhetor__prompts-section rhetor__prompt-history-section" id="prompt-history-section">
+          <!-- Compact Header with CI Selector on Same Line -->
+          <div class="rhetor__prompt-history-header" style="height: 2.5rem; margin-bottom: 15px;">
+            <h3 class="rhetor__prompts-section-title" style="margin: 0; line-height: 2.5rem; display: flex; align-items: center; gap: 10px;">
+              Prompt History: <span id="prompt-history-ci-name" style="color: #9c27b0;">No CI Selected</span>
+              <select id="rhetor-ci-selector" class="rhetor__ci-selector" onchange="rhetor_loadCIPromptHistory()" style="margin-left: auto; margin-right: 10px; width: 200px;">
+                <option value="">Choose CI...</option>
+              </select>
+            </h3>
+            <div class="rhetor__prompt-history-controls">
+              <button class="rhetor__prompts-button rhetor__prompts-button--secondary" onclick="rhetor_refreshPromptHistory()">
+                🔄 Refresh
+              </button>
+              <button class="rhetor__prompts-button rhetor__prompts-button--secondary" onclick="rhetor_clearPromptEdit()">
+                ✖ Clear Edit
+              </button>
             </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--athena" data-component="athena" onclick="rhetor_showComponentPrompts('athena')">
-              <div class="rhetor__component-prompt-name">Athena - Knowledge</div>
+          </div>
+          
+          <!-- Scrollable Prompt History -->
+          <div class="rhetor__prompt-history-container">
+            <textarea id="prompt-history-editor" 
+                      class="rhetor__prompt-history-editor"
+                      placeholder="Select a CI to view and edit prompt history..."
+                      rows="8"></textarea>
+            <div class="rhetor__prompt-history-info">
+              <span id="prompt-history-timestamp">No prompt selected</span>
+              <span id="prompt-history-status">Ready</span>
             </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--engram" data-component="engram" onclick="rhetor_showComponentPrompts('engram')">
-              <div class="rhetor__component-prompt-name">Engram - Memory</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--ergon" data-component="ergon">
-              <div class="rhetor__component-prompt-name">Ergon - Solutions</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--harmonia" data-component="harmonia">
-              <div class="rhetor__component-prompt-name">Harmonia - Workflow</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--hephaestus" data-component="hephaestus">
-              <div class="rhetor__component-prompt-name">Hephaestus - UI</div>
-            </div>
-            
-            <!-- Row 2 -->
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--hermes" data-component="hermes">
-              <div class="rhetor__component-prompt-name">Hermes - Federation</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--metis" data-component="metis">
-              <div class="rhetor__component-prompt-name">Metis - Tasks</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--penia" data-component="penia">
-              <div class="rhetor__component-prompt-name">Penia - Budget</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--prometheus" data-component="prometheus">
-              <div class="rhetor__component-prompt-name">Prometheus - Planning</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--rhetor" data-component="rhetor">
-              <div class="rhetor__component-prompt-name">Rhetor - Models</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--sophia" data-component="sophia">
-              <div class="rhetor__component-prompt-name">Sophia - ML</div>
-            </div>
-            
-            <!-- Row 3 -->
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--synthesis" data-component="synthesis">
-              <div class="rhetor__component-prompt-name">Synthesis - Integration</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--tekton" data-component="tekton">
-              <div class="rhetor__component-prompt-name">Tekton - Projects</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--telos" data-component="telos">
-              <div class="rhetor__component-prompt-name">Telos - Requirements</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--terma" data-component="terma">
-              <div class="rhetor__component-prompt-name">Terma - Terminals</div>
-            </div>
-            <!-- Empty slots for future components -->
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--empty"></div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--empty"></div>
+          </div>
+          
+          <!-- Navigation and Send Buttons -->
+          <div class="rhetor__prompt-history-actions">
+            <button id="rhetor-prev-prompt" 
+                    class="rhetor__prompts-button rhetor__prompts-button--prev"
+                    onclick="rhetor_previousPrompt()">
+              ← Prev
+            </button>
+            <button id="rhetor-next-prompt" 
+                    class="rhetor__prompts-button rhetor__prompts-button--next"
+                    onclick="rhetor_nextPrompt()">
+              Next →
+            </button>
+            <button id="rhetor-send-prompt" 
+                    class="rhetor__prompts-button rhetor__prompts-button--send"
+                    onclick="rhetor_sendPromptToCI()"
+                    disabled>
+              Send
+            </button>
+            <span class="rhetor__prompt-send-status" id="prompt-send-status"></span>
           </div>
         </div>
         
@@ -1835,193 +1767,6 @@ SUCCESS CRITERIA:
       </div>
     </div>
     
-    <!-- Contexts Tab -->
-    <!-- @landmark Panel: Contexts - Context management for components -->
-    <div id="contexts-panel" class="rhetor__panel"
-         data-tekton-panel="contexts"
-         data-tekton-panel-for="Contexts"
-         data-tekton-panel-component="rhetor">
-      <div class="rhetor__prompts-container" data-tekton-scrollable="true">
-        <div class="rhetor__prompts-section" data-tekton-section="contexts-main">
-          <h3 class="rhetor__prompts-section-title" data-tekton-element="section-title">Component Context Management</h3>
-          <div class="rhetor__component-grid" 
-               data-tekton-element="component-grid"
-               data-tekton-grid="contexts"
-               data-tekton-grid-layout="6x3">
-            <!-- Row 1 -->
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--apollo" 
-                 onclick="rhetor_editContext('apollo')" 
-                 style="cursor: pointer;"
-                 data-tekton-element="context-card"
-                 data-tekton-component="apollo"
-                 data-tekton-action="edit-context">
-              <div class="rhetor__component-prompt-name" data-tekton-element="component-name">Apollo - Prediction</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--athena" 
-                 onclick="rhetor_editContext('athena')" 
-                 style="cursor: pointer;"
-                 data-tekton-element="context-card"
-                 data-tekton-component="athena"
-                 data-tekton-action="edit-context">
-              <div class="rhetor__component-prompt-name" data-tekton-element="component-name">Athena - Knowledge</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--engram" 
-                 onclick="rhetor_editContext('engram')" 
-                 style="cursor: pointer;"
-                 data-tekton-element="context-card"
-                 data-tekton-component="engram"
-                 data-tekton-action="edit-context">
-              <div class="rhetor__component-prompt-name" data-tekton-element="component-name">Engram - Memory</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--ergon" 
-                 onclick="rhetor_editContext('ergon')" 
-                 style="cursor: pointer;"
-                 data-tekton-element="context-card"
-                 data-tekton-component="ergon"
-                 data-tekton-action="edit-context">
-              <div class="rhetor__component-prompt-name" data-tekton-element="component-name">Ergon - Solutions</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--harmonia" onclick="rhetor_editContext('harmonia')" style="cursor: pointer;">
-              <div class="rhetor__component-prompt-name">Harmonia - Workflow</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--hephaestus" onclick="rhetor_editContext('hephaestus')" style="cursor: pointer;">
-              <div class="rhetor__component-prompt-name">Hephaestus - UI</div>
-            </div>
-            
-            <!-- Row 2 -->
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--hermes" onclick="rhetor_editContext('hermes')" style="cursor: pointer;">
-              <div class="rhetor__component-prompt-name">Hermes - Federation</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--metis" onclick="rhetor_editContext('metis')" style="cursor: pointer;">
-              <div class="rhetor__component-prompt-name">Metis - Tasks</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--penia" onclick="rhetor_editContext('penia')" style="cursor: pointer;">
-              <div class="rhetor__component-prompt-name">Penia - Budget</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--prometheus" onclick="rhetor_editContext('prometheus')" style="cursor: pointer;">
-              <div class="rhetor__component-prompt-name">Prometheus - Planning</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--rhetor" onclick="rhetor_editContext('rhetor')" style="cursor: pointer;">
-              <div class="rhetor__component-prompt-name">Rhetor - Models</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--sophia" onclick="rhetor_editContext('sophia')" style="cursor: pointer;">
-              <div class="rhetor__component-prompt-name">Sophia - ML</div>
-            </div>
-            
-            <!-- Row 3 -->
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--synthesis" onclick="rhetor_editContext('synthesis')" style="cursor: pointer;">
-              <div class="rhetor__component-prompt-name">Synthesis - Integration</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--tekton" onclick="rhetor_editContext('tekton')" style="cursor: pointer;">
-              <div class="rhetor__component-prompt-name">Tekton - Projects</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--telos" onclick="rhetor_editContext('telos')" style="cursor: pointer;">
-              <div class="rhetor__component-prompt-name">Telos - Requirements</div>
-            </div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--terma" onclick="rhetor_editContext('terma')" style="cursor: pointer;">
-              <div class="rhetor__component-prompt-name">Terma - Terminals</div>
-            </div>
-            <!-- Empty slots -->
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--empty"></div>
-            <div class="rhetor__component-prompt-card rhetor__component-prompt-card--empty"></div>
-          </div>
-        </div>
-        
-        <!-- Context Editor (hidden by default, shown when component selected) -->
-        <div class="rhetor__prompts-section rhetor__context-editor" 
-             data-context-editor="true" 
-             data-tekton-section="context-editor"
-             data-tekton-state="hidden"
-             style="display: none;">
-          <div class="rhetor__multi-prompt-header">
-            <h3 class="rhetor__prompts-section-title">
-              <span class="rhetor__context-component-name">Component</span> Context Configuration
-            </h3>
-            <button class="rhetor__prompts-button rhetor__prompts-button--secondary" 
-                    data-tekton-action="close-context-editor"
-                    onclick="rhetor_hideContextEditor()">
-              ← Back to Components
-            </button>
-          </div>
-          
-          <!-- Deterministic Context -->
-          <div class="rhetor__prompt-layer">
-            <div class="rhetor__prompt-layer-header">
-              <div class="rhetor__prompt-layer-info">
-                <h4 class="rhetor__prompt-layer-title">Deterministic Context</h4>
-                <span class="rhetor__prompt-layer-desc">Fixed state, facts, and operational parameters</span>
-              </div>
-              <div class="rhetor__prompt-layer-actions">
-                <button class="rhetor__prompt-layer-action" title="Edit">✏️</button>
-                <button class="rhetor__prompt-layer-action" title="Lock">🔒</button>
-              </div>
-            </div>
-            <textarea class="rhetor__prompt-layer-content" 
-                      data-tekton-input="deterministic-context"
-                      placeholder="Enter deterministic context: facts, configuration, fixed parameters..."></textarea>
-          </div>
-          
-          <!-- Probabilistic Context -->
-          <div class="rhetor__prompt-layer">
-            <div class="rhetor__prompt-layer-header">
-              <div class="rhetor__prompt-layer-info">
-                <h4 class="rhetor__prompt-layer-title">Probabilistic Context</h4>
-                <span class="rhetor__prompt-layer-desc">Behavioral attractors, tendencies, and influences</span>
-              </div>
-              <div class="rhetor__prompt-layer-actions">
-                <button class="rhetor__prompt-layer-action" title="Edit">✏️</button>
-                <button class="rhetor__prompt-layer-action" title="Lock">🔒</button>
-              </div>
-            </div>
-            <textarea class="rhetor__prompt-layer-content"
-                      data-tekton-input="probabilistic-context"
-                      placeholder="Enter probabilistic context: behaviors, tendencies, attractor states..."></textarea>
-          </div>
-          
-          <!-- Context Metrics -->
-          <div class="rhetor__prompt-layer">
-            <div class="rhetor__prompt-layer-header">
-              <div class="rhetor__prompt-layer-info">
-                <h4 class="rhetor__prompt-layer-title">Context Metrics</h4>
-                <span class="rhetor__prompt-layer-desc">Size and usage statistics</span>
-              </div>
-            </div>
-            <div class="rhetor__context-metrics">
-              <div class="rhetor__metric">
-                <span class="rhetor__metric-label">Deterministic:</span>
-                <span class="rhetor__metric-value" id="det-context-size">0 KB</span>
-              </div>
-              <div class="rhetor__metric">
-                <span class="rhetor__metric-label">Probabilistic:</span>
-                <span class="rhetor__metric-value" id="prob-context-size">0 KB</span>
-              </div>
-              <div class="rhetor__metric">
-                <span class="rhetor__metric-label">Total:</span>
-                <span class="rhetor__metric-value" id="total-context-size">0 KB</span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Editor Actions -->
-          <div class="rhetor__multi-prompt-actions">
-            <button class="rhetor__prompts-button rhetor__prompts-button--secondary"
-                    data-tekton-action="cancel-context">
-              Cancel
-            </button>
-            <button class="rhetor__prompts-button rhetor__prompts-button--primary"
-                    data-tekton-action="save-context"
-                    onclick="rhetor_saveContext()">
-              Save Context
-            </button>
-            <button class="rhetor__prompts-button rhetor__prompts-button--primary"
-                    data-tekton-action="apply-context">
-              Apply to Component
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
   
   <!-- Footer with Chat Input -->
   <div class="rhetor__footer" data-tekton-zone="footer" data-tekton-section="footer">
@@ -3196,6 +2941,28 @@ SUCCESS CRITERIA:
   .rhetor__matrix-row--default {
     background-color: var(--bg-secondary, #252535);
   }
+  
+  .rhetor__matrix-row--ci-selector {
+    background-color: #000000;
+    border: none;
+  }
+  
+  .rhetor__ci-model-selector {
+    width: 100%;
+    max-width: 150px;
+    padding: 4px;
+    background: #1a1a1d;
+    border: 1px solid #444;
+    border-radius: 3px;
+    color: #f0f0f0;
+    font-size: 0.85rem;
+    margin-top: 4px;
+  }
+  
+  .rhetor__ci-model-selector:focus {
+    outline: none;
+    border-color: #9c27b0;
+  }
 
   .rhetor__matrix-row:hover {
     background-color: var(--bg-hover, #3a3a4a);
@@ -3457,6 +3224,149 @@ SUCCESS CRITERIA:
   .rhetor__component-prompt-card--empty:hover {
     transform: none;
     border-color: var(--border-color, #444444);
+  }
+  
+  /* CI Selector Card */
+  .rhetor__component-prompt-card--selector {
+    background-color: #1a1a1d;
+    border-color: #9c27b0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+  }
+  
+  .rhetor__component-prompt-card--selector:hover {
+    background-color: #252529;
+    border-color: #ba68c8;
+  }
+  
+  .rhetor__ci-selector {
+    width: 100%;
+    padding: 4px;
+    background: #000;
+    border: 1px solid #444;
+    border-radius: 3px;
+    color: #f0f0f0;
+    font-size: 0.85rem;
+  }
+  
+  /* Prompt History Section */
+  .rhetor__prompt-history-section {
+    margin-top: 24px;
+    padding: 20px;
+    background: var(--bg-secondary, #252529);
+    border: 1px solid var(--border-color, #444);
+    border-radius: 8px;
+  }
+  
+  .rhetor__prompt-history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .rhetor__prompt-history-controls {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .rhetor__prompt-history-container {
+    background: #1a1a1d;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 12px;
+  }
+  
+  .rhetor__prompt-history-editor {
+    width: 100%;
+    height: 160px;  /* 8 lines of text */
+    background: #0d0d0f;
+    color: #f0f0f0;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 12px;
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+    font-size: 0.9rem;
+    resize: none;
+    overflow-y: auto;
+  }
+  
+  .rhetor__prompt-history-editor:focus {
+    outline: none;
+    border-color: #9c27b0;
+    box-shadow: 0 0 0 2px rgba(156, 39, 176, 0.2);
+  }
+  
+  .rhetor__prompt-history-info {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: #999;
+  }
+  
+  .rhetor__prompt-history-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 16px;
+  }
+  
+  .rhetor__prompt-send-status {
+    font-size: 0.9rem;
+    color: #999;
+  }
+  
+  /* Colored navigation buttons */
+  .rhetor__prompts-button--prev {
+    background: #008B8B;  /* Teal */
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  
+  .rhetor__prompts-button--prev:hover:not(:disabled) {
+    background: #00AAAA;
+  }
+  
+  .rhetor__prompts-button--next {
+    background: #FF9500;  /* Gold */
+    color: black;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  
+  .rhetor__prompts-button--next:hover:not(:disabled) {
+    background: #FFB143;
+  }
+  
+  .rhetor__prompts-button--send {
+    background: #D32F2F;  /* Rhetor Red */
+    color: white;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  
+  .rhetor__prompts-button--send:hover:not(:disabled) {
+    background: #F44336;
+  }
+  
+  .rhetor__prompts-button--prev:disabled,
+  .rhetor__prompts-button--next:disabled,
+  .rhetor__prompts-button--send:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   .rhetor__component-prompt-name {
@@ -4116,7 +4026,7 @@ window.rhetor_loadModelAssignments = async function() {
     
     try {
         // Direct fetch from API
-        const response = await fetch('http://localhost:8103/api/models/assignments');
+        const response = await fetch(window.TektonConfig.getRhetorUrl('/api/models/assignments'));
         if (!response.ok) {
             throw new Error(`Failed to load assignments: ${response.status}`);
         }
@@ -4127,7 +4037,7 @@ window.rhetor_loadModelAssignments = async function() {
         originalAssignments = JSON.parse(JSON.stringify(assignments)); // Deep copy
         
         // Get available models
-        const modelsResponse = await fetch('http://localhost:8103/api/models/?include_deprecated=false');
+        const modelsResponse = await fetch(window.TektonConfig.getRhetorUrl('/api/models/?include_deprecated=false'));
         if (!modelsResponse.ok) {
             throw new Error(`Failed to load models: ${modelsResponse.status}`);
         }
@@ -4332,7 +4242,7 @@ window.rhetor_saveModelConfig = async function() {
         for (const update of updates) {
             if (update.component === 'defaults') {
                 // Update default assignment via special endpoint
-                const response = await fetch('http://localhost:8103/api/models/assignments/default', {
+                const response = await fetch(window.TektonConfig.getRhetorUrl('/api/models/assignments/default'), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -4348,7 +4258,7 @@ window.rhetor_saveModelConfig = async function() {
                 }
             } else {
                 // Update component assignment
-                const response = await fetch('http://localhost:8103/api/models/assignments/component', {
+                const response = await fetch(window.TektonConfig.getRhetorUrl('/api/models/assignments/component'), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -4435,7 +4345,7 @@ window.updateTestModelDropdown = function(models) {
 window.updateProviderCards = async function() {
     try {
         // First get all models
-        const response = await fetch('http://localhost:8103/api/models/');
+        const response = await fetch(window.TektonConfig.getRhetorUrl('/api/models/'));
         if (!response.ok) {
             console.error('[RHETOR] Failed to fetch models for provider cards');
             return;
@@ -4500,7 +4410,7 @@ window.testModelLoading = async function() {
     // Test 2: Try to fetch models directly
     console.log('2. Fetching models directly...');
     try {
-        const response = await fetch('http://localhost:8003/api/models');
+        const response = await fetch(window.TektonConfig.getRhetorUrl('/api/models'));
         if (!response.ok) {
             console.error('   ❌ Failed to fetch:', response.status);
             return;
@@ -6194,7 +6104,7 @@ function rhetor_editContext(componentName) {
 window.rhetor_loadAllModels = async function() {
     console.log('[RHETOR] Loading all models');
     try {
-        const response = await fetch('http://localhost:8103/api/models/?include_deprecated=false');
+        const response = await fetch(window.TektonConfig.getRhetorUrl('/api/models/?include_deprecated=false'));
         if (!response.ok) {
             throw new Error(`Failed to load models: ${response.status}`);
         }
@@ -6206,6 +6116,419 @@ window.rhetor_loadAllModels = async function() {
         console.error('[RHETOR] Error loading models:', error);
         return [];
     }
+}
+
+// Load CI Registry and populate dropdowns
+window.rhetor_loadCIRegistry = async function() {
+    try {
+        // Try to get from Apollo's CI registry endpoint
+        const response = await fetch(window.TektonConfig ? 
+            window.TektonConfig.getApolloUrl('/api/ci-registry') : 
+            'http://localhost:8112/api/ci-registry');
+        
+        if (response.ok) {
+            const data = await response.json();
+            const cis = [];
+            
+            // Parse active_cis from the registry
+            if (data.active_cis) {
+                Object.entries(data.active_cis).forEach(([id, info]) => {
+                    cis.push({
+                        id: id,
+                        name: info.name || id.replace(/-ci$/, '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                        type: info.type || 'specialist'
+                    });
+                });
+            }
+            
+            // Parse terminals if present
+            if (data.terminals) {
+                Object.entries(data.terminals).forEach(([id, info]) => {
+                    cis.push({
+                        id: id,
+                        name: info.name || 'Terminal ' + id.replace(/terminal-/, '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                        type: 'terminal'
+                    });
+                });
+            }
+            
+            // Parse projects if present
+            if (data.projects) {
+                Object.entries(data.projects).forEach(([id, info]) => {
+                    cis.push({
+                        id: id,
+                        name: info.name || id.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                        type: 'project'
+                    });
+                });
+            }
+            
+            // Return parsed CIs or fall back to defaults
+            return cis.length > 0 ? cis : rhetor_getDefaultCIRegistry();
+        }
+    } catch (error) {
+        console.log('[RHETOR] Using default CI registry:', error);
+    }
+    
+    return rhetor_getDefaultCIRegistry();
+}
+
+// Default CI registry as fallback
+window.rhetor_getDefaultCIRegistry = function() {
+    return [
+        // Specialists
+        { id: 'ergon-ci', name: 'Ergon', type: 'specialist' },
+        { id: 'rhetor-ci', name: 'Rhetor', type: 'specialist' },
+        { id: 'noesis-ci', name: 'Noesis', type: 'specialist' },
+        { id: 'athena-ci', name: 'Athena', type: 'specialist' },
+        { id: 'hermes-ci', name: 'Hermes', type: 'specialist' },
+        { id: 'sophia-ci', name: 'Sophia', type: 'specialist' },
+        { id: 'apollo-ci', name: 'Apollo', type: 'specialist' },
+        { id: 'hephaestus-ci', name: 'Hephaestus', type: 'specialist' },
+        { id: 'terma-ci', name: 'Terma', type: 'specialist' },
+        { id: 'neurosyne-ci', name: 'NeuroSyne', type: 'specialist' },
+        { id: 'penia-ci', name: 'Penia', type: 'specialist' },
+        { id: 'harmonia-ci', name: 'Harmonia', type: 'specialist' },
+        { id: 'synthesis-ci', name: 'Synthesis', type: 'specialist' },
+        { id: 'metis-ci', name: 'Metis', type: 'specialist' },
+        { id: 'telos-ci', name: 'Telos', type: 'specialist' },
+        { id: 'prometheus-ci', name: 'Prometheus', type: 'specialist' },
+        { id: 'numa-ci', name: 'Numa', type: 'specialist' },
+        { id: 'tekton-ci', name: 'Tekton', type: 'specialist' },
+        // Terminals
+        { id: 'terminal-ergon', name: 'Terminal Ergon', type: 'terminal' },
+        { id: 'terminal-rhetor', name: 'Terminal Rhetor', type: 'terminal' },
+        { id: 'terminal-noesis', name: 'Terminal Noesis', type: 'terminal' },
+        { id: 'terminal-athena', name: 'Terminal Athena', type: 'terminal' },
+        { id: 'terminal-hermes', name: 'Terminal Hermes', type: 'terminal' },
+        { id: 'terminal-sophia', name: 'Terminal Sophia', type: 'terminal' },
+        { id: 'terminal-apollo', name: 'Terminal Apollo', type: 'terminal' },
+        { id: 'terminal-hephaestus', name: 'Terminal Hephaestus', type: 'terminal' },
+        // Projects
+        { id: 'project-alpha', name: 'Project Alpha', type: 'project' },
+        { id: 'project-beta', name: 'Project Beta', type: 'project' },
+        { id: 'project-gamma', name: 'Project Gamma', type: 'project' },
+        { id: 'project-delta', name: 'Project Delta', type: 'project' }
+    ];
+}
+
+// Populate CI selectors using registry
+window.rhetor_populateCISelectors = async function() {
+    const cis = await rhetor_loadCIRegistry();
+    
+    // Group by type
+    const grouped = {};
+    cis.forEach(ci => {
+        if (!grouped[ci.type]) grouped[ci.type] = [];
+        grouped[ci.type].push(ci);
+    });
+    
+    // Populate both selectors
+    ['rhetor-ci-selector', 'models-ci-selector'].forEach(selectorId => {
+        const selector = document.getElementById(selectorId);
+        if (!selector) return;
+        
+        // Keep first option
+        const firstOption = selector.querySelector('option');
+        selector.innerHTML = '';
+        if (firstOption) selector.appendChild(firstOption);
+        
+        // Add grouped options
+        Object.entries(grouped).forEach(([type, ciList]) => {
+            const optgroup = document.createElement('optgroup');
+            optgroup.label = type.charAt(0).toUpperCase() + type.slice(1) + 's';
+            
+            ciList.forEach(ci => {
+                const option = document.createElement('option');
+                option.value = ci.id;
+                option.textContent = ci.name;
+                optgroup.appendChild(option);
+            });
+            
+            selector.appendChild(optgroup);
+        });
+    });
+}
+
+// Prompt History Variables
+let promptHistory = [];
+let currentPromptIndex = 0;
+
+// Prompt History Functions
+window.rhetor_loadCIPromptHistory = async function() {
+    const selector = document.getElementById('rhetor-ci-selector');
+    const historySection = document.getElementById('prompt-history-section');
+    const editor = document.getElementById('prompt-history-editor');
+    const ciNameSpan = document.getElementById('prompt-history-ci-name');
+    const sendButton = document.getElementById('rhetor-send-prompt');
+    
+    if (!selector.value) {
+        // Show section but with placeholder
+        if (ciNameSpan) ciNameSpan.textContent = 'No CI Selected';
+        editor.value = '';
+        editor.placeholder = 'Choose a CI to view and edit prompt history...';
+        if (sendButton) sendButton.disabled = true;
+        updateNavigationButtons();
+        return;
+    }
+    
+    const ciName = selector.value;
+    // Update the CI name in the header
+    if (ciNameSpan) {
+        // Get the display name from the selector option
+        const selectedOption = selector.options[selector.selectedIndex];
+        ciNameSpan.textContent = selectedOption.text;
+    }
+    historySection.style.display = 'block';
+    if (sendButton) sendButton.disabled = false;
+    
+    // Load prompt history from API or local storage
+    try {
+        const response = await fetch(window.TektonConfig.getRhetorUrl(`/api/prompts/history/${ciName}`));
+        if (response.ok) {
+            const history = await response.json();
+            if (history && history.prompts && history.prompts.length > 0) {
+                promptHistory = history.prompts;
+                currentPromptIndex = 0;
+                displayCurrentPrompt();
+            } else {
+                promptHistory = [{
+                    content: `# Prompt for ${ciName}\n\n# Enter your first prompt here...`,
+                    timestamp: new Date().toISOString()
+                }];
+                currentPromptIndex = 0;
+                displayCurrentPrompt();
+            }
+        } else {
+            // Fallback to empty prompt
+            promptHistory = [{
+                content: `# Prompt for ${ciName}\n\n# Enter your prompt here...`,
+                timestamp: new Date().toISOString()
+            }];
+            currentPromptIndex = 0;
+            displayCurrentPrompt();
+        }
+    } catch (error) {
+        console.error('[RHETOR] Error loading prompt history:', error);
+        promptHistory = [{
+            content: `# Prompt for ${ciName}\n\n# Enter your prompt here...`,
+            timestamp: new Date().toISOString()
+        }];
+        currentPromptIndex = 0;
+        displayCurrentPrompt();
+    }
+    
+    updateNavigationButtons();
+    document.getElementById('prompt-history-status').textContent = 'Ready';
+}
+
+// Display current prompt from history
+window.displayCurrentPrompt = function() {
+    const editor = document.getElementById('prompt-history-editor');
+    if (!editor || !promptHistory.length) return;
+    
+    const prompt = promptHistory[currentPromptIndex];
+    editor.value = prompt.content;
+    document.getElementById('prompt-history-timestamp').textContent = 
+        `Prompt ${currentPromptIndex + 1} of ${promptHistory.length} - ${new Date(prompt.timestamp).toLocaleString()}`;
+}
+
+// Navigate prompt history
+window.rhetor_previousPrompt = function() {
+    if (currentPromptIndex < promptHistory.length - 1) {
+        currentPromptIndex++;
+        displayCurrentPrompt();
+        updateNavigationButtons();
+    }
+}
+
+window.rhetor_nextPrompt = function() {
+    if (currentPromptIndex > 0) {
+        currentPromptIndex--;
+        displayCurrentPrompt();
+        updateNavigationButtons();
+    }
+}
+
+// Update navigation button states
+window.updateNavigationButtons = function() {
+    const prevBtn = document.getElementById('rhetor-prev-prompt');
+    const nextBtn = document.getElementById('rhetor-next-prompt');
+    
+    if (prevBtn) prevBtn.disabled = !promptHistory.length || currentPromptIndex >= promptHistory.length - 1;
+    if (nextBtn) nextBtn.disabled = !promptHistory.length || currentPromptIndex <= 0;
+}
+
+window.rhetor_refreshPromptHistory = function() {
+    rhetor_loadCIPromptHistory();
+}
+
+window.rhetor_clearPromptEdit = function() {
+    const editor = document.getElementById('prompt-history-editor');
+    editor.value = '';
+    document.getElementById('prompt-history-timestamp').textContent = 'Cleared';
+}
+
+window.rhetor_sendPromptToCI = async function() {
+    const selector = document.getElementById('rhetor-ci-selector');
+    const editor = document.getElementById('prompt-history-editor');
+    const statusSpan = document.getElementById('prompt-send-status');
+    const sendButton = document.getElementById('rhetor-send-prompt');
+    
+    if (!selector.value || !editor.value.trim()) {
+        statusSpan.textContent = '❌ No CI selected or prompt is empty';
+        setTimeout(() => statusSpan.textContent = '', 3000);
+        return;
+    }
+    
+    const ciName = selector.value;
+    const prompt = editor.value.trim();
+    
+    sendButton.disabled = true;
+    statusSpan.textContent = '⏳ Sending...';
+    
+    try {
+        const response = await fetch(window.TektonConfig.getRhetorUrl('/api/prompts/send'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                ci_name: ciName,
+                prompt: prompt,
+                timestamp: new Date().toISOString()
+            })
+        });
+        
+        if (response.ok) {
+            statusSpan.textContent = '✅ Prompt sent successfully!';
+            document.getElementById('prompt-history-timestamp').textContent = 
+                `Sent: ${new Date().toLocaleString()}`;
+            
+            // Refresh to show new prompt in history
+            setTimeout(() => {
+                rhetor_loadCIPromptHistory();
+                statusSpan.textContent = '';
+            }, 2000);
+        } else {
+            throw new Error('Failed to send prompt');
+        }
+    } catch (error) {
+        console.error('[RHETOR] Error sending prompt:', error);
+        statusSpan.textContent = '❌ Failed to send prompt';
+        setTimeout(() => statusSpan.textContent = '', 3000);
+    } finally {
+        sendButton.disabled = false;
+    }
+}
+
+// Also update component card clicks to load prompt history
+document.addEventListener('DOMContentLoaded', function() {
+    // Populate CI selectors on load
+    rhetor_populateCISelectors();
+    
+    // Initialize prompt history display with placeholder
+    rhetor_loadCIPromptHistory();
+    
+    // Add click handlers to component cards
+    document.querySelectorAll('.rhetor__component-prompt-card[data-component]').forEach(card => {
+        const component = card.getAttribute('data-component');
+        if (component && component !== '') {
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', function() {
+                const selector = document.getElementById('rhetor-ci-selector');
+                if (selector) {
+                    // Set the selector to match the clicked component
+                    selector.value = component + '-ci';
+                    rhetor_loadCIPromptHistory();
+                }
+            });
+        }
+    });
+});
+
+// Model Assignment Functions for CI Selector
+window.rhetor_loadCIModelAssignment = async function() {
+    const selector = document.getElementById('models-ci-selector');
+    if (!selector || !selector.value) return;
+    
+    const ciName = selector.value;
+    console.log('[RHETOR] Loading model assignments for:', ciName);
+    
+    // Get the model selects for the selected CI row
+    const codeSelect = document.getElementById('selected-ci-code');
+    const planningSelect = document.getElementById('selected-ci-planning');
+    const reasoningSelect = document.getElementById('selected-ci-reasoning');
+    const chatSelect = document.getElementById('selected-ci-chat');
+    
+    // First populate the selects with available models if not already done
+    if (codeSelect && codeSelect.options.length === 0) {
+        await rhetor_populateModelSelects([codeSelect, planningSelect, reasoningSelect, chatSelect]);
+    }
+    
+    // Load the CI's current model assignments
+    try {
+        const response = await fetch(window.TektonConfig.getRhetorUrl(`/api/model-config/${ciName}`));
+        if (response.ok) {
+            const config = await response.json();
+            
+            // Set the values based on the CI's configuration
+            if (codeSelect) codeSelect.value = config.code_model || 'default';
+            if (planningSelect) planningSelect.value = config.planning_model || 'default';
+            if (reasoningSelect) reasoningSelect.value = config.reasoning_model || 'default';
+            if (chatSelect) chatSelect.value = config.chat_model || 'default';
+            
+            console.log('[RHETOR] Loaded model config for', ciName, config);
+        } else {
+            // Use defaults if no config found
+            console.log('[RHETOR] No custom config for', ciName, ', using defaults');
+            if (codeSelect) codeSelect.value = 'default';
+            if (planningSelect) planningSelect.value = 'default';
+            if (reasoningSelect) reasoningSelect.value = 'default';
+            if (chatSelect) chatSelect.value = 'default';
+        }
+    } catch (error) {
+        console.error('[RHETOR] Error loading CI model config:', error);
+    }
+    
+    // Update the data-component attribute so saves work correctly
+    [codeSelect, planningSelect, reasoningSelect, chatSelect].forEach(select => {
+        if (select) {
+            select.setAttribute('data-component', ciName);
+        }
+    });
+}
+
+// Helper to populate model selects
+window.rhetor_populateModelSelects = async function(selects) {
+    const models = await rhetor_loadAllModels();
+    
+    selects.forEach(select => {
+        if (!select) return;
+        
+        select.innerHTML = '<option value="default">Use Default</option>';
+        
+        // Group models by provider
+        const grouped = {};
+        models.forEach(model => {
+            const provider = model.provider || 'Other';
+            if (!grouped[provider]) grouped[provider] = [];
+            grouped[provider].push(model);
+        });
+        
+        // Add options grouped by provider
+        Object.keys(grouped).forEach(provider => {
+            const optgroup = document.createElement('optgroup');
+            optgroup.label = provider;
+            
+            grouped[provider].forEach(model => {
+                const option = document.createElement('option');
+                option.value = model.id;
+                option.textContent = model.name;
+                optgroup.appendChild(option);
+            });
+            
+            select.appendChild(optgroup);
+        });
+    });
 }
 
 // Try loading models when script loads

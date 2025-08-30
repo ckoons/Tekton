@@ -5,10 +5,15 @@
 
 class RegistryIntegration {
     constructor() {
-        // Use environment-aware port (8102 for Coder-A)
-        this.baseUrl = window.location.port === '8088' 
-            ? 'http://localhost:8102/api/ergon/registry'
-            : `http://localhost:${window.location.port}/api/ergon/registry`;
+        // Use Tekton config if available, otherwise fallback
+        if (window.TektonConfig) {
+            this.baseUrl = window.TektonConfig.getErgonUrl('/api/ergon/registry');
+        } else {
+            // Fallback for when config not loaded
+            this.baseUrl = window.location.port === '8088' 
+                ? 'http://localhost:8102/api/ergon/registry'
+                : `http://localhost:${window.location.port}/api/ergon/registry`;
+        }
         
         this.solutions = [];
         this.filteredSolutions = [];
