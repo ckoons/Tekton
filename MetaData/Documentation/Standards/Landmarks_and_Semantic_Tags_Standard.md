@@ -108,6 +108,69 @@ class IntrospectionCache:
 
 ### Advanced Landmark Patterns (New)
 
+#### Apollo Memory Landmarks (Added 2025-08-29)
+
+##### @memory_landmark
+**Purpose**: Mark significant memories as navigable landmarks
+```python
+@memory_landmark(
+    title="Redux State Decision",
+    type="decision",
+    description="Chose Redux for predictable state management",
+    summary="Redux over MobX for state",
+    ci_source="ergon-ci",
+    tags=["redux", "architecture", "state"],
+    priority=8,
+    impacts=["frontend", "performance", "debugging"],
+    namespace="apollo"
+)
+def store_redux_decision():
+    pass
+```
+
+##### @decision_landmark
+**Purpose**: Mark important decisions that affect project direction
+```python
+@decision_landmark(
+    title="Migration to TypeScript",
+    summary="Migrating codebase to TypeScript",
+    rationale="Type safety and better IDE support",
+    decided_by="team_consensus",
+    impacts=["all_components", "build_process"],
+    alternatives_considered=["Flow", "JSDoc", "PropTypes"],
+    namespace="apollo"
+)
+```
+
+##### @insight_landmark
+**Purpose**: Mark discovered insights and learnings
+```python
+@insight_landmark(
+    title="Render Performance Bottleneck",
+    summary="Unnecessary re-renders causing delays",
+    discovery="Profiling showed 200ms delays",
+    resolution="Applied React.memo and useMemo",
+    impact="10x performance improvement",
+    namespace="apollo"
+)
+```
+
+##### @error_landmark
+**Purpose**: Mark significant errors and their resolutions
+```python
+@error_landmark(
+    title="Import Order Bug",
+    summary="Shared imports before path setup",
+    symptoms=["ModuleNotFoundError", "CI launch failures"],
+    root_cause="sys.path not configured before imports",
+    resolution="Reordered imports in launcher",
+    prevented_by="Import order validation",
+    namespace="apollo"
+)
+```
+
+### Advanced Landmark Patterns (New)
+
 #### 7. @ci_orchestrated
 **Purpose**: Mark components designed for CI orchestration
 ```python

@@ -43,6 +43,8 @@ if tekton_root not in sys.path:
 
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from datetime import datetime
 import uvicorn
@@ -51,6 +53,7 @@ import uvicorn
 from ..core.apollo_component import ApolloComponent
 from ..api.routes import api_router, ws_router, metrics_router
 from ..api.endpoints.mcp import mcp_router
+from ..api.preparation_routes import preparation_router
 
 # Use shared logging setup
 from shared.utils.logging_setup import setup_component_logging
@@ -159,6 +162,13 @@ app.include_router(api_router, prefix="/api", tags=["api"])
 app.include_router(ws_router, prefix="/ws", tags=["websocket"])
 app.include_router(metrics_router, prefix="/metrics", tags=["metrics"])
 app.include_router(mcp_router, prefix="/mcp", tags=["mcp"])
+app.include_router(preparation_router, tags=["preparation"])  # Already has /api/preparation prefix
+
+# Mount static files for UI
+ui_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "ui")
+if os.path.exists(ui_path):
+    app.mount("/ui", StaticFiles(directory=ui_path), name="ui")
+    logger.info(f"Mounted UI static files from {ui_path}")
 
 # Application startup time
 START_TIME = time.time()
@@ -170,8 +180,12 @@ hermes_registration: Optional[HermesRegistration] = None
 
 @app.get("/")
 async def root():
-    """Root endpoint"""
-    return {"message": "Apollo API", "version": VERSION}
+    """Root endpoint - serve UI"""
+    ui_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "ui", "apollo-component.html")
+    if os.path.exists(ui_file):
+        return FileResponse(ui_file)
+    else:
+        return {"message": "Apollo API", "version": VERSION}
 
 @app.get("/health", response_model=HealthResponse)
 @api_contract(

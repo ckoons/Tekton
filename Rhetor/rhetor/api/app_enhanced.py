@@ -57,6 +57,10 @@ if create_workflow_endpoint:
     workflow_router = create_workflow_endpoint("rhetor")
     app.include_router(workflow_router)
 
+# Memory endpoints removed - now handled by Apollo
+# Apollo owns all memory/preparation functionality via MCP
+logger.info("Memory endpoints moved to Apollo - use Apollo MCP for Context Briefs")
+
 # Provider configurations
 PROVIDERS = {
     "ollama": {
@@ -603,11 +607,32 @@ async def complete(request: CompletionRequest):
     else:
         provider_id, model_id = select_provider_for_task(request.task_type, request.component_name)
     
+    # Get Context Brief from Apollo if component specified
+    context_brief = None
+    if request.component_name:
+        try:
+            from rhetor.core.apollo_client import get_apollo_client
+            apollo = get_apollo_client()
+            context_brief = await apollo.get_context_brief(
+                ci_name=request.component_name,
+                message=request.message,
+                max_tokens=500  # Keep brief to leave room for response
+            )
+            if context_brief:
+                logger.info(f"Retrieved Context Brief from Apollo for {request.component_name}")
+        except Exception as e:
+            logger.warning(f"Could not get Context Brief from Apollo: {e}")
+    
     # Inject context if component specified
     system_prompt = request.system_prompt
     if request.component_name and request.component_name in component_contexts:
         context = component_contexts[request.component_name]
         context_prompt = generate_context_prompt(request.component_name, context)
+        
+        # Add Context Brief if available
+        if context_brief and context_brief.get("brief"):
+            context_prompt = f"{context_prompt}\n\n## Relevant Context from Apollo:\n{context_brief['brief']}"
+        
         system_prompt = f"{context_prompt}\n\n{system_prompt}" if system_prompt else context_prompt
     
     try:

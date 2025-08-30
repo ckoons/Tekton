@@ -40,16 +40,16 @@
     <div class="apollo__tabs">
       <div class="apollo__tab apollo__tab--active" data-tab="dashboard" 
            onclick="apollo_switchTab('dashboard'); return false;">Dashboard</div>
-      <div class="apollo__tab" data-tab="sessions" 
-           onclick="apollo_switchTab('sessions'); return false;">Sessions</div>
-      <div class="apollo__tab" data-tab="tokens" 
-           onclick="apollo_switchTab('tokens'); return false;">Token Budgets</div>
-      <div class="apollo__tab" data-tab="protocols" 
-           onclick="apollo_switchTab('protocols'); return false;">Protocols</div>
-      <div class="apollo__tab" data-tab="forecasting" 
-           onclick="apollo_switchTab('forecasting'); return false;">Forecasting</div>
+      <div class="apollo__tab" data-tab="preparation" 
+           onclick="apollo_switchTab('preparation'); return false;">Preparation</div>
+      <div class="apollo__tab" data-tab="confidence" 
+           onclick="apollo_switchTab('confidence'); return false;">Confidence</div>
       <div class="apollo__tab" data-tab="actions" 
            onclick="apollo_switchTab('actions'); return false;">Actions</div>
+      <div class="apollo__tab" data-tab="protocols" 
+           onclick="apollo_switchTab('protocols'); return false;">Protocols</div>
+      <div class="apollo__tab" data-tab="tokens" 
+           onclick="apollo_switchTab('tokens'); return false;">Tokens</div>
     </div>
 
     <div class="apollo__content">
@@ -122,6 +122,152 @@
               </ul>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Preparation Panel - Memory Catalog and Context Briefs -->
+      <div id="preparation-panel" class="apollo__panel" style="display: none;">
+        <div class="apollo__preparation-container">
+          <div class="apollo__preparation-header">
+            <h2>Context Brief Preparation</h2>
+            <div class="apollo__preparation-stats">
+              <span class="apollo__stat-badge">
+                <span id="total-memories">0</span> Memories
+              </span>
+              <span class="apollo__stat-badge">
+                <span id="total-landmarks">0</span> Landmarks
+              </span>
+              <span class="apollo__stat-badge">
+                <span id="total-tokens">0</span> Tokens
+              </span>
+            </div>
+          </div>
+
+          <!-- Search and Filters -->
+          <div class="apollo__preparation-controls">
+            <div class="apollo__search-bar">
+              <input type="text" 
+                     id="memory-search" 
+                     class="apollo__search-input" 
+                     placeholder="Search memories..."
+                     onkeyup="apollo_searchMemories(event)">
+              <button class="apollo__btn apollo__btn-search" onclick="apollo_searchMemories()">
+                Search
+              </button>
+            </div>
+            
+            <div class="apollo__filter-row">
+              <select id="ci-filter" class="apollo__filter-select" onchange="apollo_filterMemories()">
+                <option value="">All CIs</option>
+                <option value="apollo-ci">Apollo</option>
+                <option value="athena-ci">Athena</option>
+                <option value="ergon-ci">Ergon</option>
+                <option value="hermes-ci">Hermes</option>
+                <option value="rhetor-ci">Rhetor</option>
+              </select>
+              
+              <select id="type-filter" class="apollo__filter-select" onchange="apollo_filterMemories()">
+                <option value="">All Types</option>
+                <option value="decision">Decisions</option>
+                <option value="insight">Insights</option>
+                <option value="error">Errors</option>
+                <option value="plan">Plans</option>
+                <option value="context">Context</option>
+              </select>
+              
+              <button class="apollo__btn apollo__btn-refresh" onclick="apollo_refreshMemories()">
+                Refresh
+              </button>
+              <button class="apollo__btn apollo__btn-analyze" onclick="apollo_analyzeRelationships()">
+                Analyze Relations
+              </button>
+            </div>
+          </div>
+
+          <!-- Memory Catalog Table -->
+          <div class="apollo__memory-catalog">
+            <table class="apollo__memory-table">
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>CI Source</th>
+                  <th>Type</th>
+                  <th>Summary</th>
+                  <th>Priority</th>
+                  <th>Tokens</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="memory-table-body">
+                <!-- Populated by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Landmark Visualization -->
+          <div class="apollo__landmark-section">
+            <h3>Knowledge Graph Landmarks</h3>
+            <div class="apollo__landmark-stats">
+              <div class="apollo__landmark-stat">
+                <span class="apollo__stat-label">Nodes:</span>
+                <span id="landmark-nodes">0</span>
+              </div>
+              <div class="apollo__landmark-stat">
+                <span class="apollo__stat-label">Relationships:</span>
+                <span id="landmark-relationships">0</span>
+              </div>
+              <div class="apollo__landmark-stat">
+                <span class="apollo__stat-label">Namespace:</span>
+                <span class="apollo__namespace-badge">apollo</span>
+              </div>
+            </div>
+            <div id="landmark-graph" class="apollo__landmark-graph">
+              <!-- Graph visualization placeholder -->
+              <div class="apollo__placeholder-graph">
+                <p>Landmark graph visualization</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Context Brief Preview -->
+          <div class="apollo__brief-section">
+            <h3>Context Brief Preview</h3>
+            <div class="apollo__brief-controls">
+              <select id="brief-ci-select" class="apollo__filter-select">
+                <option value="">Select CI...</option>
+                <option value="ergon-ci">Ergon</option>
+                <option value="apollo-ci">Apollo</option>
+                <option value="athena-ci">Athena</option>
+              </select>
+              <input type="text" 
+                     id="brief-context" 
+                     class="apollo__context-input"
+                     placeholder="Enter context for relevance...">
+              <button class="apollo__btn apollo__btn-generate" onclick="apollo_generateBrief()">
+                Generate Brief
+              </button>
+            </div>
+            <div class="apollo__brief-preview">
+              <div class="apollo__token-meter">
+                <span>Token Usage:</span>
+                <span id="brief-tokens">0 / 2000</span>
+                <div class="apollo__token-bar">
+                  <div id="brief-token-fill" class="apollo__token-fill" style="width: 0%"></div>
+                </div>
+              </div>
+              <pre id="brief-content" class="apollo__brief-content">
+Select a CI and enter context to generate a Context Brief...
+              </pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Confidence Panel -->
+      <div id="confidence-panel" class="apollo__panel" style="display: none;">
+        <div class="apollo__placeholder-content">
+          <h2>Decision Confidence</h2>
+          <p>Confidence metrics and decision analysis will be implemented in the next update.</p>
         </div>
       </div>
 
@@ -284,6 +430,218 @@
       }
     }
 
+    // MEMORY AND PREPARATION FUNCTIONS
+    // Functions for the Preparation tab functionality
+    
+    window.apollo_searchMemories = async function(event) {
+      if (event && event.type === 'keyup' && event.key !== 'Enter') {
+        return; // Only search on Enter key
+      }
+      
+      const searchInput = document.getElementById('memory-search');
+      const searchTerm = searchInput ? searchInput.value : '';
+      
+      console.log('[APOLLO] Searching memories:', searchTerm);
+      
+      try {
+        const response = await fetch('/apollo/api/preparation/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: searchTerm })
+        });
+        
+        if (response.ok) {
+          const memories = await response.json();
+          apollo_displayMemories(memories);
+        }
+      } catch (error) {
+        console.error('[APOLLO] Search error:', error);
+      }
+    };
+    
+    window.apollo_filterMemories = function() {
+      const ciFilter = document.getElementById('ci-filter').value;
+      const typeFilter = document.getElementById('type-filter').value;
+      
+      console.log('[APOLLO] Filtering memories:', { ci: ciFilter, type: typeFilter });
+      
+      // Apply filters to displayed memories
+      const rows = document.querySelectorAll('#memory-table-body tr');
+      rows.forEach(row => {
+        const ciSource = row.getAttribute('data-ci');
+        const memType = row.getAttribute('data-type');
+        
+        let show = true;
+        if (ciFilter && ciSource !== ciFilter) show = false;
+        if (typeFilter && memType !== typeFilter) show = false;
+        
+        row.style.display = show ? '' : 'none';
+      });
+    };
+    
+    window.apollo_refreshMemories = async function() {
+      console.log('[APOLLO] Refreshing memory catalog');
+      
+      try {
+        const response = await fetch('/apollo/api/preparation/memories');
+        if (response.ok) {
+          const data = await response.json();
+          apollo_displayMemories(data.memories);
+          
+          // Update stats
+          document.getElementById('total-memories').textContent = data.total || 0;
+          document.getElementById('total-tokens').textContent = data.total_tokens || 0;
+        }
+      } catch (error) {
+        console.error('[APOLLO] Refresh error:', error);
+      }
+    };
+    
+    window.apollo_analyzeRelationships = async function() {
+      console.log('[APOLLO] Analyzing memory relationships');
+      
+      try {
+        const response = await fetch('/apollo/api/preparation/analyze', {
+          method: 'POST'
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          console.log('[APOLLO] Relationships analyzed:', result);
+          
+          // Update landmark stats
+          if (result.landmarks) {
+            document.getElementById('landmark-nodes').textContent = result.landmarks.nodes || 0;
+            document.getElementById('landmark-relationships').textContent = result.landmarks.relationships || 0;
+          }
+          
+          // Could visualize the graph here
+          apollo_visualizeLandmarks(result.landmarks);
+        }
+      } catch (error) {
+        console.error('[APOLLO] Analysis error:', error);
+      }
+    };
+    
+    window.apollo_generateBrief = async function() {
+      const ciSelect = document.getElementById('brief-ci-select');
+      const contextInput = document.getElementById('brief-context');
+      
+      const ciName = ciSelect.value;
+      const context = contextInput.value;
+      
+      if (!ciName) {
+        alert('Please select a CI');
+        return;
+      }
+      
+      console.log('[APOLLO] Generating Context Brief for', ciName);
+      
+      try {
+        const response = await fetch('/apollo/api/preparation/brief', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ci_name: ciName,
+            message: context || 'General context',
+            max_tokens: 2000
+          })
+        });
+        
+        if (response.ok) {
+          const brief = await response.json();
+          apollo_displayBrief(brief);
+        }
+      } catch (error) {
+        console.error('[APOLLO] Brief generation error:', error);
+      }
+    };
+    
+    // DISPLAY HELPER FUNCTIONS
+    window.apollo_displayMemories = function(memories) {
+      const tbody = document.getElementById('memory-table-body');
+      if (!tbody) return;
+      
+      tbody.innerHTML = '';
+      
+      memories.forEach(memory => {
+        const row = document.createElement('tr');
+        row.setAttribute('data-ci', memory.ci_source);
+        row.setAttribute('data-type', memory.type);
+        
+        row.innerHTML = `
+          <td>${new Date(memory.timestamp).toLocaleString()}</td>
+          <td><span class="apollo__ci-badge">${memory.ci_source}</span></td>
+          <td><span class="apollo__type-badge apollo__type-${memory.type}">${memory.type}</span></td>
+          <td>${memory.summary}</td>
+          <td><span class="apollo__priority-badge">${memory.priority}</span></td>
+          <td>${memory.tokens}</td>
+          <td>
+            <button class="apollo__btn-small" onclick="apollo_viewMemory('${memory.id}')">View</button>
+          </td>
+        `;
+        
+        tbody.appendChild(row);
+      });
+      
+      // Update count
+      document.getElementById('total-memories').textContent = memories.length;
+    };
+    
+    window.apollo_displayBrief = function(brief) {
+      const contentElement = document.getElementById('brief-content');
+      const tokensElement = document.getElementById('brief-tokens');
+      const tokenFillElement = document.getElementById('brief-token-fill');
+      
+      if (contentElement) {
+        contentElement.textContent = brief.content || 'No content available';
+      }
+      
+      if (tokensElement && brief.tokens_used) {
+        const maxTokens = 2000;
+        tokensElement.textContent = `${brief.tokens_used} / ${maxTokens}`;
+        
+        if (tokenFillElement) {
+          const percentage = (brief.tokens_used / maxTokens) * 100;
+          tokenFillElement.style.width = `${Math.min(percentage, 100)}%`;
+        }
+      }
+    };
+    
+    window.apollo_visualizeLandmarks = function(landmarks) {
+      const graphElement = document.getElementById('landmark-graph');
+      if (!graphElement) return;
+      
+      // For now, just show a placeholder
+      // In production, this would use a graph visualization library
+      graphElement.innerHTML = `
+        <div class="apollo__graph-placeholder">
+          <p>Landmark Graph</p>
+          <p>${landmarks?.nodes || 0} nodes, ${landmarks?.relationships || 0} edges</p>
+        </div>
+      `;
+    };
+    
+    window.apollo_viewMemory = function(memoryId) {
+      console.log('[APOLLO] Viewing memory:', memoryId);
+      // Could open a modal or expand the row to show full content
+    };
+    
+    // INITIALIZATION
+    window.apolloComponent = window.apolloComponent || {};
+    window.apolloComponent.state = { activeTab: 'dashboard' };
+    
+    // Auto-refresh memories when Preparation tab is opened
+    const originalSwitchTab = window.apollo_switchTab;
+    window.apollo_switchTab = function(tabId) {
+      originalSwitchTab(tabId);
+      
+      if (tabId === 'preparation') {
+        // Load memories when tab is activated
+        apollo_refreshMemories();
+      }
+    };
+    
     // SETUP
     // Do immediate initialization on script load
     apollo_protectHtmlPanel();
