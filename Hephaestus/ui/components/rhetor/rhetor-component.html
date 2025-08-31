@@ -6282,6 +6282,8 @@ window.rhetor_loadCIPromptHistory = async function() {
     historySection.style.display = 'block';
     if (sendButton) sendButton.disabled = false;
     
+    console.log('[RHETOR] Loading prompts for CI:', ciName);
+    
     // Load prompt history from API or local storage
     try {
         const response = await fetch(window.TektonConfig.getRhetorUrl(`/api/prompts/history/${ciName}`));
