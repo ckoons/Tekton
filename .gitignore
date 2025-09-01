@@ -86,7 +86,6 @@ yarn-error.log*
 # Environment files
 .env.local
 *.local
-*.local.*
 
 # Tekton specific
 CLAUDE.md
