@@ -1,0 +1,87 @@
+#!/bin/bash
+# tekton-chorus - Manage Greek Chorus (Claude Code) sessions within Tekton
+# Integrates with the CI social architecture
+
+# Source Tekton environment if available
+if [ -f "$HOME/.tekton/env" ]; then
+    source "$HOME/.tekton/env"
+fi
+
+# Set TEKTON_ROOT if not already set
+if [ -z "$TEKTON_ROOT" ]; then
+    # Try to find the script's directory and go up one level
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    TEKTON_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+    export TEKTON_ROOT
+fi
+
+# Colors
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+# Main command
+COMMAND="${1:-help}"
+shift
+
+case "$COMMAND" in
+    reset)
+        # Reset the session for Greek Chorus
+        MODE="${1:-soft}"
+        
+        echo -e "${BLUE}🎭 Resetting Greek Chorus Session (${MODE} mode)${NC}"
+        
+        # Use the Python session manager
+        python "$TEKTON_ROOT/shared/ai/session_manager.py" --reset "$MODE"
+        
+        # Drop a landmark about the reset (only if in Terma terminal)
+        if command -v aish &> /dev/null && [ -n "$TERMA_ID" ]; then
+            aish terma send apollo "[chorus] Session reset - ready for continuation" 2>/dev/null
+            aish terma send rhetor "[chorus] Context cleared - --continue available" 2>/dev/null
+        fi
+        
+        echo -e "${GREEN}✓ Ready for --continue on next prompt${NC}"
+        ;;
+        
+    status|check)
+        # Check session status
+        python "$TEKTON_ROOT/shared/ai/session_manager.py" --check
+        ;;
+        
+    continue)
+        # Smart continue with auto-management
+        MESSAGE="$*"
+        if [ -z "$MESSAGE" ]; then
+            echo -e "${RED}Error: No message provided${NC}"
+            echo "Usage: tekton-chorus continue <message>"
+            exit 1
+        fi
+        
+        python "$TEKTON_ROOT/shared/ai/session_manager.py" --auto "$MESSAGE"
+        ;;
+        
+    help|*)
+        echo -e "${BLUE}🎭 Tekton Greek Chorus Manager${NC}"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+        echo "Commands:"
+        echo "  tekton-chorus reset [soft|hard]  - Reset session for continuation"
+        echo "  tekton-chorus status             - Check current session state"
+        echo "  tekton-chorus continue <msg>     - Smart continue management"
+        echo ""
+        echo "Usage patterns:"
+        echo "  1. When context gets too large:"
+        echo "     $ tekton-chorus reset soft"
+        echo "     $ claude --continue 'Your next prompt here'"
+        echo ""
+        echo "  2. Complete fresh start:"
+        echo "     $ tekton-chorus reset hard"
+        echo "     $ echo 'Start new conversation'"
+        echo ""
+        echo "  3. Auto-managed continuation:"
+        echo "     $ tekton-chorus continue 'Your message'"
+        echo "     (Automatically uses --continue if needed)"
+        ;;
+esac

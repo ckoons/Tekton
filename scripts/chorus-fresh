@@ -1,0 +1,63 @@
+#!/bin/bash
+# chorus-fresh - Start a fresh Claude session when context is too large
+# This is the real solution to "Prompt is too long" errors
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+echo -e "${BLUE}🎭 Greek Chorus Fresh Start${NC}"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# Get the message from arguments
+MESSAGE="$*"
+
+if [ -z "$MESSAGE" ]; then
+    echo -e "${YELLOW}Starting fresh Claude session...${NC}"
+    echo ""
+    echo "Usage: chorus-fresh <your message>"
+    echo ""
+    echo "This starts a NEW conversation, avoiding 'prompt too long' errors."
+    echo ""
+    echo "Alternative approaches:"
+    echo "  1. Use 'claude' (without --continue) for a fresh start"
+    echo "  2. Use 'echo \"your message\"' to send directly"
+    echo "  3. Use 'claude --model sonnet' to specify a model"
+    exit 0
+fi
+
+# Check current session size
+if command -v python3 &> /dev/null; then
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    TEKTON_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+    
+    echo -e "${YELLOW}Current session status:${NC}"
+    python3 "$TEKTON_ROOT/shared/ai/session_manager.py" --check | grep -E "(Context size|Status)"
+    echo ""
+fi
+
+echo -e "${GREEN}✨ Starting fresh conversation...${NC}"
+echo -e "${BLUE}Message:${NC} $MESSAGE"
+echo ""
+
+# Start a fresh Claude session (without --continue)
+# This avoids the "Prompt too long" error by starting new
+claude "$MESSAGE"
+
+# Option 3: Archive old conversation for reference
+if [ -d ~/.claude/projects ]; then
+    PROJECT_DIR=$(pwd | sed 's/\//-/g')
+    CLAUDE_PROJECT_DIR="$HOME/.claude/projects/$PROJECT_DIR"
+    
+    if [ -d "$CLAUDE_PROJECT_DIR" ]; then
+        # Count conversation files
+        FILE_COUNT=$(ls -1 "$CLAUDE_PROJECT_DIR"/*.jsonl 2>/dev/null | wc -l)
+        if [ "$FILE_COUNT" -gt 10 ]; then
+            echo -e "${YELLOW}Note: You have $FILE_COUNT conversation files.${NC}"
+            echo "Consider cleaning old ones with: chorus-clean"
+        fi
+    fi
+fi

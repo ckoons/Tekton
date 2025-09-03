@@ -1,0 +1,94 @@
+#!/bin/bash
+# chorus-clean - Clean up old Claude conversation files
+# Helps manage disk space by removing archived conversations
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+echo -e "${BLUE}🧹 Greek Chorus Cleanup${NC}"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# Find Claude project directory for current path
+PROJECT_DIR=$(pwd | sed 's/\//-/g')
+CLAUDE_PROJECT_DIR="$HOME/.claude/projects/$PROJECT_DIR"
+
+if [ ! -d "$CLAUDE_PROJECT_DIR" ]; then
+    echo -e "${YELLOW}No Claude conversation files found for this project.${NC}"
+    exit 0
+fi
+
+# Check for archived conversations
+ARCHIVED_DIR="$CLAUDE_PROJECT_DIR/archived"
+if [ -d "$ARCHIVED_DIR" ]; then
+    ARCHIVED_COUNT=$(ls -1 "$ARCHIVED_DIR"/*.jsonl 2>/dev/null | wc -l)
+    if [ "$ARCHIVED_COUNT" -gt 0 ]; then
+        TOTAL_SIZE=$(du -sh "$ARCHIVED_DIR" | cut -f1)
+        echo -e "${YELLOW}Found $ARCHIVED_COUNT archived conversations (Total: $TOTAL_SIZE)${NC}"
+        echo ""
+        
+        # List archived files with sizes
+        echo "Archived conversations:"
+        ls -lh "$ARCHIVED_DIR"/*.jsonl 2>/dev/null | awk '{print "  •", $9, "(" $5 ")"}'
+        echo ""
+        
+        read -p "Remove all archived conversations? (y/N) " -n 1 -r
+        echo ""
+        
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            rm -f "$ARCHIVED_DIR"/*.jsonl
+            echo -e "${GREEN}✅ Cleaned up $ARCHIVED_COUNT archived conversations${NC}"
+        else
+            echo -e "${BLUE}Skipped cleanup${NC}"
+        fi
+    else
+        echo -e "${GREEN}No archived conversations to clean${NC}"
+    fi
+else
+    echo -e "${GREEN}No archived directory found${NC}"
+fi
+
+# Check for old conversation files (older than 30 days)
+echo ""
+echo -e "${YELLOW}Checking for old conversation files...${NC}"
+
+OLD_FILES=$(find "$CLAUDE_PROJECT_DIR" -maxdepth 1 -name "*.jsonl" -type f -mtime +30 2>/dev/null)
+if [ ! -z "$OLD_FILES" ]; then
+    OLD_COUNT=$(echo "$OLD_FILES" | wc -l)
+    echo -e "${YELLOW}Found $OLD_COUNT conversation files older than 30 days${NC}"
+    
+    read -p "Archive old conversation files? (y/N) " -n 1 -r
+    echo ""
+    
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        mkdir -p "$ARCHIVED_DIR"
+        for file in $OLD_FILES; do
+            mv "$file" "$ARCHIVED_DIR/"
+        done
+        echo -e "${GREEN}✅ Archived $OLD_COUNT old conversation files${NC}"
+    fi
+else
+    echo -e "${GREEN}No old conversation files found${NC}"
+fi
+
+echo ""
+echo -e "${BLUE}Summary:${NC}"
+echo "  • Project directory: $CLAUDE_PROJECT_DIR"
+
+# Current conversations
+CURRENT_COUNT=$(ls -1 "$CLAUDE_PROJECT_DIR"/*.jsonl 2>/dev/null | wc -l)
+if [ "$CURRENT_COUNT" -gt 0 ]; then
+    CURRENT_SIZE=$(du -sh "$CLAUDE_PROJECT_DIR"/*.jsonl 2>/dev/null | awk '{total+=$1} END {print total}')
+    echo "  • Active conversations: $CURRENT_COUNT"
+fi
+
+# Show recommendation
+if [ "$CURRENT_COUNT" -gt 10 ]; then
+    echo ""
+    echo -e "${YELLOW}💡 Tip: You have many active conversations.${NC}"
+    echo "     Consider using 'chorus-fresh' to start new sessions"
+    echo "     instead of accumulating large context files."
+fi
