@@ -448,6 +448,7 @@ static void set_environment(env_list_t *env) {
 static void parse_arguments(int argc, char *argv[], char **path_or_name, char **coder_letter, char **subcommand, char ***sub_args, int *debug) {
     int i;
     int subcommand_index = -1;
+    int path_index = -1;
     
     /* Initialize outputs */
     *path_or_name = NULL;
@@ -464,9 +465,15 @@ static void parse_arguments(int argc, char *argv[], char **path_or_name, char **
             if (is_subcommand(argv[i])) {
                 subcommand_index = i;
                 *subcommand = argv[i];
+                /* Check if next arg is path/name */
+                if (i + 1 < argc && argv[i + 1][0] != '-' && !is_subcommand(argv[i + 1])) {
+                    path_index = i + 1;
+                    *path_or_name = argv[i + 1];
+                }
                 break;
             } else {
-                /* It might be a path/name - save it and look for command after */
+                /* It's a path/name before the command */
+                path_index = i;
                 *path_or_name = argv[i];
                 /* Check if next arg is a subcommand */
                 if (i + 1 < argc && is_subcommand(argv[i + 1])) {
@@ -502,11 +509,15 @@ static void parse_arguments(int argc, char *argv[], char **path_or_name, char **
     }
     
     /* Collect subcommand arguments if we found a subcommand */
-    if (subcommand_index > 0 && subcommand_index + 1 < argc) {
-        /* Create sub_args array with everything after the subcommand */
+    if (subcommand_index > 0) {
+        /* Create sub_args array with everything after the subcommand, excluding path_or_name */
         static char *sub_args_array[MAX_ARGS];
         int j = 0;
         for (i = subcommand_index + 1; i < argc; i++) {
+            /* Skip the path/name argument if it's at this position */
+            if (path_index == i) {
+                continue;
+            }
             sub_args_array[j++] = argv[i];
         }
         sub_args_array[j] = NULL;
