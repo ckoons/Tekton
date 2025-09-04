@@ -42,7 +42,6 @@ static void parse_arguments(int argc, char *argv[], char **path_or_name, char **
 static void execute_python_script(const char *script_name, char **args);
 static void execute_till(char **args);
 static env_list_t* create_env_list(void);
-static void free_env_list(env_list_t *env);
 static void add_env_var(env_list_t *env, const char *key, const char *value);
 static void write_javascript_env(const char *tekton_root, env_list_t *env);
 
@@ -165,7 +164,6 @@ int main(int argc, char *argv[]) {
 }
 
 static char* find_tekton_root(const char *path_or_name) {
-    char test_path[MAX_PATH];
     char resolved[MAX_PATH];
     
     /* Priority 1: Explicit path argument */
@@ -552,13 +550,6 @@ static void execute_python_script(const char *script_name, char **args) {
     exit(1);
 }
 
-static void free_env_list(env_list_t *env) {
-    for (int i = 0; i < env->count; i++) {
-        free(env->vars[i]);
-    }
-    free(env->vars);
-    free(env);
-}
 
 static char* get_env_value(env_list_t *env, const char *key) {
     for (int i = 0; i < env->count; i++) {
