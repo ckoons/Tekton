@@ -62,6 +62,9 @@ Hephaestus/ui/scripts/env.js
 logs/
 *.log.*
 
+# till
+.till
+
 # Database
 *.db
 *.sqlite

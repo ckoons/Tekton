@@ -15,10 +15,12 @@
 #include <errno.h>
 #include <libgen.h>
 #include <time.h>
+#include <ctype.h>
 
 #define MAX_PATH 4096
 #define MAX_LINE 8192
 #define MAX_ARGS 1024
+#define TILL_REGISTRY_FILE ".till/tekton/till-private.json"
 
 /* Structure to hold environment variables */
 typedef struct {
@@ -28,12 +30,17 @@ typedef struct {
 } env_list_t;
 
 /* Function prototypes */
-static char* find_tekton_root(void);
+static char* find_tekton_root(const char *path_or_name);
+static char* lookup_in_till_registry(const char *name);
+static char* find_default_tekton(void);
+static int is_tekton_directory(const char *path);
+static int is_subcommand(const char *arg);
 static void load_env_file(const char *filepath, env_list_t *env);
 static void set_environment(env_list_t *env);
 static char* get_env_value(env_list_t *env, const char *key);
-static void parse_arguments(int argc, char *argv[], char **coder_letter, char **subcommand, char ***sub_args, int *debug);
+static void parse_arguments(int argc, char *argv[], char **path_or_name, char **coder_letter, char **subcommand, char ***sub_args, int *debug);
 static void execute_python_script(const char *script_name, char **args);
+static void execute_till(char **args);
 static env_list_t* create_env_list(void);
 static void free_env_list(env_list_t *env);
 static void add_env_var(env_list_t *env, const char *key, const char *value);
@@ -41,6 +48,7 @@ static void write_javascript_env(const char *tekton_root, env_list_t *env);
 
 int main(int argc, char *argv[]) {
     char *tekton_root;
+    char *path_or_name = NULL;
     char *coder_letter = NULL;
     char *subcommand = NULL;
     char **sub_args = NULL;
@@ -48,32 +56,34 @@ int main(int argc, char *argv[]) {
     env_list_t *env;
     char path[MAX_PATH];
     
-    /* Find TEKTON_ROOT */
-    tekton_root = find_tekton_root();
-    if (!tekton_root) {
-        fprintf(stderr, "Error: TEKTON_ROOT environment variable not set\n");
-        return 1;
+    /* Parse arguments to find path/name and global options */
+    parse_arguments(argc, argv, &path_or_name, &coder_letter, &subcommand, &sub_args, &debug);
+    
+    /* Handle 'tekton till' pass-through first */
+    if (subcommand && strcmp(subcommand, "till") == 0) {
+        execute_till(sub_args);
+        return 1; /* Should not reach here */
     }
     
-    /* Parse arguments to find global options */
-    parse_arguments(argc, argv, &coder_letter, &subcommand, &sub_args, &debug);
-    
-    /* If --coder specified, verify and switch TEKTON_ROOT */
+    /* Find TEKTON_ROOT using new resolution logic */
+    /* Priority: coder_letter > path_or_name > current_dir > default */
     if (coder_letter) {
-        char coder_dir[MAX_PATH];
-        char *parent = dirname(strdup(tekton_root));
-        snprintf(coder_dir, sizeof(coder_dir), "%s/Coder-%c", parent, coder_letter[0]);
-        
-        /* Verify .env.local exists */
-        snprintf(path, sizeof(path), "%s/.env.local", coder_dir);
-        struct stat st;
-        if (stat(path, &st) != 0) {
-            fprintf(stderr, "Error: Coder-%c environment not found at %s\n", coder_letter[0], path);
+        /* Legacy -c flag support */
+        char coder_name[32];
+        snprintf(coder_name, sizeof(coder_name), "coder-%c", tolower(coder_letter[0]));
+        tekton_root = lookup_in_till_registry(coder_name);
+        if (!tekton_root) {
+            fprintf(stderr, "Error: Coder-%c not found in registry\n", coder_letter[0]);
             return 1;
         }
-        
-        /* Update TEKTON_ROOT */
-        tekton_root = strdup(coder_dir);
+    } else {
+        tekton_root = find_tekton_root(path_or_name);
+    }
+    
+    if (!tekton_root) {
+        fprintf(stderr, "Error: Could not determine Tekton directory\n");
+        fprintf(stderr, "Try 'tekton status' in a Tekton directory or specify a path\n");
+        return 1;
     }
     
     /* Create environment list starting with current environment */
@@ -110,9 +120,13 @@ int main(int argc, char *argv[]) {
     /* Handle help - show help if no subcommand or help requested */
     if (!subcommand || strcmp(subcommand, "help") == 0 || 
         strcmp(subcommand, "--help") == 0 || strcmp(subcommand, "-h") == 0) {
-        printf("Usage: tekton [options] [command] [args...]\n\n");
+        printf("Usage: tekton [path-or-name] [command] [args...]\n");
+        printf("       tekton [command] [path-or-name] [args...]\n\n");
+        printf("Path/Name resolution:\n");
+        printf("  path-or-name          Path to Tekton dir or registry name\n");
+        printf("                        If omitted, uses current dir or default\n\n");
         printf("Global options:\n");
-        printf("  -c, --coder <letter>  Use Coder-<letter> environment\n");
+        printf("  -c, --coder <letter>  Use Coder-<letter> environment (legacy)\n");
         printf("  -d, --debug           Enable debug logging\n");
         printf("  -h, --help            Show this help message\n\n");
         printf("Commands:\n");
@@ -120,7 +134,14 @@ int main(int argc, char *argv[]) {
         printf("  start, launch         Start components\n");
         printf("  stop, kill            Stop components\n");
         printf("  revert                Revert changes\n");
-        printf("  help                  Show this help message\n");
+        printf("  till [args...]        Pass through to till command\n");
+        printf("  help                  Show this help message\n\n");
+        printf("Examples:\n");
+        printf("  tekton start                    # Start Tekton in current dir\n");
+        printf("  tekton start coder-b            # Start Coder-B from registry\n");
+        printf("  tekton start /path/to/tekton   # Start specific path\n");
+        printf("  tekton -c d status              # Status of Coder-D (legacy)\n");
+        printf("  tekton till install tekton -i  # Run till interactively\n");
         return 0;
     }
     
@@ -143,12 +164,181 @@ int main(int argc, char *argv[]) {
     return 1;
 }
 
-static char* find_tekton_root(void) {
-    char *env_root = getenv("TEKTON_ROOT");
-    if (env_root) {
-        return env_root;
+static char* find_tekton_root(const char *path_or_name) {
+    char test_path[MAX_PATH];
+    char resolved[MAX_PATH];
+    
+    /* Priority 1: Explicit path argument */
+    if (path_or_name && (strchr(path_or_name, '/') || path_or_name[0] == '.')) {
+        /* It's a path - verify it's a Tekton directory */
+        if (is_tekton_directory(path_or_name)) {
+            if (realpath(path_or_name, resolved)) {
+                return strdup(resolved);
+            }
+        }
+        return NULL;
     }
+    
+    /* Priority 2: Registry name lookup */
+    if (path_or_name) {
+        char *registry_path = lookup_in_till_registry(path_or_name);
+        if (registry_path) {
+            return registry_path;
+        }
+    }
+    
+    /* Priority 3: Current directory */
+    if (is_tekton_directory(".")) {
+        if (getcwd(resolved, sizeof(resolved))) {
+            return strdup(resolved);
+        }
+    }
+    
+    /* Priority 4: Default Tekton */
+    return find_default_tekton();
+}
+
+static int is_tekton_directory(const char *path) {
+    char test_path[MAX_PATH];
+    struct stat st;
+    
+    snprintf(test_path, sizeof(test_path), "%s/.env.tekton", path);
+    if (stat(test_path, &st) == 0) {
+        return 1;
+    }
+    return 0;
+}
+
+static int is_subcommand(const char *arg) {
+    const char *commands[] = {
+        "status", "start", "launch", "stop", "kill", 
+        "revert", "till", "help", "--help", "-h",
+        NULL
+    };
+    
+    for (int i = 0; commands[i]; i++) {
+        if (strcmp(arg, commands[i]) == 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+static char* find_default_tekton(void) {
+    char resolved[MAX_PATH];
+    
+    /* Try environment variable first for backwards compatibility */
+    char *env_root = getenv("TEKTON_ROOT");
+    if (env_root && is_tekton_directory(env_root)) {
+        return strdup(env_root);
+    }
+    
+    /* Look for primary.tekton.development.us in registry */
+    char *primary = lookup_in_till_registry("primary");
+    if (primary) {
+        return primary;
+    }
+    
+    /* Try ../Tekton relative to current directory */
+    if (is_tekton_directory("../Tekton")) {
+        if (realpath("../Tekton", resolved)) {
+            return strdup(resolved);
+        }
+    }
+    
     return NULL;
+}
+
+static char* lookup_in_till_registry(const char *name) {
+    char till_path[MAX_PATH];
+    char *home = getenv("HOME");
+    FILE *fp;
+    char line[MAX_LINE];
+    char *result = NULL;
+    int in_installations = 0;
+    char current_key[256] = "";
+    char lowercase_name[256];
+    
+    if (!home) return NULL;
+    
+    /* Convert name to lowercase for matching */
+    int i;
+    for (i = 0; name[i] && i < 255; i++) {
+        lowercase_name[i] = tolower(name[i]);
+    }
+    lowercase_name[i] = '\0';
+    
+    /* Try .till symlink first */
+    if (readlink(".till", till_path, sizeof(till_path)) > 0) {
+        till_path[sizeof(till_path)-1] = '\0';
+        strncat(till_path, "/tekton/till-private.json", 
+                sizeof(till_path) - strlen(till_path) - 1);
+    } else {
+        /* Use default location */
+        snprintf(till_path, sizeof(till_path), 
+                 "%s/.till/tekton/till-private.json", home);
+    }
+    
+    fp = fopen(till_path, "r");
+    if (!fp) return NULL;
+    
+    /* Simple JSON parsing - look for installations section */
+    while (fgets(line, sizeof(line), fp)) {
+        char *p = line;
+        while (*p == ' ' || *p == '\t') p++;
+        
+        /* Check if we're in installations section */
+        if (strstr(p, "\"installations\"")) {
+            in_installations = 1;
+            continue;
+        }
+        
+        if (in_installations) {
+            /* Look for registry names as keys */
+            char *quote1 = strchr(p, '"');
+            if (quote1) {
+                char *quote2 = strchr(quote1 + 1, '"');
+                if (quote2) {
+                    *quote2 = '\0';
+                    strcpy(current_key, quote1 + 1);
+                    
+                    /* Convert key to lowercase for comparison */
+                    char lowercase_key[256];
+                    for (i = 0; current_key[i] && i < 255; i++) {
+                        lowercase_key[i] = tolower(current_key[i]);
+                    }
+                    lowercase_key[i] = '\0';
+                    
+                    /* Check for match - partial or full */
+                    if (strstr(lowercase_key, lowercase_name) == lowercase_key) {
+                        /* Found a match - now get the root path */
+                        while (fgets(line, sizeof(line), fp)) {
+                            if (strstr(line, "\"root\"")) {
+                                char *root_quote1 = strrchr(line, ':');
+                                if (root_quote1) {
+                                    root_quote1 = strchr(root_quote1, '"');
+                                    if (root_quote1) {
+                                        char *root_quote2 = strchr(root_quote1 + 1, '"');
+                                        if (root_quote2) {
+                                            *root_quote2 = '\0';
+                                            result = strdup(root_quote1 + 1);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            /* Stop if we hit the next installation */
+                            if (strchr(line, '}')) break;
+                        }
+                        if (result) break;
+                    }
+                }
+            }
+        }
+    }
+    
+    fclose(fp);
+    return result;
 }
 
 static env_list_t* create_env_list(void) {
@@ -255,21 +445,36 @@ static void set_environment(env_list_t *env) {
     }
 }
 
-static void parse_arguments(int argc, char *argv[], char **coder_letter, char **subcommand, char ***sub_args, int *debug) {
+static void parse_arguments(int argc, char *argv[], char **path_or_name, char **coder_letter, char **subcommand, char ***sub_args, int *debug) {
     int i;
     int subcommand_index = -1;
     
-    /* First, find the subcommand (first non-option argument) */
+    /* Initialize outputs */
+    *path_or_name = NULL;
+    
+    /* First pass: look for non-option arguments */
     for (i = 1; i < argc; i++) {
         if (argv[i][0] != '-') {
             /* Check if this is a value for a previous option */
             if (i > 1 && (strcmp(argv[i-1], "--coder") == 0 || strcmp(argv[i-1], "-c") == 0)) {
                 continue;  /* This is a value for --coder/-c */
             }
-            /* This is the subcommand */
-            subcommand_index = i;
-            *subcommand = argv[i];
-            break;
+            
+            /* Check if it's a known subcommand */
+            if (is_subcommand(argv[i])) {
+                subcommand_index = i;
+                *subcommand = argv[i];
+                break;
+            } else {
+                /* It might be a path/name - save it and look for command after */
+                *path_or_name = argv[i];
+                /* Check if next arg is a subcommand */
+                if (i + 1 < argc && is_subcommand(argv[i + 1])) {
+                    subcommand_index = i + 1;
+                    *subcommand = argv[i + 1];
+                }
+                break;
+            }
         }
     }
     
@@ -468,4 +673,43 @@ static void write_javascript_env(const char *tekton_root, env_list_t *env) {
     if (getenv("DEBUG")) {
         fprintf(stderr, "Wrote JavaScript environment file: %s\n", filepath);
     }
+}
+
+static void execute_till(char **args) {
+    char till_path[MAX_PATH];
+    char *home = getenv("HOME");
+    
+    if (!home) {
+        fprintf(stderr, "Error: HOME environment variable not set\n");
+        exit(1);
+    }
+    
+    /* Build path to till executable */
+    snprintf(till_path, sizeof(till_path), "%s/projects/github/till/till", home);
+    
+    /* Check if till exists */
+    struct stat st;
+    if (stat(till_path, &st) != 0 || !S_ISREG(st.st_mode)) {
+        fprintf(stderr, "Error: till not found at %s\n", till_path);
+        exit(1);
+    }
+    
+    /* Build argument array for execv */
+    char *exec_args[MAX_ARGS];
+    exec_args[0] = till_path;
+    
+    int i = 1;
+    if (args) {
+        while (*args && i < MAX_ARGS - 1) {
+            exec_args[i++] = *args++;
+        }
+    }
+    exec_args[i] = NULL;
+    
+    /* Execute till */
+    execv(till_path, exec_args);
+    
+    /* If we get here, exec failed */
+    perror("execv");
+    exit(1);
 }
