@@ -745,7 +745,8 @@ You are part of the Tekton CI ecosystem, working collaboratively with other spec
         
         # Also register with the template registry
         # Only if it's not already there and useful as a template
-        if (not any(t.name == prompt_id for t in self.template_registry.templates.values()) and 
+        # Note: templates.values() contains dicts, not objects, so use t.get('name')
+        if (not any(t.get('name') == prompt_id for t in self.template_registry.templates.values()) and 
             '{' in content and '}' in content):
             self.template_registry.register({
                 "name": prompt_id,

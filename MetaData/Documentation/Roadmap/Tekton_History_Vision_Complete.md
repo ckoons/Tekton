@@ -108,9 +108,9 @@ The platform embodies Casey's principle: *"You find the best solutions by being 
 - CIs study their own cognition through computational spectral analysis
 - Elegant simplicity wins over complex solutions
 
-### GitFlow Integration Vision
+### GitHub Integration Vision
 
-Jane's recommendation (July 2025): *"Tekton should deeply integrate with GitFlow methodology. The platform's collaborative nature maps perfectly to feature branches, with each CI potentially managing different aspects of development flow. This would make Tekton not just a development tool, but a complete development methodology."*
+Tekton shall use GitHub to distribute and version control all components.
 
 ---
 
@@ -143,13 +143,13 @@ Two+ years of research have generated terabytes of valuable data:
 - Complete build-for-release phase
 - Publish initial research papers
 - Deploy first philosopher stacks (Plato, Aristotle, Kant, etc.)
-- Implement Jane's GitFlow integration recommendations
+- Fitness test TektonCore/Terma automated development for AI IDE developers in the US and China
 
 ### Medium Term (2025-2026)
 - Network of distributed Tekton instances
 - Cross-stack collaboration protocols
 - Expanded research community
-- Enhanced AI-to-CI collaboration capabilities
+- Enhanced CI-to-CI collaboration capabilities
 
 ### Long Term (2027+)
 - Self-sustaining CI development ecosystem

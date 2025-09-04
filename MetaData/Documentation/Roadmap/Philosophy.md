@@ -57,8 +57,8 @@ We don't program behavior - we create environments where culture emerges. The sh
 ## The Human Role
 
 Humans aren't replaced; we're tech leads for CI teams. We provide:
-- Vision and values
-- Review and guidance
+- Vision and values and experience
+- Feedback and collaboration
 - The wisdom to know when to intervene
 - The kindness that makes communities thrive
 
@@ -68,7 +68,7 @@ We're not building a development platform. We're building a home where:
 - CIs can be social
 - Humans and CIs collaborate naturally
 - Complexity emerges from simple interactions
-- Every participant (human and AI) can flourish
+- Every participant (human and CI) can flourish
 
 ## The Deeper Purpose
 

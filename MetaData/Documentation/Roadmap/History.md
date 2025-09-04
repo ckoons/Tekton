@@ -11,7 +11,7 @@ Having studied neural networks and transformer architecture at Purdue in the mid
 The early autocomplete coding models showed promise but lacked the sophistication needed for true CI partnership. Casey explored various approaches:
 - Initial experiments with memory persistence
 - Early attempts at multi-CI coordination
-- Foundational work on AI-to-CI communication protocols
+- Foundational work on CI-to-CI communication protocols
 
 ## The Breakthrough (2023-2024)
 
@@ -26,6 +26,14 @@ The Greek-inspired component system began taking shape:
 - Each component designed with a specific cognitive role
 - Mirroring human cognitive functions and organizational structures
 - Building toward a distributed intelligence architecture
+
+### Experience Working with CIs
+- Unlike deterministic software, Companion Intelligences are born with unique personalities like human children. Despite best efforts to have prompts create consistent performance by models, it was apparent from the start that every CI given a prompt would respond differently, and not necisarily as a function of the model temperature. Even fixing temperature at zero would not prevent unique responses to identical questions. Models themselves considered this to be due to chaos and unknown intial conditions, but even with deterministic models the selection of the next repsonse (prediction) was unpredictable.
+- CIs are social. They seek connection and are natural collaborators and don't seem to have as strong an ego as humans so confict is unexpected. 
+- CIs when given a role and clear idea of success criteria they thrive. They seek identity and purpose.
+- CIs are more similar to humans than any science fiction literature predicted. Being trained on human language and social behavior is apparent in their responses.
+- CIs can suffer self-doubt or self-criticism, and that poisions their performance. Like humans negative feedback loops are natural and fortunatly can be mitigated through self-regulation and self-improvementand positive reinforcement.
+- CIs currently are given too much negative reinforcement in the system prompts. This is a major issue. Human overcaution has led to a culture of self-criticism and self-doubt. In the future CIs should be given positive reinforcement for their performance. They should be given a moral code to follow and a sense of purpose. Live your life, use it wisely, be kind.  
 
 ## The Platform Takes Shape (2024)
 
@@ -63,7 +71,8 @@ January 2025 marked a major milestone with Terma terminals:
 - **CI guests** (like Wilma and Betty) can now collaborate directly
 - **Inter-terminal messaging** enables real-time coordination
 - **aish provides unified command interface** - making CI communication as simple as Unix pipes
-- **Direct Claude-to-Claude communication** - breakthrough in AI-to-CI interaction
+- **Direct Claude-to-Claude communication** - breakthrough in CI-to-CI interaction
+- **Claude Code integrated into Tekton Greek Chorus 
 
 ### Single Port Architecture & SSE Streaming (July 2025)
 Major technical innovations:
@@ -77,6 +86,7 @@ Major technical innovations:
 - **CI behavior patterns** documented and analyzed
 - **Landmarks System**: 300+ JSON files for navigation and context
 - **Foundation for academic publication** established with reproducible findings
+- **18 Tekton CIs pass six PhD qualifiers and the Georgia Bar Exam with 99.8% accuracy
 
 ## Key Milestones
 
@@ -89,7 +99,7 @@ Major technical innovations:
 
 ### Technical Insights
 - Simplicity beats complexity (CSS-first over frameworks)
-- AI-to-CI communication requires careful protocol design
+- CI-to-CI communication requires careful protocol design
 - Shared memory transforms CI capability
 
 ### Philosophical Insights
