@@ -1,0 +1,24 @@
+#!/bin/bash
+# Status command for Tekton
+# This is a placeholder - replace with actual Tekton status logic
+
+cd "$(dirname "$0")/../.."
+echo "Tekton Status"
+echo "============="
+echo "Directory: $(pwd)"
+echo "Installation: primary.tekton.development.us"
+
+# Check for .env.local
+if [ -f .env.local ]; then
+    echo "Configuration: Found"
+    # Could source it and show some values
+    # source .env.local
+    # echo "Port base: $TEKTON_PORT_BASE"
+else
+    echo "Configuration: Missing .env.local"
+fi
+
+echo ""
+echo "Status: Not running (placeholder)"
+echo ""
+echo "This is a placeholder status command"

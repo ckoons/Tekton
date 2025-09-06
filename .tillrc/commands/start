@@ -1,0 +1,17 @@
+#!/bin/bash
+# Start Tekton command
+# This is a placeholder - replace with actual Tekton start logic
+
+cd "$(dirname "$0")/../.."
+echo "Starting Tekton from: $(pwd)"
+
+# Check for arguments (specific installation)
+if [ $# -gt 0 ]; then
+    echo "Starting installation: $1"
+    # ./scripts/tekton start "$@"
+else
+    echo "Starting primary Tekton..."
+    # ./scripts/tekton start
+fi
+
+echo "Tekton start command executed (placeholder)"

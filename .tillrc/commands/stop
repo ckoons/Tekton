@@ -1,0 +1,15 @@
+#!/bin/bash
+# Stop Tekton command
+# This is a placeholder - replace with actual Tekton stop logic
+
+cd "$(dirname "$0")/../.."
+echo "Stopping Tekton from: $(pwd)"
+
+# Check for arguments
+if [ "$1" == "--force" ]; then
+    echo "Force stopping all Tekton processes..."
+else
+    echo "Gracefully stopping Tekton..."
+fi
+
+echo "Tekton stop command executed (placeholder)"
