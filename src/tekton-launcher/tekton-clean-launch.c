@@ -266,6 +266,10 @@ static char* lookup_in_till_registry(const char *name) {
     }
     lowercase_name[i] = '\0';
     
+    if (getenv("TEKTON_DEBUG")) {
+        fprintf(stderr, "DEBUG: Looking for '%s' in registry\n", lowercase_name);
+    }
+    
     /* Try .till symlink first */
     if (readlink(".till", till_path, sizeof(till_path)) > 0) {
         till_path[sizeof(till_path)-1] = '\0';
@@ -278,9 +282,19 @@ static char* lookup_in_till_registry(const char *name) {
     }
     
     fp = fopen(till_path, "r");
-    if (!fp) return NULL;
+    if (!fp) {
+        if (getenv("TEKTON_DEBUG")) {
+            fprintf(stderr, "DEBUG: Could not open %s\n", till_path);
+        }
+        return NULL;
+    }
+    
+    if (getenv("TEKTON_DEBUG")) {
+        fprintf(stderr, "DEBUG: Opened registry file %s\n", till_path);
+    }
     
     /* Simple JSON parsing - look for installations section */
+    int brace_depth = 0;
     while (fgets(line, sizeof(line), fp)) {
         char *p = line;
         while (*p == ' ' || *p == '\t') p++;
@@ -288,47 +302,90 @@ static char* lookup_in_till_registry(const char *name) {
         /* Check if we're in installations section */
         if (strstr(p, "\"installations\"")) {
             in_installations = 1;
+            brace_depth = 0;
             continue;
         }
         
         if (in_installations) {
-            /* Look for registry names as keys */
-            char *quote1 = strchr(p, '"');
-            if (quote1) {
-                char *quote2 = strchr(quote1 + 1, '"');
-                if (quote2) {
-                    *quote2 = '\0';
-                    strcpy(current_key, quote1 + 1);
-                    
-                    /* Convert key to lowercase for comparison */
-                    char lowercase_key[256];
-                    for (i = 0; current_key[i] && i < 255; i++) {
-                        lowercase_key[i] = tolower(current_key[i]);
+            /* Track brace depth to only check top-level keys */
+            char *scan = p;
+            while (*scan) {
+                if (*scan == '{') brace_depth++;
+                else if (*scan == '}') {
+                    brace_depth--;
+                    if (brace_depth < 0) {
+                        /* End of installations section */
+                        in_installations = 0;
+                        break;
                     }
-                    lowercase_key[i] = '\0';
-                    
-                    /* Check for match - partial or full */
-                    if (strstr(lowercase_key, lowercase_name) == lowercase_key) {
-                        /* Found a match - now get the root path */
-                        while (fgets(line, sizeof(line), fp)) {
-                            if (strstr(line, "\"root\"")) {
-                                char *root_quote1 = strrchr(line, ':');
-                                if (root_quote1) {
-                                    root_quote1 = strchr(root_quote1, '"');
-                                    if (root_quote1) {
-                                        char *root_quote2 = strchr(root_quote1 + 1, '"');
-                                        if (root_quote2) {
-                                            *root_quote2 = '\0';
-                                            result = strdup(root_quote1 + 1);
-                                            break;
+                }
+                scan++;
+            }
+            
+            /* Only look for installation names at depth 1 (direct children of "installations") */
+            if (brace_depth == 1) {
+                /* Look for registry names as keys */
+                char *quote1 = strchr(p, '"');
+                if (quote1) {
+                    char *quote2 = strchr(quote1 + 1, '"');
+                    if (quote2) {
+                        /* Check if this line has a colon and opening brace (installation entry) */
+                        char *colon = strchr(quote2, ':');
+                        if (colon && strchr(colon, '{')) {
+                            *quote2 = '\0';
+                            strcpy(current_key, quote1 + 1);
+                            
+                            /* Convert key to lowercase for comparison */
+                            char lowercase_key[256];
+                            for (i = 0; current_key[i] && i < 255; i++) {
+                                lowercase_key[i] = tolower(current_key[i]);
+                            }
+                            lowercase_key[i] = '\0';
+                            
+                            /* Debug: print what we're comparing */
+                            if (getenv("TEKTON_DEBUG")) {
+                                fprintf(stderr, "DEBUG: Comparing installation '%s' with '%s'\n", lowercase_key, lowercase_name);
+                            }
+                            
+                            /* Check for match - exact, prefix, or contains (fuzzy) */
+                            int is_match = 0;
+                            
+                            /* First try exact match */
+                            if (strcmp(lowercase_key, lowercase_name) == 0) {
+                                is_match = 1;
+                            }
+                            /* Then try prefix match (e.g., "coder-d" matches "coder-d.tekton.development.us") */
+                            else if (strncmp(lowercase_key, lowercase_name, strlen(lowercase_name)) == 0) {
+                                is_match = 1;
+                            }
+                            /* Finally try contains match (fuzzy) */
+                            else if (strstr(lowercase_key, lowercase_name) != NULL) {
+                                is_match = 1;
+                            }
+                            
+                            if (is_match) {
+                                /* Found a match - now get the root path */
+                                while (fgets(line, sizeof(line), fp)) {
+                                    if (strstr(line, "\"root\"")) {
+                                        char *root_quote1 = strrchr(line, ':');
+                                        if (root_quote1) {
+                                            root_quote1 = strchr(root_quote1, '"');
+                                            if (root_quote1) {
+                                                char *root_quote2 = strchr(root_quote1 + 1, '"');
+                                                if (root_quote2) {
+                                                    *root_quote2 = '\0';
+                                                    result = strdup(root_quote1 + 1);
+                                                    break;
+                                                }
+                                            }
                                         }
                                     }
+                                    /* Stop if we hit the next installation */
+                                    if (strchr(line, '}')) break;
                                 }
+                                if (result) break;
                             }
-                            /* Stop if we hit the next installation */
-                            if (strchr(line, '}')) break;
                         }
-                        if (result) break;
                     }
                 }
             }
