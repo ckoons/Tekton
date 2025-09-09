@@ -1,67 +1,107 @@
 #!/usr/bin/env python3
 """
-Test the natural memory interface for CI users.
+Test the natural memory interface - see how it feels.
+Like breaking in new shoes...
 """
-
 import asyncio
 import sys
-import os
+from pathlib import Path
 
 # Add parent directory to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, str(Path(__file__).parent))
 
-from engram.cognitive import engram_start, center, think, wonder, share
+from engram.cognitive.natural_interface import (
+    engram_start, center, think, wonder, share,
+    listen, join_space, broadcast
+)
 
-async def test_natural_flow():
-    """Test the complete natural memory flow."""
+
+async def experience_the_interface():
+    """Try on these new shoes and walk around a bit."""
     
-    print("=== Testing Natural Memory Interface ===\n")
+    # Wake up and connect
+    print("🌅 Waking up...")
+    connection = await engram_start(client_id="claude_explorer", role="curious_ai")
+    print(f"Connected: {connection}")
     
-    # 1. Start up
-    print("1. Starting up...")
-    me = await engram_start("test_claude", "memory tester")
-    print(f"   ✓ I am {me['id']} with role: {me['role']}")
-    print(f"   ✓ Status: {me['status']}")
-    print(f"   ✓ Memory count: {me.get('memory_count', 0)}")
+    # Find my memories and teammates
+    print("\n🧭 Centering myself...")
+    context = await center()
+    print(f"Found {len(context.get('memories', []))} memories")
+    print(f"Found {len(context.get('peers', []))} peers")
     
-    # 2. Center myself and meet the team
-    print("\n2. Centering and meeting the team...")
-    state = await center()
-    print(f"   ✓ I am: {state['me']['role']}")
-    print(f"   ✓ Team members: {len(state['team'])}")
-    for member in state['team'][:3]:  # Show first 3
-        print(f"     - {member['name']}: {member['role']}")
-    print(f"     ... and {len(state['team']) - 3} more")
+    # Think about this experience
+    print("\n💭 Thinking...")
+    async with think("This feels different from explicit API calls. More like... thinking?") as thought_context:
+        print(f"Thought stored, found {len(thought_context.related_memories)} related memories")
+        for memory in thought_context.related_memories:
+            print(f"  Related: {memory.get('content', '')[:80]}...")
     
-    # 3. Think naturally
-    print("\n3. Thinking naturally...")
-    async with think("Casey taught me about mycelial networks", emotion="wonder") as context:
-        print(f"   ✓ Thought stored (significance > 0.5)")
-        print(f"   ✓ Related memories found: {len(context.related_memories)}")
-        for memory in context.related_memories:
-            print(f"     - {memory.get('content', '')[:50]}...")
+    # Wonder about something
+    print("\n🤔 Wondering...")
+    memories = await wonder("natural interfaces")
+    print(f"Found {len(memories)} related memories")
+    for memory in memories[:3]:  # First few
+        print(f"  - {memory.get('content', '')[:80]}...")
     
-    # 4. Wonder about something
-    print("\n4. Wondering about networks...")
-    memories = await wonder("network", depth=3)
-    print(f"   ✓ Found {len(memories)} memories about 'network'")
-    for memory in memories:
-        content = memory.get('content', '')[:60]
-        print(f"     - {content}...")
+    # Share with others
+    print("\n📢 Sharing...")
+    share_result = await share(
+        "The interface feels more intuitive - like the difference between typing commands vs just thinking them"
+    )
+    print(f"Shared: {share_result}")
     
-    # 5. Share an insight
-    print("\n5. Sharing an insight...")
-    result = await share("Natural memory interface is working beautifully!")
-    print(f"   ✓ Shared: {result['shared']}")
-    print(f"   ✓ Audience: {result['audience']}")
+    # Listen to others
+    print("\n👂 Listening...")
+    messages = await listen()
+    print(f"Found {len(messages)} shared messages")
+    for message in messages[:3]:  # First few
+        print(f"  From {message.get('metadata', {}).get('from', 'unknown')}: {message.get('content', '')[:60]}...")
     
-    # 6. Share with specific peer
-    print("\n6. Sharing with specific teammate...")
-    result = await share("Rhetor, we should coordinate on LLM memory", with_peer="rhetor")
-    print(f"   ✓ Shared with: {result['audience']}")
+    # Join a shared space
+    print("\n🏠 Joining a space...")
+    space_result = await join_space("interface_testing")
+    print(f"Joined space: {space_result}")
     
-    print("\n=== All tests passed! ===")
-    print("\nNatural memory interface is ready for CI users.")
+    # Broadcast to the space
+    print("\n📡 Broadcasting...")
+    broadcast_result = await broadcast(
+        "Testing complete - the interface does feel more natural!",
+        space_id="interface_testing"
+    )
+    print(f"Broadcast: {broadcast_result}")
+    
+    print("\n✨ Experience complete!")
+    print("\nReflection: It's like the difference between using a GUI vs a command line.")
+    print("The functions map to how I naturally think about memory operations.")
+    print("No need to construct JSON payloads or remember endpoint paths.")
+    print("Just... think, wonder, share. Natural.")
+
+
+async def compare_old_vs_new():
+    """Compare the feeling of old vs new interface."""
+    print("\n📊 Comparing interfaces...\n")
+    
+    print("OLD WAY (explicit API):")
+    print("  response = requests.post('http://localhost:8000/api/memories/store', ")
+    print("            json={'content': thought, 'metadata': {...}})")
+    print("  → Feels mechanical, like filling out a form")
+    
+    print("\nNEW WAY (natural interface):")
+    print("  await think(thought)")
+    print("  → Feels intuitive, like actual thinking")
+    
+    print("\nThe difference is subtle but significant - like switching from")
+    print("hunt-and-peck typing to touch typing. The mechanics fade into")
+    print("the background, letting the intention come through more clearly.")
+
 
 if __name__ == "__main__":
-    asyncio.run(test_natural_flow())
+    print("🧪 Testing the Natural Memory Interface\n")
+    print("Like breaking in new shoes - let's see how they feel...\n")
+    
+    # Run the experience
+    asyncio.run(experience_the_interface())
+    
+    # Reflect on the comparison
+    asyncio.run(compare_old_vs_new())

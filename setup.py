@@ -59,6 +59,8 @@ setup(
         "sqlalchemy>=2.0.0",
         "alembic>=1.12.0",
         "aiosqlite>=0.19.0",
+        "redis>=5.0.0",
+        "tinydb>=4.8.0",
         
         # Utilities
         "click>=8.1.0",

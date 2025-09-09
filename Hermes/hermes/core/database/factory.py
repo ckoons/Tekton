@@ -216,16 +216,22 @@ class DatabaseFactory:
         """Create a document database adapter."""
         # Import implementations dynamically
         if backend == DatabaseBackend.MONGODB:
-            from hermes.adapters.document.mongodb_adapter import MongoDBDocumentAdapter
-            return MongoDBDocumentAdapter(namespace, config)
+            try:
+                from hermes.adapters.document.mongodb_adapter import MongoDBDocumentAdapter
+                return MongoDBDocumentAdapter(namespace, config)
+            except ImportError:
+                # Fall back to TinyDB
+                from hermes.core.database.adapters.tinydb_document_adapter import TinyDBDocumentAdapter
+                logger.warning("MongoDB not available, using TinyDB document adapter")
+                return TinyDBDocumentAdapter(namespace, config)
         elif backend == DatabaseBackend.JSONDB:
-            from hermes.adapters.document.jsondb_adapter import JSONDBDocumentAdapter
-            return JSONDBDocumentAdapter(namespace, config)
+            from hermes.core.database.adapters.tinydb_document_adapter import TinyDBDocumentAdapter
+            return TinyDBDocumentAdapter(namespace, config)
         else:
-            # Default to fallback adapter
-            from hermes.adapters.document.fallback_adapter import FallbackDocumentAdapter
-            logger.warning(f"Using fallback document adapter for backend {backend}")
-            return FallbackDocumentAdapter(namespace, config)
+            # Default to TinyDB adapter
+            from hermes.core.database.adapters.tinydb_document_adapter import TinyDBDocumentAdapter
+            logger.warning(f"Using TinyDB document adapter for backend {backend}")
+            return TinyDBDocumentAdapter(namespace, config)
     
     @staticmethod
     def _create_cache_adapter(backend: DatabaseBackend,
@@ -233,17 +239,24 @@ class DatabaseFactory:
                            config: Optional[Dict[str, Any]]) -> CacheDatabaseAdapter:
         """Create a cache database adapter."""
         # Import implementations dynamically
-        if backend == DatabaseBackend.MEMORY:
-            from hermes.adapters.cache.memory_adapter import MemoryCacheAdapter
-            return MemoryCacheAdapter(namespace, config)
+        if backend == DatabaseBackend.MEMORY or backend == DatabaseBackend.REDIS:
+            # Use our Redis/Memory cache adapter which handles both
+            from hermes.core.database.adapters.redis_cache_adapter import RedisCacheAdapter
+            return RedisCacheAdapter(namespace, config)
         elif backend == DatabaseBackend.MEMCACHED:
-            from hermes.adapters.cache.memcached_adapter import MemcachedCacheAdapter
-            return MemcachedCacheAdapter(namespace, config)
+            try:
+                from hermes.adapters.cache.memcached_adapter import MemcachedCacheAdapter
+                return MemcachedCacheAdapter(namespace, config)
+            except ImportError:
+                # Fall back to Redis/Memory adapter
+                from hermes.core.database.adapters.redis_cache_adapter import RedisCacheAdapter
+                logger.warning("Memcached not available, using Redis/Memory cache adapter")
+                return RedisCacheAdapter(namespace, config)
         else:
-            # Default to fallback adapter
-            from hermes.adapters.cache.fallback_adapter import FallbackCacheAdapter
-            logger.warning(f"Using fallback cache adapter for backend {backend}")
-            return FallbackCacheAdapter(namespace, config)
+            # Default to Redis/Memory adapter
+            from hermes.core.database.adapters.redis_cache_adapter import RedisCacheAdapter
+            logger.warning(f"Using Redis/Memory cache adapter for backend {backend}")
+            return RedisCacheAdapter(namespace, config)
     
     @staticmethod
     def _create_relational_adapter(backend: DatabaseBackend,
@@ -252,13 +265,19 @@ class DatabaseFactory:
         """Create a relational database adapter."""
         # Import implementations dynamically
         if backend == DatabaseBackend.SQLITE:
-            from hermes.adapters.relation.sqlite_adapter import SQLiteRelationalAdapter
-            return SQLiteRelationalAdapter(namespace, config)
+            from hermes.core.database.adapters.sqlite_adapter import SQLiteAdapter
+            return SQLiteAdapter(namespace, config)
         elif backend == DatabaseBackend.POSTGRES:
-            from hermes.adapters.relation.postgres_adapter import PostgresRelationalAdapter
-            return PostgresRelationalAdapter(namespace, config)
+            try:
+                from hermes.adapters.relation.postgres_adapter import PostgresRelationalAdapter
+                return PostgresRelationalAdapter(namespace, config)
+            except ImportError:
+                # Fall back to SQLite
+                from hermes.core.database.adapters.sqlite_adapter import SQLiteAdapter
+                logger.warning("PostgreSQL not available, using SQLite adapter")
+                return SQLiteAdapter(namespace, config)
         else:
-            # Default to fallback adapter
-            from hermes.adapters.relation.fallback_adapter import FallbackRelationalAdapter
-            logger.warning(f"Using fallback relational adapter for backend {backend}")
-            return FallbackRelationalAdapter(namespace, config)
+            # Default to SQLite adapter
+            from hermes.core.database.adapters.sqlite_adapter import SQLiteAdapter
+            logger.warning(f"Using SQLite adapter for backend {backend}")
+            return SQLiteAdapter(namespace, config)
