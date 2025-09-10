@@ -928,6 +928,14 @@ mount_standard_routers(app, routers)
 workflow_router = create_workflow_endpoint("engram")
 app.include_router(workflow_router)
 
+# Include ESR endpoints
+try:
+    from engram.api.controllers.esr import router as esr_router
+    app.include_router(esr_router)
+    logger.info("ESR API endpoints registered")
+except ImportError as e:
+    logger.warning(f"ESR API endpoints not available: {e}")
+
 # Note: Engram uses shared MCP bridge for standard operation
 # The fastmcp_server.py provides standalone MCP mode when run with --standalone flag
 
