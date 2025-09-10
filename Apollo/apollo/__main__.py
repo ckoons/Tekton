@@ -2,10 +2,14 @@
 import os
 import sys
 
-# Add Tekton root to path if not already present
-tekton_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-if tekton_root not in sys.path:
-    sys.path.insert(0, tekton_root)
+# Use the starting directory (where the command was run from) as Tekton root
+tekton_root = os.path.abspath(os.getcwd())
+
+# Force THIS Tekton's modules to be found first (before any site-packages entries)
+sys.path.insert(0, os.path.join(tekton_root, 'Hermes'))
+sys.path.insert(0, os.path.join(tekton_root, 'Engram'))
+sys.path.insert(0, os.path.join(tekton_root, 'Apollo'))
+sys.path.insert(0, tekton_root)
 
 # Initialize Tekton environment before other imports
 try:

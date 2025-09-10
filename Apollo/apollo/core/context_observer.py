@@ -78,7 +78,8 @@ class ContextObserver:
         rhetor_interface: Optional[RhetorInterface] = None,
         history_limit: int = 100,
         polling_interval: float = 5.0,
-        data_dir: Optional[str] = None
+        data_dir: Optional[str] = None,
+        esr_system=None  # Optional ESR system for future integration
     ):
         """
         Initialize the Context Observer.
@@ -88,10 +89,12 @@ class ContextObserver:
             history_limit: Maximum number of historical records to keep per context
             polling_interval: Interval in seconds for polling metrics
             data_dir: Directory for storing context data
+            esr_system: Optional ESR system for enhanced storage capabilities
         """
         self.rhetor_interface = rhetor_interface or RhetorInterface()
         self.history_limit = history_limit
         self.polling_interval = polling_interval
+        self.esr_system = esr_system  # Store for potential future use
         
         # Set up data directory
         if data_dir:

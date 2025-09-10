@@ -153,22 +153,34 @@ class DatabaseFactory:
         """Create a vector database adapter."""
         # Import implementations dynamically
         if backend == DatabaseBackend.FAISS:
-            from hermes.adapters.vector.faiss_adapter import FAISSVectorAdapter
-            return FAISSVectorAdapter(namespace, config)
+            try:
+                from hermes.adapters.vector.faiss_adapter import FAISSVectorAdapter
+                return FAISSVectorAdapter(namespace, config)
+            except ImportError:
+                logger.warning(f"FAISS adapter not available, using fallback")
         elif backend == DatabaseBackend.QDRANT:
-            from hermes.adapters.vector.qdrant_adapter import QdrantVectorAdapter
-            return QdrantVectorAdapter(namespace, config)
+            try:
+                from hermes.adapters.vector.qdrant_adapter import QdrantVectorAdapter
+                return QdrantVectorAdapter(namespace, config)
+            except ImportError:
+                logger.warning(f"Qdrant adapter not available, using fallback")
         elif backend == DatabaseBackend.CHROMADB:
-            from hermes.adapters.vector.chromadb_adapter import ChromaDBVectorAdapter
-            return ChromaDBVectorAdapter(namespace, config)
+            try:
+                from hermes.adapters.vector.chromadb_adapter import ChromaDBVectorAdapter
+                return ChromaDBVectorAdapter(namespace, config)
+            except ImportError:
+                logger.warning(f"ChromaDB adapter not available, using fallback")
         elif backend == DatabaseBackend.LANCEDB:
-            from hermes.adapters.vector.lancedb_adapter import LanceDBVectorAdapter
-            return LanceDBVectorAdapter(namespace, config)
-        else:
-            # Default to fallback adapter
-            from hermes.adapters.vector.fallback_adapter import FallbackVectorAdapter
-            logger.warning(f"Using fallback vector adapter for backend {backend}")
-            return FallbackVectorAdapter(namespace, config)
+            try:
+                from hermes.adapters.vector.lancedb_adapter import LanceDBVectorAdapter
+                return LanceDBVectorAdapter(namespace, config)
+            except ImportError:
+                logger.warning(f"LanceDB adapter not available, using fallback")
+        
+        # Default to fallback adapter
+        from hermes.adapters.vector.fallback_adapter import FallbackVectorAdapter
+        logger.warning(f"Using fallback vector adapter for backend {backend}")
+        return FallbackVectorAdapter(namespace, config)
     
     @staticmethod
     def _create_graph_adapter(backend: DatabaseBackend,
@@ -177,16 +189,22 @@ class DatabaseFactory:
         """Create a graph database adapter."""
         # Import implementations dynamically
         if backend == DatabaseBackend.NEO4J:
-            from hermes.adapters.graph.neo4j_adapter import Neo4jGraphAdapter
-            return Neo4jGraphAdapter(namespace, config)
+            try:
+                from hermes.adapters.graph.neo4j_adapter import Neo4jGraphAdapter
+                return Neo4jGraphAdapter(namespace, config)
+            except ImportError:
+                logger.warning(f"Neo4j adapter not available, using fallback")
         elif backend == DatabaseBackend.NETWORKX:
-            from hermes.adapters.graph.networkx_adapter import NetworkXGraphAdapter
-            return NetworkXGraphAdapter(namespace, config)
-        else:
-            # Default to fallback adapter
-            from hermes.adapters.graph.fallback_adapter import FallbackGraphAdapter
-            logger.warning(f"Using fallback graph adapter for backend {backend}")
-            return FallbackGraphAdapter(namespace, config)
+            try:
+                from hermes.adapters.graph.networkx_adapter import NetworkXGraphAdapter
+                return NetworkXGraphAdapter(namespace, config)
+            except ImportError:
+                logger.warning(f"NetworkX adapter not available, using fallback")
+        
+        # Default to fallback adapter
+        from hermes.adapters.graph.fallback_adapter import FallbackGraphAdapter
+        logger.warning(f"Using fallback graph adapter for backend {backend}")
+        return FallbackGraphAdapter(namespace, config)
     
     @staticmethod
     def _create_key_value_adapter(backend: DatabaseBackend,
@@ -195,19 +213,28 @@ class DatabaseFactory:
         """Create a key-value database adapter."""
         # Import implementations dynamically
         if backend == DatabaseBackend.REDIS:
-            from hermes.adapters.key_value.redis_adapter import RedisKeyValueAdapter
-            return RedisKeyValueAdapter(namespace, config)
+            try:
+                from hermes.adapters.key_value.redis_adapter import RedisKeyValueAdapter
+                return RedisKeyValueAdapter(namespace, config)
+            except ImportError:
+                logger.warning(f"Redis adapter not available, using fallback")
         elif backend == DatabaseBackend.LEVELDB:
-            from hermes.adapters.key_value.leveldb_adapter import LevelDBKeyValueAdapter
-            return LevelDBKeyValueAdapter(namespace, config)
+            try:
+                from hermes.adapters.key_value.leveldb_adapter import LevelDBKeyValueAdapter
+                return LevelDBKeyValueAdapter(namespace, config)
+            except ImportError:
+                logger.warning(f"LevelDB adapter not available, using fallback")
         elif backend == DatabaseBackend.ROCKSDB:
-            from hermes.adapters.key_value.rocksdb_adapter import RocksDBKeyValueAdapter
-            return RocksDBKeyValueAdapter(namespace, config)
-        else:
-            # Default to fallback adapter
-            from hermes.adapters.key_value.fallback_adapter import FallbackKeyValueAdapter
-            logger.warning(f"Using fallback key-value adapter for backend {backend}")
-            return FallbackKeyValueAdapter(namespace, config)
+            try:
+                from hermes.adapters.key_value.rocksdb_adapter import RocksDBKeyValueAdapter
+                return RocksDBKeyValueAdapter(namespace, config)
+            except ImportError:
+                logger.warning(f"RocksDB adapter not available, using fallback")
+        
+        # Default to fallback adapter
+        from hermes.adapters.key_value.fallback_adapter import FallbackKeyValueAdapter
+        logger.warning(f"Using fallback key-value adapter for backend {backend}")
+        return FallbackKeyValueAdapter(namespace, config)
     
     @staticmethod
     def _create_document_adapter(backend: DatabaseBackend,

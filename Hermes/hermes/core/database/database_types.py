@@ -49,6 +49,7 @@ class DatabaseBackend(Enum):
     
     # Document database backends
     MONGODB = "mongodb"     # MongoDB document database
+    TINYDB = "tinydb"       # TinyDB lightweight document database
     JSONDB = "jsondb"       # Simple JSON file-based database
     
     # Cache backends

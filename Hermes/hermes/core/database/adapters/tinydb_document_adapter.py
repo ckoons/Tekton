@@ -24,6 +24,7 @@ except ImportError:
     # Fallback to simple JSON file storage
     
 from hermes.core.database.adapters.document import DocumentDatabaseAdapter
+from hermes.core.database.database_types import DatabaseBackend
 
 logger = logging.getLogger("hermes.database.document")
 
@@ -130,6 +131,20 @@ class TinyDBDocumentAdapter(DocumentDatabaseAdapter):
         }
         
         logger.info(f"Document adapter initialized for namespace '{namespace}' at {self.db_path}")
+    
+    @property
+    def backend(self) -> DatabaseBackend:
+        """Get the database backend."""
+        return DatabaseBackend.TINYDB if TINYDB_AVAILABLE else DatabaseBackend.JSONDB
+    
+    async def is_connected(self) -> bool:
+        """
+        Check if connected to database.
+        
+        Returns:
+            True if connected
+        """
+        return self.db is not None
     
     async def connect(self) -> bool:
         """

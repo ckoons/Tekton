@@ -31,6 +31,15 @@ from apollo.core.token_budget import TokenBudgetManager
 # Configure logging first
 logger = logging.getLogger(__name__)
 
+# Import ESR system
+try:
+    from engram.core.storage.unified_interface import ESRMemorySystem
+    from engram.core.storage.cognitive_workflows import CognitiveWorkflows
+    esr_available = True
+except ImportError as e:
+    esr_available = False
+    logger.warning(f"ESR system not available: {e}. Using legacy storage.")
+
 # Import FastMCP integration
 try:
     # Import FastMCP functionality
@@ -80,7 +89,9 @@ class ApolloManager:
         enable_actions: bool = True,
         enable_message_handler: bool = True,
         enable_protocol_enforcer: bool = True,
-        enable_token_budget: bool = True
+        enable_token_budget: bool = True,
+        enable_esr: bool = True,
+        esr_config: Optional[Dict[str, Any]] = None
     ):
         """
         Initialize the Apollo Manager.
@@ -93,6 +104,8 @@ class ApolloManager:
             enable_message_handler: Whether to enable the message handler
             enable_protocol_enforcer: Whether to enable the protocol enforcer
             enable_token_budget: Whether to enable the token budget
+            enable_esr: Whether to enable ESR memory system
+            esr_config: Configuration for ESR system
         """
         # Set up data directory
         # Set up data directory
@@ -119,10 +132,46 @@ class ApolloManager:
         # Create rhetor interface if not provided
         self.rhetor_interface = rhetor_interface or RhetorInterface()
         
+        # Initialize ESR system if enabled and available
+        self.esr_system = None
+        self.cognitive_workflows = None
+        if enable_esr and esr_available:
+            try:
+                # Configure ESR with Apollo-specific settings
+                esr_conf = esr_config or {
+                    'cache_size': 50000,
+                    'enable_backends': ['vector', 'document', 'kv', 'sql'],
+                    'namespace': 'apollo',
+                    'data_dir': os.path.join(self.data_dir, 'esr_data')
+                }
+                
+                # Initialize ESR memory system
+                self.esr_system = ESRMemorySystem(
+                    cache_size=esr_conf.get('cache_size', 50000),
+                    enable_backends=set(esr_conf.get('enable_backends', ['vector', 'document', 'kv'])),
+                    config=esr_conf
+                )
+                
+                # Initialize cognitive workflows for natural memory operations
+                if hasattr(self.esr_system, 'cache') and hasattr(self.esr_system, 'encoder'):
+                    self.cognitive_workflows = CognitiveWorkflows(
+                        cache=self.esr_system.cache,
+                        encoder=self.esr_system.encoder
+                    )
+                    logger.info("ESR system initialized successfully for Apollo")
+                else:
+                    logger.warning("ESR system initialized but cognitive workflows unavailable")
+                    
+            except Exception as e:
+                logger.error(f"Failed to initialize ESR system: {e}")
+                self.esr_system = None
+                self.cognitive_workflows = None
+        
         # Initialize components
         self.context_observer = ContextObserver(
             rhetor_interface=self.rhetor_interface,
-            data_dir=context_data_dir
+            data_dir=context_data_dir,
+            esr_system=self.esr_system
         )
         
         self.predictive_engine = PredictiveEngine(
@@ -153,6 +202,24 @@ class ApolloManager:
         # For task management
         self.is_running = False
         
+        # Initialize storage interface if ESR is available
+        self.storage_interface = None
+        if self.esr_system:
+            try:
+                from apollo.core.storage_interface import ApolloStorageInterface, StorageMode
+                
+                self.storage_interface = ApolloStorageInterface(
+                    esr_system=self.esr_system,
+                    cognitive_workflows=self.cognitive_workflows,
+                    legacy_dir=os.path.join(self.data_dir, 'legacy_storage'),
+                    mode=StorageMode.HYBRID  # Use hybrid mode for gradual migration
+                )
+                logger.info("Apollo storage interface initialized")
+                
+            except Exception as e:
+                logger.error(f"Failed to initialize storage interface: {e}")
+                self.storage_interface = None
+        
         # Set up component connections
         self._connect_components()
     
@@ -170,6 +237,32 @@ class ApolloManager:
         if self.predictive_engine and self.action_planner:
             # No specific callbacks needed currently
             pass
+    
+    def get_storage_interface(self):
+        """
+        Get the storage interface for components to use.
+        
+        Returns:
+            ApolloStorageInterface or None if not available
+        """
+        return self.storage_interface
+    
+    def get_context_brief_manager(self):
+        """
+        Get or create a ContextBriefManager with ESR integration.
+        
+        Returns:
+            ContextBriefManager instance
+        """
+        from apollo.core.preparation.context_brief import ContextBriefManager
+        
+        storage_dir = os.path.join(self.data_dir, 'preparation')
+        
+        return ContextBriefManager(
+            storage_dir=storage_dir,
+            enable_landmarks=True,
+            storage_interface=self.storage_interface
+        )
     
     async def _on_context_health_change(self, context_state: ContextState, previous_health: ContextHealth):
         """

@@ -18,7 +18,6 @@ import os
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent.parent / "Hermes"))
 
 from engram.core.storage.cache_layer import CacheLayer, CacheEntry
-from engram.core.storage.storage_decision_engine import StorageDecisionEngine, StorageType
 from engram.core.storage.universal_encoder import UniversalEncoder
 
 try:
@@ -131,19 +130,9 @@ class ESRMemorySystem:
         # Set promotion callback
         self.cache.promotion_callback = self._handle_promotion
         
-        # Initialize decision engine (kept for compatibility, but using universal encoder)
+        # Track enabled backends (no routing decisions needed with universal encoding)
         enabled = enable_backends or {'vector', 'graph', 'sql', 'document', 'kv'}
-        available_types = set()
-        for backend in enabled:
-            try:
-                available_types.add(StorageType(backend))
-            except ValueError:
-                logger.warning(f"Unknown backend type: {backend}")
-        
-        self.decision_engine = StorageDecisionEngine(available_types)
-        
-        # Initialize universal encoder for store-everywhere approach
-        self.universal_encoder = None  # Will be initialized after backends are ready
+        self.enabled_backends = enabled
         
         # Initialize hash index for O(1) lookups
         self.hash_index = HashIndex()
@@ -151,6 +140,10 @@ class ESRMemorySystem:
         # Initialize storage backends
         self.backends = {}
         self._initialize_backends(enabled)
+        
+        # Initialize universal encoder immediately (don't wait for start())
+        self.universal_encoder = UniversalEncoder(self.backends, recall_timeout=3.0)
+        self.encoder = self.universal_encoder  # Alias for compatibility
         
         # Track statistics
         self.stats = {
@@ -214,8 +207,8 @@ class ESRMemorySystem:
             except Exception as e:
                 logger.error(f"Failed to connect to {name}: {e}")
         
-        # Initialize universal encoder with connected backends
-        self.universal_encoder = UniversalEncoder(self.backends, recall_timeout=3.0)
+        # Encoder already initialized in __init__, just log that backends are ready
+        logger.info("All backends connected, universal encoder ready")
         
         # Start promotion processor
         self.promotion_task = asyncio.create_task(self._process_promotions())
@@ -428,19 +421,10 @@ class ESRMemorySystem:
                     logger.info(f"Promoted {entry.content_type} to {successful} backends")
                     
                 else:
-                    # Fallback to old routing approach if universal encoder not available
-                    storage_type = self.decision_engine.decide_storage(
-                        entry.content,
-                        entry.content_type,
-                        entry.metadata,
-                        entry.access_pattern
-                    )
-                    
-                    routes = self.decision_engine.route_to_backends(
-                        storage_type,
-                        entry.content,
-                        entry.key
-                    )
+                    # Without universal encoder, store in all available backends
+                    routes = []
+                    for backend_name in self.backends.keys():
+                        routes.append((backend_name, entry.content))
                     
                     for backend_name, prepared_content in routes:
                         if backend_name in self.backends:
@@ -609,12 +593,9 @@ class ESRMemorySystem:
             System statistics
         """
         cache_stats = self.cache.analyze_patterns()
-        routing_stats = self.decision_engine.get_routing_stats()
-        
         return {
             'system_stats': self.stats,
             'cache_analysis': cache_stats,
-            'routing_analysis': routing_stats,
             'hash_index_size': len(self.hash_index.index),
             'backends_connected': list(self.backends.keys()),
             'promotion_queue_size': self.promotion_queue.qsize()

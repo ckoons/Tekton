@@ -14,6 +14,7 @@ from typing import Dict, List, Any, Optional, Union
 from datetime import datetime
 
 from hermes.core.database.adapters.relational import RelationalDatabaseAdapter
+from hermes.core.database.database_types import DatabaseBackend
 
 logger = logging.getLogger("hermes.database.sqlite")
 
@@ -46,6 +47,20 @@ class SQLiteAdapter(RelationalDatabaseAdapter):
         self.transaction_active = False
         
         logger.info(f"SQLite adapter initialized for namespace '{namespace}' at {self.db_path}")
+    
+    @property
+    def backend(self) -> DatabaseBackend:
+        """Get the database backend."""
+        return DatabaseBackend.SQLITE
+    
+    async def is_connected(self) -> bool:
+        """
+        Check if connected to database.
+        
+        Returns:
+            True if connected
+        """
+        return self.connection is not None
     
     async def connect(self) -> bool:
         """

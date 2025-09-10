@@ -16,7 +16,8 @@ from typing import Dict, List, Any, Optional, Union, Tuple
 import redis.asyncio as redis
 
 from hermes.core.logging import get_logger
-from hermes.core.database_manager import KeyValueDatabaseAdapter, DatabaseBackend
+from hermes.core.database.adapters.key_value import KeyValueDatabaseAdapter
+from hermes.core.database.database_types import DatabaseBackend
 
 # Logger for this module
 logger = get_logger("hermes.adapters.key_value.redis")

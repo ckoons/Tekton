@@ -136,13 +136,14 @@ class ContextBriefManager:
     Prepares token-aware Context Briefs with memory landmarks for all CIs
     """
     
-    def __init__(self, storage_dir: Optional[Path] = None, enable_landmarks: bool = True):
+    def __init__(self, storage_dir: Optional[Path] = None, enable_landmarks: bool = True, storage_interface=None):
         """
         Initialize the context brief manager
         
         Args:
             storage_dir: Directory for storing memory files
             enable_landmarks: Whether to create graph landmarks
+            storage_interface: Optional Apollo storage interface for ESR integration
         """
         if storage_dir is None:
             try:
@@ -156,6 +157,10 @@ class ContextBriefManager:
         
         self.storage_dir = Path(storage_dir)
         self.storage_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Storage interface for ESR integration
+        self.storage_interface = storage_interface
+        self.use_esr = storage_interface is not None
         
         # Configuration
         self.max_memories_per_ci = 1000
@@ -716,6 +721,166 @@ class ContextBriefManager:
             newest_memory=max((m.timestamp for m in self.memories), default=None),
             avg_priority=sum(m.priority for m in self.memories) / len(self.memories) if self.memories else 0.0
         )
+    
+    # ESR-aware async methods
+    async def store_async(self, ci_name: str, memory_type: MemoryType, summary: str, 
+                         content: str, tags: List[str] = None, priority: int = 5,
+                         expires_days: int = None) -> MemoryItem:
+        """
+        Store memory using ESR if available, otherwise use legacy storage.
+        
+        This is the async version that leverages ESR capabilities.
+        """
+        # Create memory item
+        memory = MemoryItem(
+            id=self._generate_memory_id(content),
+            timestamp=datetime.now(),
+            ci_source=ci_name,
+            ci_type=self._detect_ci_type(ci_name),
+            type=memory_type,
+            summary=summary[:50],
+            content=content,
+            tokens=self._count_tokens(content),
+            relevance_tags=tags or [],
+            priority=min(max(priority, 0), 10),
+            expires=datetime.now() + timedelta(days=expires_days or self.default_expiration_days)
+        )
+        
+        # Store in ESR if available
+        if self.use_esr and self.storage_interface:
+            try:
+                # Store via storage interface
+                memory_dict = memory.to_dict()
+                key = await self.storage_interface.store_memory(
+                    content=memory_dict,
+                    memory_type=memory_type.value,
+                    metadata={
+                        'ci_source': ci_name,
+                        'ci_type': memory.ci_type.value,
+                        'tags': tags or [],
+                        'priority': priority
+                    },
+                    ci_id=ci_name
+                )
+                
+                # Update memory ID with ESR key
+                memory.id = key
+                logger.info(f"Stored memory in ESR: {key[:8]}...")
+                
+            except Exception as e:
+                logger.error(f"Failed to store in ESR, falling back to legacy: {e}")
+                # Fall back to legacy storage
+                return self.store(ci_name, memory_type, summary, content, tags, priority, expires_days)
+        
+        # Also store in legacy for hybrid mode
+        if not self.use_esr or self.storage_interface.mode == 'hybrid':
+            self.add_memory(memory)
+            self.save()
+        
+        return memory
+    
+    async def search_async(self, query: str = None, ci_name: str = None, 
+                          limit: int = 10) -> List[MemoryItem]:
+        """
+        Search memories using ESR semantic search if available.
+        
+        This leverages ESR's vector search capabilities for better results.
+        """
+        if self.use_esr and self.storage_interface:
+            try:
+                # Use ESR search
+                results = await self.storage_interface.search_memories(
+                    query=query,
+                    limit=limit,
+                    ci_id=ci_name or "apollo"
+                )
+                
+                memories = []
+                for result in results:
+                    content = result.get('content', {})
+                    if isinstance(content, dict):
+                        memory = self._dict_to_memory(content)
+                        if memory:
+                            memories.append(memory)
+                
+                logger.debug(f"Found {len(memories)} memories via ESR search")
+                return memories
+                
+            except Exception as e:
+                logger.error(f"ESR search failed, falling back to legacy: {e}")
+        
+        # Fall back to legacy search
+        return self.search(query)
+    
+    async def build_context_async(self, topic: str, ci_name: str = None) -> Dict[str, Any]:
+        """
+        Build rich context using ESR's cognitive workflows.
+        
+        This provides associative memory retrieval and context building.
+        """
+        if self.use_esr and self.storage_interface:
+            try:
+                context = await self.storage_interface.build_context(
+                    topic=topic,
+                    depth=2,
+                    ci_id=ci_name or "apollo"
+                )
+                
+                logger.info(f"Built context for '{topic}' using ESR")
+                return context
+                
+            except Exception as e:
+                logger.error(f"ESR context building failed: {e}")
+        
+        # Fall back to simple search-based context
+        memories = await self.search_async(topic, ci_name, limit=20)
+        
+        return {
+            'topic': topic,
+            'memories': [m.to_dict() for m in memories],
+            'timestamp': datetime.now().isoformat(),
+            'source': 'legacy'
+        }
+    
+    async def migrate_to_esr(self) -> int:
+        """
+        Migrate existing memories to ESR system.
+        
+        Returns:
+            Number of memories migrated
+        """
+        if not self.use_esr or not self.storage_interface:
+            logger.error("Cannot migrate: ESR not available")
+            return 0
+        
+        migrated = 0
+        
+        # Load all memories
+        self.load()
+        
+        for memory in self.memories:
+            try:
+                # Store in ESR
+                await self.storage_interface.store_memory(
+                    content=memory.to_dict(),
+                    memory_type=memory.type.value,
+                    metadata={
+                        'ci_source': memory.ci_source,
+                        'ci_type': memory.ci_type.value,
+                        'tags': memory.relevance_tags,
+                        'priority': memory.priority,
+                        'migrated': True
+                    },
+                    ci_id=memory.ci_source
+                )
+                
+                migrated += 1
+                
+            except Exception as e:
+                logger.error(f"Failed to migrate memory {memory.id}: {e}")
+        
+        logger.info(f"Migrated {migrated}/{len(self.memories)} memories to ESR")
+        return migrated
 
 
 # Singleton instance
