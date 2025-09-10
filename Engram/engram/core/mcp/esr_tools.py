@@ -49,11 +49,14 @@ async def get_esr_system():
         await _esr_system.start()
         
         # Initialize cognitive workflows
-        if hasattr(_esr_system, 'encoder'):
-            _cognitive_workflows = CognitiveWorkflows(_esr_system)
+        if hasattr(_esr_system, 'encoder') and hasattr(_esr_system, 'cache'):
+            _cognitive_workflows = CognitiveWorkflows(
+                cache=_esr_system.cache,
+                encoder=_esr_system.encoder
+            )
             logger.info("ESR system and Cognitive Workflows initialized")
         else:
-            raise RuntimeError("ESR system initialized but encoder not available")
+            raise RuntimeError("ESR system initialized but cache/encoder not available")
     
     return _esr_system, _cognitive_workflows
 
@@ -187,18 +190,34 @@ async def esr_search_similar(
                 pass
         
         # Search for similar thoughts
+        # Note: recall_similar takes 'reference' not 'query', and doesn't support thought_type/min_confidence
         results = await workflows.recall_similar(
-            query=query,
+            reference=query,
             limit=limit,
-            thought_type=thought_enum,
-            min_confidence=min_confidence,
             ci_id=ci_id
         )
         
+        # Filter by thought_type and min_confidence if provided
+        if thought_type or min_confidence > 0:
+            filtered_results = []
+            for thought in results:
+                if thought_type and thought.thought_type.value != thought_type.upper():
+                    continue
+                if thought.confidence < min_confidence:
+                    continue
+                filtered_results.append(thought)
+            results = filtered_results
+        
+        # Convert Thought objects to dictionaries for JSON serialization
+        results_dict = [
+            thought.to_dict() if hasattr(thought, 'to_dict') else thought
+            for thought in results
+        ]
+        
         return {
             "status": "success",
-            "results": results,
-            "count": len(results),
+            "results": results_dict,
+            "count": len(results_dict),
             "timestamp": datetime.now().isoformat()
         }
         
@@ -232,12 +251,18 @@ async def esr_build_context(
         _, workflows = await get_esr_system()
         
         # Build context
+        # Note: build_context doesn't have max_items parameter
         context = await workflows.build_context(
             topic=topic,
             depth=depth,
-            max_items=max_items,
             ci_id=ci_id
         )
+        
+        # If max_items is specified, limit the results
+        if max_items and isinstance(context, dict):
+            for key in context:
+                if isinstance(context[key], list) and len(context[key]) > max_items:
+                    context[key] = context[key][:max_items]
         
         return {
             "status": "success",
