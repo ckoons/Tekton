@@ -92,7 +92,6 @@ from shared.api import (
     get_openapi_configuration,
     EndpointInfo
 )
-from landmarks import api_contract, integration_point
 
 # Use shared logger
 logger = setup_component_logging("engram")

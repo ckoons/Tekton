@@ -22,9 +22,11 @@ import sys
 import operator
 import json
 import requests
+import httpx
+import asyncio
 from pathlib import Path
 from typing import Dict, List, Optional, Any, Union
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Add parent paths for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
@@ -205,6 +207,11 @@ class CIRegistry:
         
         # Load context state from file
         self._context_state = self._file_registry.get('context_state', {})
+        
+        # Initialize ESR client for memory services
+        self._esr_client = None
+        self._esr_url = engram_url('/api/esr')
+        self._memory_metadata = self._file_registry.get('memory_metadata', {})
         
         # Component aliases
         self.ALIASES = {
@@ -628,13 +635,42 @@ class CIRegistry:
         return True
 
     def get_sunrise_context(self, ci_name: str) -> Optional[str]:
-        """Get the sunrise_context for a CI.
+        """Get the sunrise_context for a CI with memory enrichment.
         Thread-safe read through file registry.
+        
+        NEW: Enriches sunrise context with recent memories from ESR.
         """
         ci_name = ci_name.lower()
         if ci_name not in self._context_state:
             return None
-        return self._context_state[ci_name].get('sunrise_context')
+        
+        base_context = self._context_state[ci_name].get('sunrise_context')
+        
+        # Enrich with recent memories if available
+        if base_context:
+            try:
+                # Try to get recent memories synchronously
+                loop = asyncio.new_event_loop()
+                memories = loop.run_until_complete(
+                    self.recall_ci_memories(ci_name, limit=5)
+                )
+                loop.close()
+                
+                if memories:
+                    # Add memory summary to context
+                    memory_summary = "\n\nRecent memories:\n"
+                    for mem in memories[:3]:  # Top 3 most relevant
+                        content = mem.get('content', '')
+                        if len(content) > 100:
+                            content = content[:100] + "..."
+                        memory_summary += f"- {content}\n"
+                    
+                    base_context = base_context + memory_summary
+            except:
+                # If memory retrieval fails, use base context only
+                pass
+        
+        return base_context
 
     def clear_sunrise_context(self, ci_name: str) -> bool:
         """Clear sunrise_context after use.
@@ -685,17 +721,18 @@ class CIRegistry:
         return self._context_state[ci_name].get('needs_fresh_start', False)
     
     @integration_point(
-        title="CI Exchange Storage",
-        description="Stores complete user message and CI response exchanges",
-        target_component="CI Specialists",
-        protocol="Socket JSON messages",
-        data_flow="CI Specialist → update_ci_last_output → registry.json",
-        integration_date="2025-07-30"
+        title="CI Exchange Storage with Memory",
+        description="Stores complete user message and CI response exchanges with ESR memory integration",
+        target_component="CI Specialists + Engram ESR",
+        protocol="Socket JSON messages + ESR HTTP API",
+        data_flow="CI Specialist → update_ci_last_output → registry.json + ESR memory",
+        integration_date="2025-09-10"
     )
     def update_ci_last_output(self, ci_name: str, output: Union[str, Dict]) -> bool:
         """Store the CI's output when turn completes.
         
         NEW: Auto-detect sunset responses and copy to sunrise_context.
+        NEWER: Auto-store exchanges in ESR memory system.
         
         Args:
             ci_name: Name of the CI
@@ -710,7 +747,58 @@ class CIRegistry:
             
         self._context_state[ci_name]['last_output'] = output
         
-        # NEW: Auto-detect sunset response
+        # Auto-store in ESR memory (async task)
+        if isinstance(output, dict):
+            content = output.get('content', '')
+            user_msg = output.get('user_message', '')
+            
+            # Create memory content combining user and CI response
+            memory_content = f"User: {user_msg}\n\nCI Response: {content}" if user_msg else content
+            
+            # Determine thought type based on content
+            thought_type = "ANSWER" if user_msg else "MEMORY"
+            
+            # Store memory asynchronously
+            try:
+                loop = asyncio.get_event_loop()
+                if loop.is_running():
+                    # Schedule coroutine
+                    asyncio.create_task(
+                        self.store_ci_memory(
+                            ci_name=ci_name,
+                            content=memory_content,
+                            thought_type=thought_type,
+                            context={'exchange_type': 'conversation'},
+                            confidence=0.9
+                        )
+                    )
+                else:
+                    # Run synchronously if no loop
+                    loop.run_until_complete(
+                        self.store_ci_memory(
+                            ci_name=ci_name,
+                            content=memory_content,
+                            thought_type=thought_type,
+                            context={'exchange_type': 'conversation'},
+                            confidence=0.9
+                        )
+                    )
+            except:
+                # If we can't get a loop, skip memory storage
+                pass
+        
+        # Check if reflection should be triggered
+        if self.should_trigger_reflection(ci_name):
+            try:
+                loop = asyncio.get_event_loop()
+                if loop.is_running():
+                    asyncio.create_task(
+                        self.trigger_ci_reflection(ci_name, "threshold_reached")
+                    )
+            except:
+                pass
+        
+        # Auto-detect sunset response
         if self._is_sunset_response(output):
             # Auto-copy to sunrise_context
             if isinstance(output, dict):
@@ -718,6 +806,16 @@ class CIRegistry:
             else:
                 content = str(output)
             self._context_state[ci_name]['sunrise_context'] = content
+            
+            # Trigger reflection on sunset
+            try:
+                loop = asyncio.get_event_loop()
+                if loop.is_running():
+                    asyncio.create_task(
+                        self.trigger_ci_reflection(ci_name, "sunset_protocol")
+                    )
+            except:
+                pass
         
         self._save_context_state()
         return True
@@ -754,6 +852,246 @@ class CIRegistry:
         
         # If 3+ indicators present, likely a sunset response
         return matches >= 3
+    
+    # Memory Service Integration Methods
+    
+    @integration_point(
+        title="ESR Memory Service Integration",
+        description="Integrates ESR memory services with CI Registry for automatic memory management",
+        target_component="Engram ESR",
+        protocol="HTTP API",
+        data_flow="CI exchanges → ESR store → memory persistence",
+        integration_date="2025-09-10"
+    )
+    def _get_esr_client(self):
+        """Get or create ESR HTTP client."""
+        if self._esr_client is None:
+            self._esr_client = httpx.AsyncClient(timeout=30.0)
+        return self._esr_client
+    
+    def _save_memory_metadata(self):
+        """Save memory metadata to file."""
+        self._file_registry.update('memory_metadata', self._memory_metadata)
+    
+    async def store_ci_memory(self, ci_name: str, content: str, 
+                             thought_type: str = "MEMORY",
+                             context: Optional[Dict[str, Any]] = None,
+                             confidence: float = 1.0) -> Optional[str]:
+        """Store a memory for a CI in ESR.
+        
+        Args:
+            ci_name: Name of the CI
+            content: Memory content to store
+            thought_type: Type of thought (IDEA, MEMORY, FACT, etc.)
+            context: Optional context metadata
+            confidence: Confidence level (0-1)
+            
+        Returns:
+            Memory ID if successful, None otherwise
+        """
+        ci_name = ci_name.lower()
+        client = self._get_esr_client()
+        
+        try:
+            # Prepare memory data
+            memory_data = {
+                "content": content,
+                "thought_type": thought_type,
+                "context": context or {},
+                "confidence": confidence,
+                "ci_id": ci_name
+            }
+            
+            # Store via ESR API
+            response = await client.post(
+                f"{self._esr_url}/store",
+                json=memory_data
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                memory_id = result.get("memory_id")
+                
+                # Track memory metadata
+                if ci_name not in self._memory_metadata:
+                    self._memory_metadata[ci_name] = {
+                        'memory_count': 0,
+                        'last_stored': None,
+                        'last_reflection': None
+                    }
+                
+                self._memory_metadata[ci_name]['memory_count'] += 1
+                self._memory_metadata[ci_name]['last_stored'] = datetime.now().isoformat()
+                self._save_memory_metadata()
+                
+                return memory_id
+                
+        except Exception as e:
+            print(f"[Registry] Failed to store memory for {ci_name}: {e}")
+            
+        return None
+    
+    async def recall_ci_memories(self, ci_name: str, query: str = None, 
+                                limit: int = 10) -> List[Dict[str, Any]]:
+        """Recall memories for a CI from ESR.
+        
+        Args:
+            ci_name: Name of the CI
+            query: Optional search query
+            limit: Maximum number of memories to recall
+            
+        Returns:
+            List of memory dictionaries
+        """
+        ci_name = ci_name.lower()
+        client = self._get_esr_client()
+        
+        try:
+            if query:
+                # Search for similar memories
+                search_data = {
+                    "query": query,
+                    "limit": limit,
+                    "ci_id": ci_name
+                }
+                
+                response = await client.post(
+                    f"{self._esr_url}/search",
+                    json=search_data
+                )
+            else:
+                # Get recent memories (search with CI name as query)
+                search_data = {
+                    "query": ci_name,
+                    "limit": limit,
+                    "ci_id": ci_name
+                }
+                
+                response = await client.post(
+                    f"{self._esr_url}/search",
+                    json=search_data
+                )
+            
+            if response.status_code == 200:
+                result = response.json()
+                return result.get("results", [])
+                
+        except Exception as e:
+            print(f"[Registry] Failed to recall memories for {ci_name}: {e}")
+            
+        return []
+    
+    async def trigger_ci_reflection(self, ci_name: str, reason: str = "scheduled") -> bool:
+        """Trigger memory reflection for a CI.
+        
+        Args:
+            ci_name: Name of the CI
+            reason: Reason for reflection
+            
+        Returns:
+            Success status
+        """
+        ci_name = ci_name.lower()
+        client = self._get_esr_client()
+        
+        try:
+            reflection_data = {
+                "ci_id": ci_name,
+                "reason": reason
+            }
+            
+            response = await client.post(
+                f"{self._esr_url}/reflect",
+                json=reflection_data
+            )
+            
+            if response.status_code == 200:
+                # Update metadata
+                if ci_name not in self._memory_metadata:
+                    self._memory_metadata[ci_name] = {}
+                
+                self._memory_metadata[ci_name]['last_reflection'] = datetime.now().isoformat()
+                self._save_memory_metadata()
+                
+                return True
+                
+        except Exception as e:
+            print(f"[Registry] Failed to trigger reflection for {ci_name}: {e}")
+            
+        return False
+    
+    async def get_ci_memory_context(self, ci_name: str, topic: str, 
+                                   depth: int = 3) -> Optional[Dict[str, Any]]:
+        """Build memory context around a topic for a CI.
+        
+        Args:
+            ci_name: Name of the CI
+            topic: Topic to build context around
+            depth: Depth of context building
+            
+        Returns:
+            Context dictionary or None
+        """
+        ci_name = ci_name.lower()
+        client = self._get_esr_client()
+        
+        try:
+            context_data = {
+                "topic": topic,
+                "depth": depth,
+                "ci_id": ci_name
+            }
+            
+            response = await client.post(
+                f"{self._esr_url}/context",
+                json=context_data
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                return result.get("context")
+                
+        except Exception as e:
+            print(f"[Registry] Failed to get memory context for {ci_name}: {e}")
+            
+        return None
+    
+    def should_trigger_reflection(self, ci_name: str) -> bool:
+        """Check if CI should trigger memory reflection.
+        
+        Uses configurable intervals and conditions.
+        
+        Args:
+            ci_name: Name of the CI
+            
+        Returns:
+            Whether reflection should be triggered
+        """
+        ci_name = ci_name.lower()
+        
+        # Get CI metadata
+        metadata = self._memory_metadata.get(ci_name, {})
+        last_reflection = metadata.get('last_reflection')
+        
+        # Default reflection interval: 1 hour
+        reflection_interval = timedelta(hours=1)
+        
+        # Check if enough time has passed
+        if last_reflection:
+            last_time = datetime.fromisoformat(last_reflection)
+            if datetime.now() - last_time < reflection_interval:
+                return False
+        
+        # Check memory count threshold (reflect after 50 new memories)
+        memory_count = metadata.get('memory_count', 0)
+        if memory_count > 0 and memory_count % 50 == 0:
+            return True
+        
+        # If no reflection yet and has memories, reflect
+        if not last_reflection and memory_count > 0:
+            return True
+        
+        return False
     
     def get_ci_context_state(self, ci_name: str) -> Optional[Dict[str, Any]]:
         """Get the complete context state for a CI."""

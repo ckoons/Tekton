@@ -6,7 +6,31 @@ from pathlib import Path
 
 from shared.utils.standard_component import StandardComponentBase
 from shared.env import TektonEnviron
-from landmarks import architecture_decision, state_checkpoint, integration_point, danger_zone
+
+# Import landmarks with fallback
+try:
+    from landmarks import architecture_decision, state_checkpoint, integration_point, danger_zone
+except ImportError:
+    # Define no-op decorators when landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def danger_zone(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
 
 logger = logging.getLogger(__name__)
 

@@ -141,7 +141,7 @@ async def esr_recall_thought(
         if memory:
             return {
                 "status": "success",
-                "memory": memory,
+                "memory": memory.to_dict() if hasattr(memory, 'to_dict') else memory,
                 "timestamp": datetime.now().isoformat()
             }
         else:
