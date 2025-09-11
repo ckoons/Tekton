@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 from datetime import datetime
 import logging
+from typing import Any, Optional
 
 # Configure logging first
 logging.basicConfig(
@@ -42,10 +43,17 @@ except ImportError as e:
     sys.exit(1)
 
 try:
-    from engram.core.storage.storage_decision_engine import StorageDecisionEngine, StorageType
-    logger.info("✓ StorageDecisionEngine imported successfully")
+    from engram.core.storage.universal_encoder import UniversalEncoder, MemorySynthesizer, MemoryResponse
+    logger.info("✓ UniversalEncoder imported successfully")
 except ImportError as e:
-    logger.error(f"Failed to import StorageDecisionEngine: {e}")
+    logger.error(f"Failed to import UniversalEncoder: {e}")
+    sys.exit(1)
+
+try:
+    from engram.core.storage.unified_interface import ESRMemorySystem
+    logger.info("✓ ESRMemorySystem imported successfully")
+except ImportError as e:
+    logger.error(f"Failed to import ESRMemorySystem: {e}")
     sys.exit(1)
 
 # Test without Hermes dependency first
@@ -105,40 +113,49 @@ async def test_cache_layer():
     return True
 
 
-async def test_decision_engine():
-    """Test the storage decision engine."""
-    logger.info("\nTest 2: Storage Decision Engine")
+async def test_universal_encoder():
+    """Test the universal encoder 'store everywhere' paradigm."""
+    logger.info("\nTest 2: Universal Encoder - Store Everywhere")
     
-    engine = StorageDecisionEngine()
+    # Create mock backends for testing
+    mock_backends = {
+        'kv': MockBackend('kv'),
+        'document': MockBackend('document'),
+        'sql': MockBackend('sql')
+    }
     
-    test_cases = [
-        # (content, expected_type)
-        ("Simple string value", [StorageType.KEY_VALUE, StorageType.VECTOR]),
-        ({"name": "John", "age": 30}, [StorageType.SQL, StorageType.DOCUMENT]),
-        ({"nested": {"data": "value"}}, [StorageType.DOCUMENT]),
-        ({"embedding": [0.1, 0.2, 0.3]}, [StorageType.VECTOR]),
-        ({"source": "A", "target": "B", "weight": 1.0}, [StorageType.GRAPH]),
-    ]
+    # Create encoder
+    encoder = UniversalEncoder(backends=mock_backends)
     
-    for content, expected_types in test_cases:
-        decision = engine.decide_storage(
-            content=content,
-            content_type='test',
-            metadata=None
-        )
-        
-        # Check if decision is reasonable
-        is_expected = decision in expected_types or any(
-            str(expected).lower() in str(decision.value).lower() 
-            for expected in expected_types
-        )
-        
-        status = "✓" if is_expected else "?"
-        logger.info(f"  {status} {str(content)[:30]}... -> {decision.value}")
+    # Test storing everywhere
+    test_key = "test_memory_001"
+    test_content = {
+        "thought": "The sky is blue",
+        "type": "observation",
+        "timestamp": datetime.now().isoformat()
+    }
     
-    # Test routing stats
-    stats = engine.get_routing_stats()
-    logger.info(f"  ✓ Routing stats: {stats['total_routings']} total routings")
+    # Store in all backends
+    results = await encoder.store_everywhere(
+        key=test_key,
+        content=test_content,
+        metadata={'source': 'test'}
+    )
+    
+    logger.info(f"  Storage results: {results}")
+    
+    # Verify stored in all backends
+    successful_stores = sum(1 for success in results.values() if success)
+    logger.info(f"  ✓ Stored in {successful_stores}/{len(mock_backends)} backends")
+    
+    # Test recall from all backends
+    memories = await encoder.recall_from_everywhere(test_key)
+    logger.info(f"  ✓ Recalled from {len(memories)} backends")
+    
+    # Test synthesis
+    synthesizer = MemorySynthesizer()
+    synthesized = synthesizer.synthesize(memories, query=test_key)
+    logger.info(f"  ✓ Synthesized response: {synthesized.get('synthesis', 'No synthesis')}")
     
     return True
 
@@ -184,6 +201,45 @@ async def test_frequency_promotion():
     logger.info(f"  ✓ {len(candidates)} promotion candidates identified")
     
     return True
+
+
+class MockBackend:
+    """Simple mock backend for testing."""
+    
+    def __init__(self, backend_type: str):
+        self.backend_type = backend_type
+        self.storage = {}
+    
+    async def store(self, key: str, value: Any, **kwargs) -> bool:
+        self.storage[key] = value
+        return True
+    
+    async def retrieve(self, key: str) -> Optional[Any]:
+        value = self.storage.get(key)
+        if value:
+            # Return as MemoryResponse for compatibility
+            return MemoryResponse(
+                content=value,
+                source_backend=self.backend_type,
+                retrieval_time=0.1,
+                confidence=1.0,
+                metadata={}
+            )
+        return None
+    
+    async def search(self, query: str) -> list:
+        # Simple search - return all items that contain the query
+        results = []
+        for key, value in self.storage.items():
+            if query in str(value):
+                results.append(MemoryResponse(
+                    content=value,
+                    source_backend=self.backend_type,
+                    retrieval_time=0.1,
+                    confidence=0.8,
+                    metadata={'key': key}
+                ))
+        return results
 
 
 async def test_cache_persistence():
@@ -246,7 +302,7 @@ async def main():
     
     tests = [
         ("Cache Layer", test_cache_layer),
-        ("Decision Engine", test_decision_engine),
+        ("Universal Encoder", test_universal_encoder),
         ("Frequency Promotion", test_frequency_promotion),
         ("Cache Analysis", test_cache_persistence),
     ]

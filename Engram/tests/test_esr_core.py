@@ -1,13 +1,24 @@
 #!/usr/bin/env python3
 """
-Test ESR Core Components - Pytest compatible tests for ESR.
+ESR Core Test - Tests core ESR functionality without external dependencies.
 """
 
-import pytest
 import asyncio
+import sys
+import os
+from pathlib import Path
 from datetime import datetime
 
-from engram.core.storage.cache_layer import CacheLayer, CacheEntry
+# Setup paths
+current_dir = Path(__file__).parent
+engram_root = current_dir.parent
+coder_a_root = engram_root.parent
+
+sys.path.insert(0, str(engram_root))
+sys.path.insert(0, str(coder_a_root))
+
+if 'TEKTON_ROOT' not in os.environ:
+    os.environ['TEKTON_ROOT'] = str(coder_a_root)
 
 
 @pytest.mark.asyncio

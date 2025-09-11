@@ -298,7 +298,7 @@ class UniversalEncoder:
         try:
             # Try different storage methods based on backend type
             if hasattr(backend, 'store'):
-                await backend.store(key, content)
+                await backend.store(key, content, metadata=metadata)
                 return True
             elif hasattr(backend, 'set'):
                 await backend.set(key, content, 0)
