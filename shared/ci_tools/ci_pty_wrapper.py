@@ -176,6 +176,7 @@ class PTYWrapper:
         
         signal.signal(signal.SIGINT, signal_handler)
         signal.signal(signal.SIGTERM, signal_handler)
+        signal.signal(signal.SIGHUP, signal_handler)  # Handle terminal hangup
         
         # Set up socket
         self.setup_socket()
@@ -194,33 +195,60 @@ class PTYWrapper:
             # Parent process - handle I/O
             print(f"[PTY Wrapper] Started child PID {self.child_pid}", file=sys.stderr)
             
-            # Save terminal settings
-            old_tty = termios.tcgetattr(sys.stdin)
-            try:
-                # Set terminal to raw mode for proper passthrough
-                tty.setraw(sys.stdin.fileno())
-                tty.setcbreak(sys.stdin.fileno())
+            # Check if we have a valid terminal
+            has_terminal = sys.stdin.isatty()
+            old_tty = None
+            
+            if has_terminal:
+                # Save terminal settings
+                try:
+                    old_tty = termios.tcgetattr(sys.stdin)
+                    # Set terminal to raw mode for proper passthrough
+                    tty.setraw(sys.stdin.fileno())
+                    tty.setcbreak(sys.stdin.fileno())
+                except:
+                    # If we can't get terminal attributes, continue without raw mode
+                    has_terminal = False
+                    print(f"[PTY Wrapper] Running without terminal (background mode)", file=sys.stderr)
                 
                 # I/O loop
+                stdin_closed = False
                 while True:
                     try:
-                        r, w, e = select.select([self.master_fd, sys.stdin], [], [], 0.1)
+                        # Build select list based on what's available
+                        read_fds = [self.master_fd]
+                        if has_terminal and not stdin_closed:
+                            read_fds.append(sys.stdin)
+                        
+                        r, w, e = select.select(read_fds, [], [], 0.1)
                         
                         if self.master_fd in r:
                             try:
                                 data = os.read(self.master_fd, 10240)
-                                if data:
-                                    os.write(sys.stdout.fileno(), data)
-                                else:
+                                if data and has_terminal:
+                                    try:
+                                        os.write(sys.stdout.fileno(), data)
+                                    except (BrokenPipeError, OSError):
+                                        # stdout closed, continue without output
+                                        pass
+                                elif not data:
                                     # EOF from child
                                     break
                             except OSError:
                                 break
                         
-                        if sys.stdin in r:
-                            data = os.read(sys.stdin.fileno(), 10240)
-                            if data:
-                                os.write(self.master_fd, data)
+                        if has_terminal and sys.stdin in r:
+                            try:
+                                data = os.read(sys.stdin.fileno(), 10240)
+                                if data:
+                                    os.write(self.master_fd, data)
+                                else:
+                                    # EOF on stdin - terminal disconnected
+                                    print(f"\n[PTY Wrapper] stdin closed, terminal disconnected", file=sys.stderr)
+                                    stdin_closed = True
+                                    # Continue running to keep the wrapped process alive
+                            except (OSError, BrokenPipeError):
+                                stdin_closed = True
                     except (KeyboardInterrupt, OSError):
                         break
                     
@@ -229,10 +257,19 @@ class PTYWrapper:
                     if pid != 0:
                         print(f"\n[PTY Wrapper] Child process {self.child_pid} exited", file=sys.stderr)
                         break
+                    
+                    # Check parent process periodically (detect orphan state)
+                    if os.getppid() == 1:  # Parent is init, we're orphaned
+                        print(f"\n[PTY Wrapper] Orphaned (parent died), cleaning up...", file=sys.stderr)
+                        break
                         
             finally:
-                # Restore terminal settings
-                termios.tcsetattr(sys.stdin, termios.TCSAFLUSH, old_tty)
+                # Restore terminal settings if we had them
+                if old_tty and has_terminal:
+                    try:
+                        termios.tcsetattr(sys.stdin, termios.TCSAFLUSH, old_tty)
+                    except:
+                        pass  # Terminal may be gone
                 self.cleanup()
     
     def cleanup(self):

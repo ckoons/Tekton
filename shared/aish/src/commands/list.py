@@ -4,6 +4,8 @@ Handles the unified CI listing with various filters and output formats.
 """
 
 import sys
+import os
+import signal
 import operator
 from pathlib import Path
 
@@ -23,6 +25,7 @@ def handle_list_command(args):
     - aish list type terminal      # Filter by type
     - aish list json              # JSON output
     - aish list json terminal     # JSON output with filter
+    - aish list remove <ci-name>   # Remove dead CI from registry
     """
     if not args:
         # Default: show all CIs in text format
@@ -33,6 +36,11 @@ def handle_list_command(args):
     # Handle context command first
     if args[0].lower() == 'context':
         handle_context_list(args[1:] if len(args) > 1 else [])
+        return
+    
+    # Handle remove command
+    if args[0].lower() == 'remove':
+        handle_remove_ci(args[1:] if len(args) > 1 else [])
         return
     
     # Parse arguments
@@ -210,3 +218,87 @@ def show_context_details(registry, ci_name):
             print("-" * 60)
     else:
         print("Status: No output captured")
+
+
+def handle_remove_ci(args):
+    """
+    Handle removing a dead CI from the registry.
+    
+    Usage:
+      aish list remove <ci-name>  # Remove specific CI
+    """
+    if not args:
+        print("Error: Please specify a CI name to remove")
+        print("Usage: aish list remove <ci-name>")
+        return
+    
+    ci_name = args[0]
+    registry = get_registry()
+    
+    # Check if CI exists
+    ci_info = registry.get_by_name(ci_name)
+    if not ci_info:
+        print(f"Error: CI '{ci_name}' not found in registry")
+        return
+    
+    # Check CI type - only allow removal of certain types
+    ci_type = ci_info.get('type')
+    if ci_type not in ['ci_terminal', 'ci_tool', 'wrapped_ci']:
+        print(f"Error: Cannot remove CI of type '{ci_type}'")
+        print("Only ci_terminal, ci_tool, and wrapped_ci types can be removed")
+        return
+    
+    # Check if process is still running
+    pid = ci_info.get('pid')
+    process_running = False
+    if pid:
+        try:
+            # Signal 0 just checks if process exists
+            os.kill(pid, 0)
+            process_running = True
+        except (ProcessLookupError, PermissionError):
+            process_running = False
+    
+    if process_running:
+        print(f"Warning: CI '{ci_name}' (PID {pid}) appears to still be running")
+        response = input("Do you want to terminate it and remove from registry? (y/N): ")
+        if response.lower() == 'y':
+            # Try to terminate the process
+            try:
+                print(f"Terminating process {pid}...")
+                os.kill(pid, signal.SIGTERM)
+                import time
+                time.sleep(1)
+                # Check if it's still running and force kill if needed
+                try:
+                    os.kill(pid, 0)
+                    print(f"Process didn't terminate cleanly, force killing...")
+                    os.kill(pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    print(f"Process terminated successfully")
+            except Exception as e:
+                print(f"Error terminating process: {e}")
+                return
+        else:
+            print("Aborted")
+            return
+    
+    # Clean up socket file if it exists
+    socket_path = ci_info.get('socket')
+    if socket_path and os.path.exists(socket_path):
+        try:
+            os.unlink(socket_path)
+            print(f"Removed socket file: {socket_path}")
+        except Exception as e:
+            print(f"Warning: Could not remove socket file: {e}")
+    
+    # Remove from registry
+    success = registry.unregister_wrapped_ci(ci_name)
+    if success:
+        print(f"Successfully removed '{ci_name}' from CI registry")
+    else:
+        print(f"Failed to remove '{ci_name}' from registry")
+        
+    # Show updated list
+    print("\nUpdated CI list:")
+    print(registry.format_list())

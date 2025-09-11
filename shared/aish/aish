@@ -507,6 +507,7 @@ Environment variables:
             print("  aish list json [type]          List CIs in JSON format")
             print("  aish list context              Show context state for all CIs")
             print("  aish list context <ci-name>    Show full context details for specific CI")
+            print("  aish list remove <ci-name>     Remove dead CI from registry")
             print("  aish list commands             Show this command reference")
             print("  aish <ci-name> \"message\"       Send message to any CI")
             print()
