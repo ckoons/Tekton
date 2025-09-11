@@ -199,17 +199,18 @@ class PTYWrapper:
             has_terminal = sys.stdin.isatty()
             old_tty = None
             
-            if has_terminal:
-                # Save terminal settings
-                try:
-                    old_tty = termios.tcgetattr(sys.stdin)
-                    # Set terminal to raw mode for proper passthrough
-                    tty.setraw(sys.stdin.fileno())
-                    tty.setcbreak(sys.stdin.fileno())
-                except:
-                    # If we can't get terminal attributes, continue without raw mode
-                    has_terminal = False
-                    print(f"[PTY Wrapper] Running without terminal (background mode)", file=sys.stderr)
+            try:
+                if has_terminal:
+                    # Save terminal settings
+                    try:
+                        old_tty = termios.tcgetattr(sys.stdin)
+                        # Set terminal to raw mode for proper passthrough
+                        tty.setraw(sys.stdin.fileno())
+                        tty.setcbreak(sys.stdin.fileno())
+                    except:
+                        # If we can't get terminal attributes, continue without raw mode
+                        has_terminal = False
+                        print(f"[PTY Wrapper] Running without terminal (background mode)", file=sys.stderr)
                 
                 # I/O loop
                 stdin_closed = False
