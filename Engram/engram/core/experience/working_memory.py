@@ -5,6 +5,22 @@ Provides temporary storage for active cognitive processes before
 consolidation to long-term memory.
 """
 
+# Import landmarks with fallback
+try:
+    from engram.core.landmarks import (
+        architecture_decision,
+        state_checkpoint,
+        performance_boundary,
+        danger_zone
+    )
+except ImportError:
+    from ..landmarks import (
+        architecture_decision,
+        state_checkpoint,
+        performance_boundary,
+        danger_zone
+    )
+
 import asyncio
 import logging
 from collections import deque
@@ -79,6 +95,23 @@ class ThoughtBuffer:
         self.associations.add(other_id)
 
 
+@architecture_decision(
+    title="Working Memory Implementation",
+    description="Implements 7±2 capacity limit with temporal decay",
+    rationale="Mimics human cognitive limitations for natural memory patterns",
+    alternatives_considered=["Unlimited capacity", "Fixed time windows", "Pure LRU cache"],
+    impacts=["memory_naturalness", "cognitive_load", "consolidation_patterns"],
+    decided_by="Casey based on Miller's Law",
+    decision_date="2025-09-12"
+)
+@state_checkpoint(
+    title="Working Memory State",
+    description="Active thoughts buffer with attention tracking",
+    state_type="cognitive_buffer",
+    persistence=False,
+    consistency_requirements="Maintain associations during consolidation",
+    recovery_strategy="Clear and restart"
+)
 class WorkingMemory:
     """
     Working memory system for active cognitive processing.
@@ -113,6 +146,13 @@ class WorkingMemory:
         
         logger.info(f"Working memory initialized with capacity {capacity}")
     
+    @performance_boundary(
+        title="Thought Addition",
+        description="Adds thought to working memory with capacity management",
+        sla="<5ms per thought",
+        optimization_notes="Automatic overflow handling",
+        measured_impact="Maintains natural capacity limits"
+    )
     async def add_thought(self, 
                          content: Any,
                          thought_id: Optional[str] = None,
@@ -216,6 +256,14 @@ class WorkingMemory:
         ]
         return sorted(active, key=lambda t: t.attention_weight, reverse=True)
     
+    @danger_zone(
+        title="Memory Overflow Management",
+        description="Removes least important thoughts when at capacity",
+        risk_level="medium",
+        risks=["potential_data_loss", "important_thought_removal"],
+        mitigation="Consolidate important thoughts before removal",
+        review_required=False
+    )
     async def _make_room(self):
         """Make room in working memory by removing least important thoughts."""
         # Sort by attention weight and recency

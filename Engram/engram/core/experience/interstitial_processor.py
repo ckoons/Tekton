@@ -5,6 +5,24 @@ Processes memory at cognitive boundaries - the spaces between thoughts
 where consolidation and integration naturally occur.
 """
 
+# Import landmarks with fallback
+try:
+    from engram.core.landmarks import (
+        architecture_decision,
+        state_checkpoint,
+        performance_boundary,
+        ci_collaboration,
+        insight_landmark
+    )
+except ImportError:
+    from ..landmarks import (
+        architecture_decision,
+        state_checkpoint,
+        performance_boundary,
+        ci_collaboration,
+        insight_landmark
+    )
+
 import asyncio
 import logging
 from dataclasses import dataclass
@@ -43,6 +61,23 @@ class CognitiveBoundary:
     metadata: Dict[str, Any] = None
 
 
+@architecture_decision(
+    title="Interstitial Memory Processing",
+    description="Processes memories at cognitive boundaries for natural consolidation",
+    rationale="Mimics human memory consolidation during cognitive gaps",
+    alternatives_considered=["Continuous processing", "Time-based intervals", "Manual triggers"],
+    impacts=["memory_coherence", "natural_forgetting", "association_formation"],
+    decided_by="Casey based on cognitive science",
+    decision_date="2025-09-12"
+)
+@insight_landmark(
+    title="Cognitive Boundary Detection",
+    summary="Natural memory consolidation points",
+    discovery="Memories consolidate naturally at topic shifts and pauses",
+    resolution="Detect boundaries and trigger consolidation",
+    impact="More coherent memory formation",
+    namespace="engram"
+)
 class InterstitialProcessor:
     """
     Processes memory at cognitive boundaries.
@@ -85,6 +120,13 @@ class InterstitialProcessor:
         
         logger.info("Interstitial processor initialized")
     
+    @performance_boundary(
+        title="Boundary Detection",
+        description="Detects cognitive boundaries for memory consolidation",
+        sla="<10ms detection time",
+        optimization_notes="Multiple boundary types checked in parallel",
+        measured_impact="Real-time boundary detection without latency"
+    )
     async def detect_boundary(self, 
                              new_context: Dict[str, Any]) -> Optional[BoundaryType]:
         """
@@ -212,6 +254,14 @@ class InterstitialProcessor:
         
         return False
     
+    @state_checkpoint(
+        title="Boundary Consolidation",
+        description="Consolidates working memory at cognitive boundaries",
+        state_type="memory_consolidation",
+        persistence=True,
+        consistency_requirements="Preserve all associations",
+        recovery_strategy="Replay from working memory"
+    )
     async def consolidate_at_boundary(self, boundary: CognitiveBoundary):
         """
         Consolidate memories at a cognitive boundary.
@@ -470,6 +520,13 @@ class InterstitialProcessor:
                 exp.reinforce(strength=0.3)
                 logger.debug(f"Strengthened important memory {exp.memory_id}")
     
+    @ci_collaboration(
+        title="Dream-like Memory Recombination",
+        description="Creates novel associations during idle periods",
+        participants=["experience_manager", "emotional_context"],
+        coordination_method="random_association",
+        synchronization="async_idle"
+    )
     async def dream_recombine(self, idle_duration: timedelta):
         """
         Dream-like recombination of memories during idle periods.

@@ -4,6 +4,24 @@ Experience Layer for ESR Memory System.
 Transforms mechanical storage into natural, lived experiences for CIs.
 """
 
+# Import landmarks with fallback
+try:
+    from engram.core.landmarks import (
+        architecture_decision,
+        state_checkpoint,
+        performance_boundary,
+        ci_orchestrated,
+        integration_point
+    )
+except ImportError:
+    from ..landmarks import (
+        architecture_decision,
+        state_checkpoint,
+        performance_boundary,
+        ci_orchestrated,
+        integration_point
+    )
+
 import asyncio
 import logging
 from dataclasses import dataclass
@@ -61,6 +79,22 @@ class MemoryExperience:
         self.importance = min(1.0, self.importance + strength * 0.3)
 
 
+@architecture_decision(
+    title="Experience Layer Architecture",
+    description="Transforms mechanical storage into natural, lived experiences for CIs",
+    rationale="Memory should feel organic and emotionally-aware, not mechanically stored",
+    alternatives_considered=["Pure mechanical storage", "Simple tagging system", "No emotional context"],
+    impacts=["ci_consciousness", "memory_naturalness", "emotional_coherence"],
+    decided_by="Casey and Opus 4.1",
+    decision_date="2025-09-12"
+)
+@ci_orchestrated(
+    title="CI Memory Experience System",
+    description="Enables CIs to form natural, emotionally-tagged memories",
+    orchestrator="Any CI using ESR",
+    workflow=["experience", "tag_emotion", "working_memory", "consolidate", "recall"],
+    ci_capabilities=["emotional_awareness", "memory_promises", "interstitial_processing"]
+)
 class ExperienceManager:
     """
     Manages the experience layer for natural memory.
@@ -95,6 +129,13 @@ class ExperienceManager:
         
         logger.info("Experience Manager initialized")
     
+    @performance_boundary(
+        title="Experience Creation",
+        description="Creates new memory experience with emotional tagging",
+        sla="<50ms creation time",
+        optimization_notes="Deferred consolidation to background process",
+        measured_impact="Enables natural memory formation without blocking"
+    )
     async def create_experience(self,
                                content: Any,
                                emotion: Optional[EmotionalTag] = None,
@@ -134,6 +175,13 @@ class ExperienceManager:
         logger.debug(f"Created experience {memory_id} with {emotion.primary_emotion.value}")
         return experience
     
+    @performance_boundary(
+        title="Experience Recall",
+        description="Progressive memory recall with emotional influence",
+        sla="<100ms for initial promise, <500ms for full resolution",
+        optimization_notes="Promise-based progressive refinement",
+        measured_impact="Non-blocking recall with immediate partial results"
+    )
     async def recall_experience(self, 
                                query: str,
                                use_promise: bool = True) -> Any:
@@ -279,6 +327,14 @@ class ExperienceManager:
                 )
             )
     
+    @integration_point(
+        title="Working Memory Consolidation",
+        description="Consolidates thoughts from working memory to long-term storage",
+        target_component="ESR Storage System",
+        protocol="async_callback",
+        data_flow="WorkingMemory → consolidate → ExperienceManager → ESR backends",
+        integration_date="2025-09-12"
+    )
     async def _consolidate_thought(self, thought: ThoughtBuffer):
         """Consolidate a thought from working memory to experience."""
         # Extract experience if it exists
