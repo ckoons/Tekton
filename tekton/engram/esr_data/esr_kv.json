@@ -1,0 +1,32 @@
+{
+  "test_1757625996.630455": {
+    "data": "test",
+    "timestamp": "2025-09-11T17:26:36.630467"
+  },
+  "test_1757678226.88012": {
+    "data": "test",
+    "timestamp": "2025-09-12T07:57:06.880131"
+  },
+  "test_kv_1757678308.106963": {
+    "value": {
+      "message": "ESR test data",
+      "timestamp": "2025-09-12T07:58:28.106317",
+      "nested": {
+        "key": "value"
+      }
+    },
+    "metadata": {},
+    "timestamp": "2025-09-12T07:58:28.106965"
+  },
+  "test_kv_1757678330.385226": {
+    "value": {
+      "message": "ESR test data",
+      "timestamp": "2025-09-12T07:58:50.384445",
+      "nested": {
+        "key": "value"
+      }
+    },
+    "metadata": {},
+    "timestamp": "2025-09-12T07:58:50.385231"
+  }
+}

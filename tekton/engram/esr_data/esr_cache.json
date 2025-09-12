@@ -1,0 +1,19 @@
+{
+  "cache": {
+    "test_cache_1757678308.106819": {
+      "message": "ESR test data",
+      "timestamp": "2025-09-12T07:58:28.106317",
+      "nested": {
+        "key": "value"
+      }
+    },
+    "test_cache_1757678330.385097": {
+      "message": "ESR test data",
+      "timestamp": "2025-09-12T07:58:50.384445",
+      "nested": {
+        "key": "value"
+      }
+    }
+  },
+  "ttl": {}
+}
