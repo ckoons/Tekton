@@ -13,6 +13,14 @@ Engram is Tekton's memory and persistence service, providing both traditional da
 - **Multi-CI Support**: Isolated namespaces for each CI
 - **Reflection Triggers**: Time-based, event-based, and threshold-based
 
+### ESR Experience Layer (New!)
+- **Emotional Context**: Memories tagged with emotions that influence recall
+- **Working Memory**: 7±2 capacity with natural overflow handling
+- **Interstitial Processing**: Automatic consolidation at cognitive boundaries
+- **Memory Promises**: Non-blocking progressive recall with confidence gradients
+- **Natural Forgetting**: Temporal decay and memory metabolism
+- **Dream Recombination**: Novel associations during idle periods
+
 ### Traditional Storage
 - **Nexus Processing**: Advanced data transformation
 - **Structured Memory**: Key-value storage with metadata
@@ -270,6 +278,9 @@ class CustomBackend:
 ## Documentation
 
 - [ESR System Documentation](docs/ESR_SYSTEM.md)
+- [Experience Layer Documentation](engram/core/experience/README.md)
+- [Experience Layer Executive Summary](../MetaData/DevelopmentSprints/Encoding_Storage_Retrieval_Sprint/EXPERIENCE_LAYER_EXECUTIVE_SUMMARY.md)
+- [Integration Guide](../MetaData/DevelopmentSprints/Encoding_Storage_Retrieval_Sprint/INTEGRATION_GUIDE.md)
 - [CI Registry Memory Integration](../shared/aish/docs/CI_REGISTRY_MEMORY.md)
 - [Memory Integration Guide](../docs/MEMORY_INTEGRATION_GUIDE.md)
 
