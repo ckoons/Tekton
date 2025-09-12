@@ -165,7 +165,20 @@ class ExperienceManager:
         for thought in self.working_memory.get_active_thoughts():
             if query.lower() in str(thought.content).lower():
                 await self.working_memory.access_thought(thought.thought_id)
-                return thought.content
+                # Return colored result even from working memory
+                if thought.thought_id in self.experiences:
+                    return self._color_with_emotion(self.experiences[thought.thought_id])
+                else:
+                    # Create a temporary experience-like structure
+                    temp_exp = MemoryExperience(
+                        memory_id=thought.thought_id,
+                        content=thought.content,
+                        emotional_tag=self.emotional_context.current_mood,
+                        confidence=0.8,
+                        created_at=thought.created_at,
+                        vividness=1.0
+                    )
+                    return self._color_with_emotion(temp_exp)
         
         # Search experiences
         results = []
