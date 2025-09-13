@@ -7,7 +7,11 @@
 
 class PatternsDiscoveryEngine {
     constructor(containerId) {
-        this.container = document.getElementById(containerId) || document.querySelector('#patterns-panel');
+        this.container = document.getElementById(containerId);
+        if (!this.container) {
+            console.error('Patterns container not found:', containerId);
+            return;
+        }
         this.ws = null;
         this.patterns = new Map(); // Pattern ID -> Pattern Object
         this.activeFilter = 'all';
@@ -34,6 +38,16 @@ class PatternsDiscoveryEngine {
      * @landmark Layout: Create main container structure
      */
     createLayout() {
+        // Check if we already have the visualization container in HTML
+        const vizContainer = document.getElementById('patterns-container');
+        if (vizContainer) {
+            console.log('Using existing patterns structure from HTML');
+            // Don't replace the HTML, just use what's there
+            return;
+        }
+        
+        console.log('Creating patterns layout dynamically');
+        // Only create layout if it doesn't exist
         this.container.innerHTML = `
             <div class="patterns__header">
                 <div class="patterns__title-section">
@@ -123,14 +137,32 @@ class PatternsDiscoveryEngine {
      * @landmark Visualization: Create pattern flow stream
      */
     createVisualization() {
-        this.svg = d3.select('#patterns-svg');
-        this.canvas = document.getElementById('patterns-canvas');
-        this.ctx = this.canvas.getContext('2d');
+        // Make sure D3 is loaded
+        if (typeof d3 === 'undefined') {
+            console.error('D3.js not loaded, retrying...');
+            setTimeout(() => this.createVisualization(), 500);
+            return;
+        }
         
-        const width = this.container.offsetWidth;
+        this.svg = d3.select('#patterns-svg');
+        if (this.svg.empty()) {
+            console.error('SVG element not found');
+            return;
+        }
+        
+        this.canvas = document.getElementById('patterns-canvas');
+        if (this.canvas) {
+            this.ctx = this.canvas.getContext('2d');
+        }
+        
+        const width = 1200;
         const height = 400;
         
-        this.svg.attr('viewBox', `0 0 ${width} ${height}`);
+        console.log('Creating patterns visualization:', width, 'x', height);
+        
+        this.svg.attr('viewBox', `0 0 ${width} ${height}`)
+            .attr('width', '100%')
+            .attr('height', height);
         
         // Create gradients for different pattern states
         const defs = this.svg.append('defs');
@@ -186,6 +218,9 @@ class PatternsDiscoveryEngine {
         
         this.labelsGroup = this.svg.append('g')
             .attr('class', 'pattern-labels');
+        
+        // Add demo patterns for immediate visualization
+        this.addDemoPatterns();
     }
     
     /**
@@ -497,6 +532,52 @@ class PatternsDiscoveryEngine {
         } catch (error) {
             console.error('Error handling pattern message:', error);
         }
+    }
+    
+    /**
+     * @landmark Demo Patterns: Add sample patterns for visualization
+     */
+    addDemoPatterns() {
+        const demoPatterns = [
+            {
+                id: 'demo_1',
+                name: 'Code Review Stress',
+                state: 'strengthening',
+                strength: 0.7,
+                type: 'behavioral',
+                ci_id: 'apollo',
+                emotion: 'stress'
+            },
+            {
+                id: 'demo_2',
+                name: 'Morning Productivity',
+                state: 'stable',
+                strength: 0.9,
+                type: 'temporal',
+                ci_id: 'athena',
+                emotion: 'focus'
+            },
+            {
+                id: 'demo_3',
+                name: 'Learning Pattern',
+                state: 'emerging',
+                strength: 0.4,
+                type: 'cognitive',
+                ci_id: 'hermes',
+                emotion: 'curiosity'
+            },
+            {
+                id: 'demo_4',
+                name: 'Collaboration Flow',
+                state: 'cyclical',
+                strength: 0.6,
+                type: 'social',
+                ci_id: 'zeus',
+                emotion: 'engagement'
+            }
+        ];
+        
+        demoPatterns.forEach(pattern => this.addPattern(pattern));
     }
     
     /**
@@ -860,17 +941,28 @@ class PatternsDiscoveryEngine {
 }
 
 // Initialize when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        if (document.getElementById('patterns-panel')) {
-            window.patternsDiscovery = new PatternsDiscoveryEngine('patterns-panel');
-        }
-    });
-} else {
-    if (document.getElementById('patterns-panel')) {
+function initializePatternsDiscovery() {
+    const container = document.getElementById('patterns-panel');
+    if (container && !window.patternsDiscovery) {
+        console.log('Initializing Patterns Discovery visualization');
         window.patternsDiscovery = new PatternsDiscoveryEngine('patterns-panel');
     }
 }
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(initializePatternsDiscovery, 100);
+    });
+} else {
+    setTimeout(initializePatternsDiscovery, 100);
+}
+
+// Also try to initialize when patterns tab is clicked
+document.addEventListener('click', (e) => {
+    if (e.target.closest('[data-tab="patterns"]') || e.target.closest('#engram-tab-patterns')) {
+        setTimeout(initializePatternsDiscovery, 200);
+    }
+});
 
 // Export for use in other components
 if (typeof module !== 'undefined' && module.exports) {

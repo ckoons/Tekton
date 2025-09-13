@@ -12,6 +12,55 @@ window.engram = window.engram || {};
 console.log('[ENGRAM] Script loaded, window.engram initialized');
 
 /**
+ * Switch between Memory panel modes (Browse, Create, Search, Timeline)
+ */
+window.engram.switchMemoryMode = function(mode) {
+    // Update tab states
+    const tabs = document.querySelectorAll('.memories__mode-tab');
+    tabs.forEach(tab => {
+        if (tab.getAttribute('data-mode') === mode) {
+            tab.classList.add('active');
+        } else {
+            tab.classList.remove('active');
+        }
+    });
+    
+    // Update content visibility
+    const contents = document.querySelectorAll('.memories__mode-content');
+    contents.forEach(content => {
+        if (content.getAttribute('data-mode-content') === mode) {
+            content.classList.add('active');
+            content.style.display = 'block';
+        } else {
+            content.classList.remove('active');
+            content.style.display = 'none';
+        }
+    });
+    
+    console.log(`[ENGRAM] Switched to ${mode} mode`);
+};
+
+// Initialize visualizations when tabs are clicked
+document.addEventListener('change', (e) => {
+    if (e.target.id === 'engram-tab-cognition' && e.target.checked) {
+        console.log('[ENGRAM] Cognition tab selected, initializing 3D brain');
+        setTimeout(() => {
+            if (typeof initializeCognitionBrain3D === 'function') {
+                initializeCognitionBrain3D();
+            }
+        }, 100);
+    }
+    if (e.target.id === 'engram-tab-patterns' && e.target.checked) {
+        console.log('[ENGRAM] Patterns tab selected, initializing patterns');
+        setTimeout(() => {
+            if (typeof initializePatternsDiscovery === 'function') {
+                initializePatternsDiscovery();
+            }
+        }, 100);
+    }
+});
+
+/**
  * Load memories for browse tab
  */
 window.engram.loadMemories = async function(type = 'all', sharing = 'all', page = 1) {

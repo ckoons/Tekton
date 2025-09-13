@@ -3,14 +3,27 @@
  * Living pattern visualization and discovery
  */
 
-/* Container */
-.patterns__header {
+/* Submenu Bar */
+.patterns__submenu {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
+    padding: 10px 20px;
     border-bottom: 1px solid var(--border-color, #444);
     background-color: var(--bg-secondary, #252535);
+    height: 46px;
+}
+
+.patterns__submenu-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.patterns__submenu-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
 .patterns__title-section {
@@ -131,16 +144,17 @@
 .patterns__main {
     position: relative;
     background-color: var(--bg-primary, #1e1e2e);
-    min-height: 450px;
+    height: calc(100% - 46px); /* Account for submenu */
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
 }
 
 .patterns__visualization {
     position: relative;
     width: 100%;
     height: 400px;
-    background: linear-gradient(180deg, 
-        rgba(30, 30, 46, 0.9) 0%, 
-        rgba(30, 30, 46, 1) 100%);
+    background: #000000;
     overflow: hidden;
 }
 

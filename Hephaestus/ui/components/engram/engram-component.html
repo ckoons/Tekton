@@ -16,7 +16,7 @@
 <!-- Load Cognition Brain Visualization -->
 <link rel="stylesheet" href="/styles/engram/cognition.css">
 <script src="https://d3js.org/d3.v7.min.js"></script>
-<script src="/components/engram/cognition-brain.js"></script>
+<!-- Removed old 2D cognition-brain.js - using 3D version only -->
 
 <!-- Hidden radio inputs for CSS-first tab functionality -->
 <!-- @landmark Navigation: CSS-first radio buttons for tab switching -->
@@ -91,53 +91,58 @@
     <!-- Engram Content Area -->
     <!-- @landmark Content: Main content area with 6 tab panels -->
     <div class="engram__content" data-tekton-zone="content" data-tekton-scrollable="true">
-        <!-- Browse Tab (Default Active Tab) -->
-        <!-- @landmark Panel: Browse - Card-based memory browser -->
-        <div id="browse-panel" class="engram__panel" data-tekton-panel="browse" data-tekton-panel-for="Browse" data-tekton-panel-component="engram">
-            <div class="engram__browse">
-                <!-- @landmark Control Bar: Filter and action controls for memory browsing -->
-                <div class="engram__control-bar" data-tekton-zone="control-bar" data-tekton-component="memory-filters">
-                    <div class="engram__browse-filters" data-tekton-zone="filters" data-tekton-state="ready">
-                        <select id="memory-type-filter" class="engram__filter-select" 
-                               data-tekton-select="filter" 
-                               data-tekton-filter="memory-type"
-                               data-tekton-action="filter-change"
-                               data-tekton-trigger="change">
-                            <option value="all">All Types</option>
-                            <option value="conversation">Conversation</option>
-                            <option value="document">Document</option>
-                            <option value="knowledge">Knowledge</option>
-                            <option value="task">Task</option>
-                            <option value="note">Note</option>
-                        </select>
-                        <select id="memory-sharing-filter" class="engram__filter-select" 
-                               data-tekton-select="filter" 
-                               data-tekton-filter="memory-sharing"
-                               data-tekton-action="filter-change"
-                               data-tekton-trigger="change">
-                            <option value="all">All Memories</option>
-                            <option value="private">Private</option>
-                            <option value="shared">Shared</option>
-                        </select>
-                        <select id="filter-action" class="engram__filter-select" 
-                               data-tekton-select="filter-action" 
-                               data-tekton-action="apply-filter"
-                               data-tekton-trigger="change"
-                               data-tekton-target="memory-cards-container"
-                               onchange="engram.applySelectedFilter(this.value)">
-                            <option value="">Apply Filter...</option>
-                            <option value="type">Apply Type Filter</option>
-                            <option value="sharing">Apply Sharing Filter</option>
-                            <option value="all">Apply All Filters</option>
-                        </select>
-                    </div>
-                    <div class="engram__browse-actions" data-tekton-zone="actions">
-                        <!-- Refresh button removed -->
-                    </div>
+        <!-- Memories Panel - Consolidated Browse/Create/Search -->
+        <!-- @landmark Panel: Memories - Unified memory management interface -->
+        <div id="memories-panel" class="engram__panel" data-tekton-panel="memories" data-tekton-panel-for="Memories" data-tekton-panel-component="engram" data-tekton-state="ready">
+            <!-- Memories Submenu Bar -->
+            <div class="memories__submenu">
+                <div class="memories__submenu-left">
+                    <label>CI:</label>
+                    <select id="memories-ci-select" class="memories__select">
+                        <option value="all">All CIs</option>
+                        <option value="apollo">Apollo</option>
+                        <option value="athena">Athena</option>
+                        <option value="hermes">Hermes</option>
+                        <option value="zeus">Zeus</option>
+                        <option value="diana">Diana</option>
+                    </select>
+                    
+                    <select class="memories__filter-select" id="memory-type-filter">
+                        <option value="all">All Types</option>
+                        <option value="conversation">Conversation</option>
+                        <option value="document">Document</option>
+                        <option value="knowledge">Knowledge</option>
+                        <option value="task">Task</option>
+                        <option value="note">Note</option>
+                        <option value="insight">Insight</option>
+                    </select>
+                    
+                    <select class="memories__filter-select" id="memory-time-filter">
+                        <option value="all">All Times</option>
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                        <option value="year">This Year</option>
+                    </select>
+                    
+                    <select class="memories__filter-select" id="memory-sharing-filter">
+                        <option value="all">All Sharing</option>
+                        <option value="private">Private</option>
+                        <option value="shared">Shared</option>
+                    </select>
                 </div>
                 
-                <!-- @landmark Cards Grid: Memory cards display container -->
-                <div class="engram__cards-container" id="memory-cards-container" 
+                <div class="memories__mode-tabs">
+                    <button class="memories__mode-tab active" data-mode="browse" onclick="engram.switchMemoryMode('browse')">Browse</button>
+                    <button class="memories__mode-tab" data-mode="create" onclick="engram.switchMemoryMode('create')">Create</button>
+                    <button class="memories__mode-tab" data-mode="search" onclick="engram.switchMemoryMode('search')">Search</button>
+                    <button class="memories__mode-tab" data-mode="timeline" onclick="engram.switchMemoryMode('timeline')">Timeline</button>
+                </div>
+            </div>
+            
+            <!-- Browse Mode -->
+            <div class="memories__mode-content active" data-mode-content="browse">
+                <div class="memories__cards-container" id="memory-cards-container" 
                      data-tekton-zone="content-grid" 
                      data-tekton-type="memory-cards"
                      data-tekton-state="ready"
@@ -267,11 +272,7 @@
                         </button>
                     </div>
                 </div>
-                
-                <!-- Pagination -->
-                <div class="engram__pagination" id="memory-pagination"></div>
             </div>
-        </div>
         
         <!-- Create Tab -->
         <!-- @landmark Panel: Create - Create new memories with file upload -->
@@ -552,42 +553,88 @@
              data-tekton-panel-component="engram"
              data-tekton-state="ready"
              data-tekton-ai="pattern-detection">
-            <div class="engram__patterns" data-tekton-zone="patterns-content">
-                <div class="engram__patterns-header" data-tekton-zone="header">
-                    <h3 class="engram__section-title" 
-                       data-tekton-text="section-title">Pattern Detective - Emergent Discoveries</h3>
-                    <div class="engram__patterns-controls" data-tekton-zone="controls">
-                        <select id="pattern-type-filter" class="engram__filter-select">
-                            <option value="all">All Patterns</option>
-                            <option value="repeating_success">Success Patterns</option>
-                            <option value="stress_correlation">Stress Correlations</option>
-                            <option value="discovery">Discoveries</option>
-                            <option value="emotional">Emotional Patterns</option>
-                            <option value="behavioral">Behavioral Patterns</option>
-                        </select>
-                        <button id="detect-patterns-btn" class="engram__button engram__button--primary" style="background: #00BCD4; color: white; border: none;">
-                            Detect New Patterns
-                        </button>
-                    </div>
+            <!-- Patterns Submenu Bar -->
+            <div class="patterns__submenu">
+                <div class="patterns__submenu-left">
+                    <span class="patterns__status-dot" data-status="active"></span>
+                    <span class="patterns__status-text">Detecting patterns...</span>
+                    
+                    <select id="pattern-ci-select" class="patterns__select">
+                        <option value="all">All CIs</option>
+                        <option value="apollo">Apollo</option>
+                        <option value="athena">Athena</option>
+                        <option value="hermes">Hermes</option>
+                        <option value="zeus">Zeus</option>
+                        <option value="diana">Diana</option>
+                    </select>
+                    
+                    <select class="patterns__select">
+                        <option value="all">All Patterns</option>
+                        <option value="emerging">Emerging</option>
+                        <option value="strengthening">Strengthening</option>
+                        <option value="stable">Stable</option>
+                        <option value="fading">Fading</option>
+                        <option value="cyclical">Cyclical</option>
+                    </select>
                 </div>
                 
-                <!-- Pattern Cards Container -->
-                <div class="engram__patterns-container" id="patterns-container" 
-                     data-tekton-zone="patterns-grid"
-                     data-tekton-type="pattern-analysis"
-                     data-tekton-state="ready">
-                    
-                    <!-- Loading State -->
-                    <div class="engram__loading" id="patterns-loading" 
-                         style="display: none;">
-                        <div class="engram__loading-spinner"></div>
-                        <p>🔍 Detecting patterns in memories...</p>
+                <div class="patterns__submenu-right">
+                    <div class="patterns__viz-toggle">
+                        <button class="patterns__viz-btn active" data-viz="stream">Stream</button>
+                        <button class="patterns__viz-btn" data-viz="network">Network</button>
+                        <button class="patterns__viz-btn" data-viz="pulse">Pulse</button>
                     </div>
                     
-                    <!-- Pattern cards will be dynamically populated here -->
-                    <div id="pattern-cards" class="engram__pattern-cards">
-                        <!-- Pattern cards inserted by JavaScript -->
+                    <button class="patterns__btn patterns__btn--primary">Detect New Patterns</button>
+                </div>
+            </div>
+            
+            <!-- Main Visualization Area -->
+            <div class="patterns__main">
+                <div class="patterns__visualization" id="patterns-container" 
+>
+                    <svg id="patterns-svg"></svg>
+                    <canvas id="patterns-canvas" style="display: none;"></canvas>
+                    
+                    <!-- Legend -->
+                    <div class="patterns__legend">
+                        <div class="patterns__legend-item">
+                            <div class="patterns__legend-icon patterns__legend-icon--emerging"></div>
+                            <span>Emerging</span>
+                        </div>
+                        <div class="patterns__legend-item">
+                            <div class="patterns__legend-icon patterns__legend-icon--strengthening"></div>
+                            <span>Strengthening</span>
+                        </div>
+                        <div class="patterns__legend-item">
+                            <div class="patterns__legend-icon patterns__legend-icon--stable"></div>
+                            <span>Stable</span>
+                        </div>
+                        <div class="patterns__legend-item">
+                            <div class="patterns__legend-icon patterns__legend-icon--fading"></div>
+                            <span>Fading</span>
+                        </div>
+                        <div class="patterns__legend-item">
+                            <div class="patterns__legend-icon patterns__legend-icon--cyclical"></div>
+                            <span>Cyclical</span>
+                        </div>
                     </div>
+                </div>
+            </div>
+            
+            <!-- Pattern Details -->
+            <div class="patterns__details" id="pattern-details" style="display: none;">
+                <h4 class="patterns__details-title">Selected Pattern</h4>
+                <div class="patterns__details-content">
+                    <!-- Details will be populated here -->
+                </div>
+            </div>
+            
+            <!-- Discovery Feed -->
+            <div class="patterns__discovery-feed">
+                <h4 class="patterns__feed-title">Discovery Feed</h4>
+                <div class="patterns__feed" id="patterns-feed">
+                    <!-- Feed items will be populated here -->
                 </div>
             </div>
         </div>
@@ -756,6 +803,63 @@
         </div>
     </div>
     
+    <!-- Cognition Panel -->
+    <!-- @landmark Panel: Cognition - Real-time CI cognitive state visualization -->
+    <div id="cognition-panel" class="engram__panel" 
+         data-tekton-panel="cognition" 
+         data-tekton-panel-for="Cognition" 
+         data-tekton-panel-component="engram"
+         data-tekton-cognition="brain-monitor"
+         data-tekton-state="ready">
+        <!-- Cognition 3D Brain Visualization -->
+        <div class="cognition__container">
+            <div class="cognition__header">
+                <h3 class="cognition__title">Cognitive State Monitor</h3>
+                <select id="cognition-ci-select" class="cognition__select">
+                    <option value="all">All CIs</option>
+                    <option value="apollo">Apollo</option>
+                    <option value="athena">Athena</option>
+                    <option value="hermes">Hermes</option>
+                    <option value="zeus">Zeus</option>
+                    <option value="diana">Diana</option>
+                </select>
+            </div>
+            
+            <!-- 3D Brain Container -->
+            <div id="cognition-brain-3d" class="cognition__brain-3d"></div>
+            
+            <!-- Region Info Panel -->
+            <div class="cognition__info">
+                <div class="cognition__control-group">
+                    <span class="cognition__control-label">Active Regions</span>
+                    <div class="cognition__region-buttons">
+                        <button class="cognition__region-btn" data-region="prefrontal">Prefrontal</button>
+                        <button class="cognition__region-btn" data-region="hippocampus">Hippocampus</button>
+                        <button class="cognition__region-btn" data-region="amygdala">Amygdala</button>
+                        <button class="cognition__region-btn" data-region="temporal">Temporal</button>
+                        <button class="cognition__region-btn" data-region="parietal">Parietal</button>
+                    </div>
+                </div>
+                
+                <div class="cognition__control-group">
+                    <span class="cognition__control-label">Cognitive Aspects</span>
+                    <div class="cognition__aspect-buttons">
+                        <button class="cognition__aspect-btn" data-aspect="memory">Memory</button>
+                        <button class="cognition__aspect-btn" data-aspect="emotion">Emotion</button>
+                        <button class="cognition__aspect-btn" data-aspect="planning">Planning</button>
+                        <button class="cognition__aspect-btn" data-aspect="language">Language</button>
+                        <button class="cognition__aspect-btn" data-aspect="spatial">Spatial</button>
+                    </div>
+                </div>
+                
+                <div class="cognition__controls">
+                    <p class="cognition__hint">Click and drag to rotate • Scroll to zoom</p>
+                    <button onclick="window.cognitionBrain3D && window.cognitionBrain3D.resetHighlight()">Reset View</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- Footer with Chat Input -->
     <!-- @landmark Footer: CI chat input and message transmission -->
     <div class="engram__footer" 
@@ -784,20 +888,6 @@
                     data-tekton-trigger="click"
                     data-tekton-ai="message-send"
                     data-tekton-state="ready">Send</button>
-        </div>
-    </div>
-    
-    <!-- Cognition Panel -->
-    <!-- @landmark Panel: Cognition - Real-time CI cognitive state visualization -->
-    <div id="cognition-panel" class="engram__panel" 
-         data-tekton-panel="cognition" 
-         data-tekton-panel-for="Cognition" 
-         data-tekton-panel-component="engram"
-         data-tekton-cognition="brain-monitor"
-         data-tekton-state="ready">
-        <!-- Cognition content will be loaded here -->
-        <div class="cognition__container">
-            <!-- Brain visualization will be inserted here -->
         </div>
     </div>
 </div>
@@ -922,14 +1012,15 @@
         flex: 1;
         overflow: hidden;
         position: relative;
-        margin-bottom: 70px; /* Space for footer */
+        height: calc(100vh - 96px - 70px); /* Full height minus header, menu, and footer */
     }
     
     .engram__panel {
         display: none;
         height: 100%;
         width: 100%;
-        overflow: auto;
+        overflow-y: auto;
+        overflow-x: hidden;
         position: relative;
     }
     
@@ -2228,14 +2319,15 @@
     .engram__footer {
         background-color: var(--bg-secondary, #252535);
         border-top: 1px solid var(--border-color, #444444);
-        padding: 12px 16px;
-        position: absolute;
+        padding: 12px 20px;
+        position: fixed;
         bottom: 0;
-        left: 0;
+        left: 260px; /* Match Terma's footer positioning */
         right: 0;
         height: 70px;
-        z-index: 10; /* Ensure it stays above content */
-        display: block !important; /* Always visible */
+        z-index: 1000; /* High z-index to stay above everything */
+        display: flex !important; /* Always visible */
+        align-items: center;
     }
     
     .engram__chat-input-container {
@@ -2292,6 +2384,177 @@
 <script src="/scripts/tekton-urls.js"></script>
 <script src="/scripts/shared/ai-chat.js"></script>
 <script src="/scripts/engram/engram-component.js"></script>
+<!-- Include visualization libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<!-- Include Engram visualization components -->
+<script src="/components/engram/cognition-brain-3d.js"></script>
+<script src="/components/engram/patterns-discovery.js"></script>
+<link rel="stylesheet" href="/styles/engram/memories.css">
+<link rel="stylesheet" href="/styles/engram/cognition.css">
+<link rel="stylesheet" href="/styles/engram/patterns-discovery.css">
+<script type="text/javascript">
+// Enhanced initialization with better error handling
+function initializeEngram3DBrain() {
+    console.log('[ENGRAM] Attempting to initialize 3D Brain...');
+    
+    // Check if container exists
+    const container = document.getElementById('cognition-brain-3d');
+    if (!container) {
+        console.log('[ENGRAM] Container cognition-brain-3d not found');
+        return false;
+    }
+    
+    // Check if Three.js is loaded
+    if (typeof THREE === 'undefined') {
+        console.log('[ENGRAM] Three.js not loaded yet');
+        return false;
+    }
+    
+    // Check if CognitionBrain3D class is available
+    if (typeof CognitionBrain3D === 'undefined') {
+        console.log('[ENGRAM] CognitionBrain3D class not defined');
+        // Try loading the script again
+        if (!document.querySelector('script[src*="cognition-brain-3d.js"]')) {
+            const script = document.createElement('script');
+            script.src = '/components/engram/cognition-brain-3d.js';
+            document.head.appendChild(script);
+        }
+        return false;
+    }
+    
+    // Don't reinitialize if already exists
+    if (window.cognitionBrain3D) {
+        console.log('[ENGRAM] 3D Brain already initialized');
+        return true;
+    }
+    
+    try {
+        console.log('[ENGRAM] Creating CognitionBrain3D instance...');
+        window.cognitionBrain3D = new CognitionBrain3D('cognition-brain-3d');
+        console.log('[ENGRAM] 3D Brain initialized successfully!');
+        return true;
+    } catch (error) {
+        console.error('[ENGRAM] Error initializing 3D Brain:', error);
+        return false;
+    }
+}
+
+function initializeEngramPatterns() {
+    console.log('[ENGRAM] Attempting to initialize Patterns...');
+    
+    // Check if container exists
+    const panel = document.getElementById('patterns-panel');
+    if (!panel) {
+        console.log('[ENGRAM] Panel patterns-panel not found');
+        return false;
+    }
+    
+    // Check if D3.js is loaded
+    if (typeof d3 === 'undefined') {
+        console.log('[ENGRAM] D3.js not loaded yet');
+        return false;
+    }
+    
+    // Check if PatternsDiscoveryEngine class is available
+    if (typeof PatternsDiscoveryEngine === 'undefined') {
+        console.log('[ENGRAM] PatternsDiscoveryEngine class not defined');
+        // Try loading the script again
+        if (!document.querySelector('script[src*="patterns-discovery.js"]')) {
+            const script = document.createElement('script');
+            script.src = '/components/engram/patterns-discovery.js';
+            document.head.appendChild(script);
+        }
+        return false;
+    }
+    
+    // Don't reinitialize if already exists
+    if (window.patternsDiscovery) {
+        console.log('[ENGRAM] Patterns already initialized');
+        return true;
+    }
+    
+    try {
+        console.log('[ENGRAM] Creating PatternsDiscoveryEngine instance...');
+        window.patternsDiscovery = new PatternsDiscoveryEngine('patterns-panel');
+        console.log('[ENGRAM] Patterns initialized successfully!');
+        return true;
+    } catch (error) {
+        console.error('[ENGRAM] Error initializing Patterns:', error);
+        return false;
+    }
+}
+
+// Retry initialization until successful
+function retryInitialization() {
+    let brainDone = false;
+    let patternsDone = false;
+    let attempts = 0;
+    const maxAttempts = 30; // 15 seconds total
+    
+    const tryInit = function() {
+        attempts++;
+        
+        if (!brainDone) {
+            brainDone = initializeEngram3DBrain();
+        }
+        
+        if (!patternsDone) {
+            patternsDone = initializeEngramPatterns();
+        }
+        
+        if ((!brainDone || !patternsDone) && attempts < maxAttempts) {
+            setTimeout(tryInit, 500);
+        } else {
+            console.log('[ENGRAM] Initialization complete:', {
+                brain: brainDone,
+                patterns: patternsDone,
+                attempts: attempts
+            });
+        }
+    };
+    
+    tryInit();
+}
+
+// Start initialization when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('[ENGRAM] DOM loaded, starting initialization...');
+        setTimeout(retryInitialization, 100);
+    });
+} else {
+    console.log('[ENGRAM] DOM already loaded, starting initialization...');
+    setTimeout(retryInitialization, 100);
+}
+
+// Also try when window fully loads
+window.addEventListener('load', function() {
+    console.log('[ENGRAM] Window fully loaded, ensuring initialization...');
+    setTimeout(retryInitialization, 1000);
+});
+
+// Reinitialize when tabs are clicked
+document.addEventListener('click', function(e) {
+    const target = e.target;
+    
+    // Check for cognition tab click
+    if (target.closest('[data-tab="cognition"]') || 
+        target.closest('#engram-tab-cognition') ||
+        target.id === 'engram-tab-cognition') {
+        console.log('[ENGRAM] Cognition tab clicked');
+        setTimeout(initializeEngram3DBrain, 200);
+    }
+    
+    // Check for patterns tab click
+    if (target.closest('[data-tab="patterns"]') || 
+        target.closest('#engram-tab-patterns') ||
+        target.id === 'engram-tab-patterns') {
+        console.log('[ENGRAM] Patterns tab clicked');
+        setTimeout(initializeEngramPatterns, 200);
+    }
+});
+</script>
 <script type="text/javascript">
 // Initialize chat components
 function engram_initChats() {

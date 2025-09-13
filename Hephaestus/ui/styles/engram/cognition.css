@@ -45,6 +45,106 @@
     cursor: pointer;
 }
 
+/* 3D Brain Container */
+#cognition-brain-3d,
+.cognition__brain-3d {
+    flex: 1;
+    min-height: 400px;
+    background-color: #000000;
+    border-radius: 8px;
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.cognition__info {
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color, #444);
+}
+
+.cognition__control-group {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.cognition__control-label {
+    color: var(--text-secondary, #a0a0a0);
+    font-weight: 500;
+    min-width: 120px;
+}
+
+.cognition__region-buttons,
+.cognition__aspect-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.cognition__region-btn,
+.cognition__aspect-btn {
+    padding: 5px 12px;
+    background-color: var(--bg-tertiary, #333345);
+    border: 1px solid var(--border-color, #444);
+    border-radius: 4px;
+    color: var(--text-primary, #f0f0f0);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+.cognition__region-btn:hover,
+.cognition__aspect-btn:hover {
+    background-color: var(--bg-hover, #3a3a4a);
+    transform: translateY(-1px);
+}
+
+.cognition__region-btn.active,
+.cognition__aspect-btn.active {
+    background-color: var(--color-primary, #9C27B0);
+    border-color: var(--color-primary, #9C27B0);
+    color: white;
+}
+
+.cognition__info {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color, #444);
+}
+
+.cognition__region-details h4 {
+    margin: 0 0 10px 0;
+    color: var(--text-primary, #f0f0f0);
+    font-size: 1.1rem;
+}
+
+.cognition__controls {
+    text-align: right;
+}
+
+.cognition__hint {
+    color: var(--text-secondary, #a0a0a0);
+    font-size: 0.85rem;
+    margin-top: 10px;
+    white-space: nowrap;
+}
+
+.cognition__controls button {
+    padding: 8px 16px;
+    background-color: var(--bg-tertiary, #333345);
+    border: 1px solid var(--border-color, #444);
+    border-radius: 4px;
+    color: var(--text-primary, #f0f0f0);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cognition__controls button:hover {
+    background-color: var(--bg-hover, #3a3a4a);
+    transform: translateY(-1px);
+}
+
 /* Main Layout */
 .cognition__main {
     display: flex;
