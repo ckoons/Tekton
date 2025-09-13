@@ -7,6 +7,9 @@
 <script src="/scripts/shared/team-chat.js"></script>
 <!-- Load Pattern Detective -->
 <script src="/scripts/engram/pattern-detective.js"></script>
+<!-- Load ESR Experience -->
+<link rel="stylesheet" href="/styles/engram/esr-experience.css">
+<script src="/components/engram/esr-experience.js"></script>
 
 <!-- Hidden radio inputs for CSS-first tab functionality -->
 <!-- @landmark Navigation: CSS-first radio buttons for tab switching -->
@@ -16,6 +19,7 @@
 <input type="radio" name="engram-tab" id="engram-tab-patterns" style="display: none;">
 <input type="radio" name="engram-tab" id="engram-tab-chat" style="display: none;">
 <input type="radio" name="engram-tab" id="engram-tab-teamchat" style="display: none;">
+<input type="radio" name="engram-tab" id="engram-tab-esr" style="display: none;">
 <div class="engram" data-tekton-area="engram" data-tekton-component="engram" data-tekton-type="component-workspace" data-tekton-ai="engram-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
     <!-- @landmark Header: Component title and branding -->
@@ -80,6 +84,14 @@
                  data-tekton-menu-panel="teamchat-panel" 
                  data-tekton-nav-target="teamchat">
                 <span class="engram__tab-label">Team Chat</span>
+            </label>
+            <!-- ESR Experience Tab -->
+            <label for="engram-tab-esr" class="engram__tab" data-tab="esr" 
+                 data-tekton-menu-item="Experience" 
+                 data-tekton-menu-component="engram" 
+                 data-tekton-menu-panel="esr-panel" 
+                 data-tekton-nav-target="esr">
+                <span class="engram__tab-label">Experience</span>
             </label>
         </div>
         <div class="engram__actions">
@@ -785,6 +797,22 @@
                     data-tekton-state="ready">Send</button>
         </div>
     </div>
+    
+    <!-- ESR Experience Panel -->
+    <!-- @landmark Panel: ESR Experience - Natural memory visualization for CIs -->
+    <!-- Include the ESR Experience HTML -->
+    <div id="esr-panel" class="engram__panel" 
+         data-tekton-panel="esr-experience" 
+         data-tekton-panel-for="Experience" 
+         data-tekton-panel-component="engram"
+         data-tekton-esr="experience-panel"
+         data-tekton-state="ready">
+        <!-- ESR Experience content will be loaded here -->
+        <iframe src="/components/engram/esr-experience.html" 
+                style="width: 100%; height: 100%; border: none;"
+                data-tekton-iframe="esr-experience"
+                data-tekton-state="ready"></iframe>
+    </div>
 </div>
 
 <!-- Add component-specific styles -->
@@ -874,7 +902,8 @@
     #engram-tab-search:checked ~ .engram .engram__tab[data-tab="search"],
     #engram-tab-insights:checked ~ .engram .engram__tab[data-tab="insights"],
     #engram-tab-chat:checked ~ .engram .engram__tab[data-tab="chat"],
-    #engram-tab-teamchat:checked ~ .engram .engram__tab[data-tab="teamchat"] {
+    #engram-tab-teamchat:checked ~ .engram .engram__tab[data-tab="teamchat"],
+    #engram-tab-esr:checked ~ .engram .engram__tab[data-tab="esr"] {
         border-bottom-color: var(--color-primary, #9C27B0); /* Purple for Engram */
         font-weight: 500;
     }
@@ -925,7 +954,8 @@
     #engram-tab-search:checked ~ .engram #search-panel,
     #engram-tab-patterns:checked ~ .engram #patterns-panel,
     #engram-tab-chat:checked ~ .engram #chat-panel,
-    #engram-tab-teamchat:checked ~ .engram #teamchat-panel {
+    #engram-tab-teamchat:checked ~ .engram #teamchat-panel,
+    #engram-tab-esr:checked ~ .engram #esr-panel {
         display: block;
     }
     

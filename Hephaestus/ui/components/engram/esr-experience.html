@@ -1,0 +1,368 @@
+<!-- ESR Experience Layer UI Components -->
+<!-- @landmark Component: ESR Experience Layer - Natural memory visualization for CIs -->
+
+<!-- ESR Experience Tab Panel -->
+<div id="esr-panel" class="engram__panel" 
+     data-tekton-panel="esr-experience" 
+     data-tekton-panel-for="ESR Experience" 
+     data-tekton-panel-component="engram"
+     data-tekton-esr="experience-panel"
+     data-tekton-state="ready">
+    
+    <!-- ESR Dashboard Header -->
+    <div class="esr__header" data-tekton-zone="esr-header">
+        <h3 class="esr__title">ESR Experience Layer</h3>
+        <div class="esr__status">
+            <span class="esr__status-indicator" data-esr-status="active">●</span>
+            <span class="esr__status-text">Memory Formation Active</span>
+        </div>
+    </div>
+    
+    <!-- Main ESR Grid Layout -->
+    <div class="esr__grid" data-tekton-zone="esr-content">
+        
+        <!-- Working Memory Monitor -->
+        <!-- @landmark Widget: Working Memory - Real-time CI cognition display -->
+        <div class="esr__widget esr__working-memory" 
+             data-tekton-esr="working-memory"
+             data-tekton-widget="working-memory-monitor">
+            <div class="esr__widget-header">
+                <h4 class="esr__widget-title">🧠 Working Memory</h4>
+                <span class="esr__capacity-label" id="esr-capacity-label">5/7 thoughts</span>
+            </div>
+            
+            <!-- Capacity Gauge -->
+            <div class="esr__capacity-meter" data-capacity="71">
+                <div class="esr__capacity-fill" id="esr-capacity-fill" style="width: 71%"></div>
+                <div class="esr__capacity-marks">
+                    <span class="esr__mark" style="left: 14.3%"></span>
+                    <span class="esr__mark" style="left: 28.6%"></span>
+                    <span class="esr__mark" style="left: 42.9%"></span>
+                    <span class="esr__mark" style="left: 57.1%"></span>
+                    <span class="esr__mark" style="left: 71.4%"></span>
+                    <span class="esr__mark" style="left: 85.7%"></span>
+                </div>
+            </div>
+            
+            <!-- Active Thoughts List -->
+            <div class="esr__thoughts" id="esr-active-thoughts">
+                <div class="esr__thought" data-thought-id="t1" data-state="active" data-access-count="1">
+                    <div class="esr__thought-content">
+                        <span class="esr__thought-text">Analyzing user query about memory...</span>
+                        <span class="esr__access-count">×1</span>
+                    </div>
+                    <div class="esr__attention-bar">
+                        <div class="esr__attention-fill" style="width: 60%"></div>
+                    </div>
+                </div>
+                
+                <div class="esr__thought" data-thought-id="t2" data-state="rehearsing" data-access-count="4">
+                    <div class="esr__thought-content">
+                        <span class="esr__thought-text">Comparing with previous experiences...</span>
+                        <span class="esr__access-count">×4</span>
+                    </div>
+                    <div class="esr__attention-bar">
+                        <div class="esr__attention-fill" style="width: 85%"></div>
+                    </div>
+                </div>
+                
+                <div class="esr__thought" data-thought-id="t3" data-state="consolidating" data-access-count="6">
+                    <div class="esr__thought-content">
+                        <span class="esr__thought-text">Forming association with quantum topic...</span>
+                        <span class="esr__access-count">×6</span>
+                    </div>
+                    <div class="esr__attention-bar">
+                        <div class="esr__attention-fill" style="width: 95%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Consolidation Queue -->
+            <div class="esr__consolidation-queue">
+                <span class="esr__queue-indicator">
+                    <span class="esr__queue-count">2</span> thoughts ready for consolidation
+                </span>
+            </div>
+        </div>
+        
+        <!-- Emotional Context Visualizer -->
+        <!-- @landmark Widget: Emotional Context - CI mood and emotional state -->
+        <div class="esr__widget esr__emotional-context" 
+             data-tekton-esr="emotional-context"
+             data-tekton-widget="emotion-visualizer">
+            <div class="esr__widget-header">
+                <h4 class="esr__widget-title">🎭 Emotional Context</h4>
+                <span class="esr__mood-label" id="esr-mood-label">Joy (0.7)</span>
+            </div>
+            
+            <!-- Current Mood Indicator -->
+            <div class="esr__mood-display">
+                <div class="esr__emotion-axes">
+                    <!-- Valence Axis -->
+                    <div class="esr__axis esr__valence-axis">
+                        <label class="esr__axis-label">Valence</label>
+                        <div class="esr__axis-bar">
+                            <div class="esr__axis-fill esr__valence-fill" style="width: 85%"></div>
+                        </div>
+                        <span class="esr__axis-value">+0.7</span>
+                    </div>
+                    
+                    <!-- Arousal Axis -->
+                    <div class="esr__axis esr__arousal-axis">
+                        <label class="esr__axis-label">Arousal</label>
+                        <div class="esr__axis-bar">
+                            <div class="esr__axis-fill esr__arousal-fill" style="width: 60%"></div>
+                        </div>
+                        <span class="esr__axis-value">0.6</span>
+                    </div>
+                    
+                    <!-- Dominance Axis -->
+                    <div class="esr__axis esr__dominance-axis">
+                        <label class="esr__axis-label">Dominance</label>
+                        <div class="esr__axis-bar">
+                            <div class="esr__axis-fill esr__dominance-fill" style="width: 50%"></div>
+                        </div>
+                        <span class="esr__axis-value">0.5</span>
+                    </div>
+                </div>
+                
+                <!-- Primary Emotion Display -->
+                <div class="esr__primary-emotion">
+                    <span class="esr__emotion-icon">😊</span>
+                    <span class="esr__emotion-name">Joy</span>
+                    <span class="esr__emotion-intensity">High (0.8)</span>
+                </div>
+            </div>
+            
+            <!-- Emotional History -->
+            <div class="esr__emotion-history">
+                <canvas class="esr__emotion-graph" id="esr-emotion-graph" width="300" height="100"></canvas>
+            </div>
+            
+            <!-- Recent Emotional Tags -->
+            <div class="esr__emotion-tags">
+                <span class="esr__emotion-tag" data-emotion="joy">😊 Discovery</span>
+                <span class="esr__emotion-tag" data-emotion="surprise">😮 Unexpected</span>
+                <span class="esr__emotion-tag" data-emotion="trust">🤝 Confidence</span>
+            </div>
+        </div>
+        
+        <!-- Interstitial Processing Indicator -->
+        <!-- @landmark Widget: Interstitial Processing - Boundary detection and consolidation -->
+        <div class="esr__widget esr__interstitial" 
+             data-tekton-esr="interstitial-processor"
+             data-tekton-widget="interstitial-indicator">
+            <div class="esr__widget-header">
+                <h4 class="esr__widget-title">🌊 Interstitial Processing</h4>
+                <span class="esr__process-status" id="esr-process-status">Monitoring</span>
+            </div>
+            
+            <!-- Boundary Detection -->
+            <div class="esr__boundary-detector">
+                <div class="esr__boundary-current">
+                    <span class="esr__boundary-type">Topic Shift</span>
+                    <div class="esr__boundary-strength">
+                        <div class="esr__boundary-fill" style="width: 75%"></div>
+                    </div>
+                    <span class="esr__boundary-confidence">75% confidence</span>
+                </div>
+                
+                <!-- Recent Boundaries -->
+                <div class="esr__boundary-history">
+                    <div class="esr__boundary-item" data-type="temporal_gap">
+                        <span class="esr__boundary-time">2 min ago</span>
+                        <span class="esr__boundary-label">Temporal Gap (35s)</span>
+                    </div>
+                    <div class="esr__boundary-item" data-type="emotional_peak">
+                        <span class="esr__boundary-time">5 min ago</span>
+                        <span class="esr__boundary-label">Emotional Peak</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Consolidation Activity -->
+            <div class="esr__consolidation">
+                <div class="esr__consolidation-active" id="esr-consolidation-status">
+                    <span class="esr__consolidation-text">Consolidating 3 related thoughts...</span>
+                    <div class="esr__consolidation-progress">
+                        <div class="esr__consolidation-fill" style="width: 40%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dream State Indicator -->
+            <div class="esr__dream-state" data-active="false">
+                <span class="esr__dream-icon">💭</span>
+                <span class="esr__dream-text">Dream recombination inactive</span>
+                <button class="esr__dream-trigger" onclick="esrExperience.triggerDreamState()">
+                    Trigger Dream
+                </button>
+            </div>
+        </div>
+        
+        <!-- Memory Promise Tracker -->
+        <!-- @landmark Widget: Memory Promises - Progressive recall visualization -->
+        <div class="esr__widget esr__promises" 
+             data-tekton-esr="memory-promises"
+             data-tekton-widget="promise-tracker">
+            <div class="esr__widget-header">
+                <h4 class="esr__widget-title">🔄 Memory Promises</h4>
+                <span class="esr__promise-count">2 active</span>
+            </div>
+            
+            <!-- Active Promises -->
+            <div class="esr__promise-list" id="esr-promise-list">
+                <div class="esr__promise" data-promise-id="p1" data-state="resolving">
+                    <div class="esr__promise-query">
+                        "Recalling authentication discussion..."
+                    </div>
+                    <div class="esr__promise-stages">
+                        <span class="esr__stage complete">✓ Cache</span>
+                        <span class="esr__stage active">→ Fast Search</span>
+                        <span class="esr__stage pending">○ Deep Synthesis</span>
+                    </div>
+                    <div class="esr__promise-confidence">
+                        <div class="esr__confidence-bar">
+                            <div class="esr__confidence-fill" style="width: 65%"></div>
+                        </div>
+                        <span class="esr__confidence-text">65% confidence</span>
+                    </div>
+                </div>
+                
+                <div class="esr__promise" data-promise-id="p2" data-state="resolved">
+                    <div class="esr__promise-query">
+                        "Finding similar patterns..."
+                    </div>
+                    <div class="esr__promise-stages">
+                        <span class="esr__stage complete">✓ Cache</span>
+                        <span class="esr__stage complete">✓ Fast Search</span>
+                        <span class="esr__stage complete">✓ Deep Synthesis</span>
+                    </div>
+                    <div class="esr__promise-confidence">
+                        <div class="esr__confidence-bar">
+                            <div class="esr__confidence-fill" style="width: 92%"></div>
+                        </div>
+                        <span class="esr__confidence-text">92% confidence</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Performance Metrics Dashboard -->
+        <!-- @landmark Widget: Performance Metrics - Memory system statistics -->
+        <div class="esr__widget esr__metrics" 
+             data-tekton-esr="performance-metrics"
+             data-tekton-widget="metrics-dashboard">
+            <div class="esr__widget-header">
+                <h4 class="esr__widget-title">📊 Performance Metrics</h4>
+                <button class="esr__refresh-btn" onclick="esrExperience.refreshMetrics()">↻</button>
+            </div>
+            
+            <div class="esr__metrics-grid">
+                <div class="esr__metric">
+                    <span class="esr__metric-label">Formation Rate</span>
+                    <span class="esr__metric-value">12/hr</span>
+                </div>
+                <div class="esr__metric">
+                    <span class="esr__metric-label">Recall Latency</span>
+                    <span class="esr__metric-value">87ms</span>
+                </div>
+                <div class="esr__metric">
+                    <span class="esr__metric-label">Emotional Coherence</span>
+                    <span class="esr__metric-value">0.82</span>
+                </div>
+                <div class="esr__metric">
+                    <span class="esr__metric-label">Consolidation Rate</span>
+                    <span class="esr__metric-value">8/hr</span>
+                </div>
+                <div class="esr__metric">
+                    <span class="esr__metric-label">Working Memory</span>
+                    <span class="esr__metric-value">71%</span>
+                </div>
+                <div class="esr__metric">
+                    <span class="esr__metric-label">Mood Stability</span>
+                    <span class="esr__metric-value">0.91</span>
+                </div>
+            </div>
+            
+            <!-- Memory Decay Curve -->
+            <div class="esr__decay-graph">
+                <canvas class="esr__decay-canvas" id="esr-decay-curve" width="300" height="100"></canvas>
+            </div>
+        </div>
+        
+        <!-- Memory Association Graph -->
+        <!-- @landmark Widget: Association Graph - Interactive memory network visualization -->
+        <div class="esr__widget esr__associations esr__widget--wide" 
+             data-tekton-esr="memory-associations"
+             data-tekton-widget="association-graph">
+            <div class="esr__widget-header">
+                <h4 class="esr__widget-title">🧬 Memory Associations</h4>
+                <div class="esr__graph-controls">
+                    <button class="esr__graph-btn" onclick="esrExperience.filterByEmotion('joy')">Joy</button>
+                    <button class="esr__graph-btn" onclick="esrExperience.filterByEmotion('all')">All</button>
+                    <button class="esr__graph-btn" onclick="esrExperience.showClusters()">Clusters</button>
+                </div>
+            </div>
+            
+            <!-- SVG Graph Container -->
+            <div class="esr__graph-container">
+                <svg class="esr__association-svg" id="esr-association-graph" width="100%" height="300">
+                    <!-- D3.js will populate this -->
+                </svg>
+            </div>
+        </div>
+        
+    </div>
+    
+    <!-- ESR Control Panel -->
+    <!-- @landmark Controls: Research controls for ESR manipulation -->
+    <div class="esr__controls" data-tekton-zone="esr-controls">
+        <div class="esr__control-group">
+            <h5 class="esr__control-title">Research Controls</h5>
+            
+            <!-- Trigger Consolidation -->
+            <div class="esr__control-item">
+                <label>Trigger Boundary:</label>
+                <button class="esr__control-btn" onclick="esrExperience.triggerBoundary('topic_shift')">
+                    Topic Shift
+                </button>
+                <button class="esr__control-btn" onclick="esrExperience.triggerBoundary('temporal_gap')">
+                    Temporal Gap
+                </button>
+                <button class="esr__control-btn" onclick="esrExperience.triggerBoundary('emotional_peak')">
+                    Emotional Peak
+                </button>
+            </div>
+            
+            <!-- Emotion Injection -->
+            <div class="esr__control-item">
+                <label>Inject Emotion:</label>
+                <input type="range" class="esr__emotion-slider" id="esr-valence-control" 
+                       min="-1" max="1" step="0.1" value="0">
+                <select class="esr__emotion-select" id="esr-emotion-type">
+                    <option value="joy">Joy</option>
+                    <option value="sadness">Sadness</option>
+                    <option value="anger">Anger</option>
+                    <option value="fear">Fear</option>
+                    <option value="surprise">Surprise</option>
+                    <option value="trust">Trust</option>
+                </select>
+                <button class="esr__control-btn" onclick="esrExperience.injectEmotion()">
+                    Apply
+                </button>
+            </div>
+            
+            <!-- Memory Replay -->
+            <div class="esr__control-item">
+                <label>Session Replay:</label>
+                <button class="esr__control-btn" onclick="esrExperience.startReplay()">
+                    ▶ Play
+                </button>
+                <input type="range" class="esr__replay-speed" id="esr-replay-speed" 
+                       min="0.1" max="10" step="0.1" value="1">
+                <span class="esr__speed-label">1x</span>
+            </div>
+        </div>
+    </div>
+</div>
