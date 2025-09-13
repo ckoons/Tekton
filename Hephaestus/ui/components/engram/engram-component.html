@@ -589,45 +589,9 @@
                 </div>
             </div>
             
-            <!-- Main Visualization Area -->
-            <div class="patterns__main">
-                <div class="patterns__visualization" id="patterns-container" 
->
-                    <svg id="patterns-svg"></svg>
-                    <canvas id="patterns-canvas" style="display: none;"></canvas>
-                    
-                    <!-- Legend -->
-                    <div class="patterns__legend">
-                        <div class="patterns__legend-item">
-                            <div class="patterns__legend-icon patterns__legend-icon--emerging"></div>
-                            <span>Emerging</span>
-                        </div>
-                        <div class="patterns__legend-item">
-                            <div class="patterns__legend-icon patterns__legend-icon--strengthening"></div>
-                            <span>Strengthening</span>
-                        </div>
-                        <div class="patterns__legend-item">
-                            <div class="patterns__legend-icon patterns__legend-icon--stable"></div>
-                            <span>Stable</span>
-                        </div>
-                        <div class="patterns__legend-item">
-                            <div class="patterns__legend-icon patterns__legend-icon--fading"></div>
-                            <span>Fading</span>
-                        </div>
-                        <div class="patterns__legend-item">
-                            <div class="patterns__legend-icon patterns__legend-icon--cyclical"></div>
-                            <span>Cyclical</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Pattern Details -->
-            <div class="patterns__details" id="pattern-details" style="display: none;">
-                <h4 class="patterns__details-title">Selected Pattern</h4>
-                <div class="patterns__details-content">
-                    <!-- Details will be populated here -->
-                </div>
+            <!-- Main Visualization Container -->
+            <div id="patterns-container" class="patterns__container">
+                <!-- Pattern visualization will be created here by PatternsDiscoveryEngine -->
             </div>
             
             <!-- Discovery Feed -->
@@ -813,6 +777,7 @@
          data-tekton-state="ready">
         <!-- Cognition 3D Brain Visualization -->
         <div class="cognition__container">
+            <!-- Compact Header -->
             <div class="cognition__header">
                 <h3 class="cognition__title">Cognitive State Monitor</h3>
                 <select id="cognition-ci-select" class="cognition__select">
@@ -825,36 +790,32 @@
                 </select>
             </div>
             
-            <!-- 3D Brain Container -->
-            <div id="cognition-brain-3d" class="cognition__brain-3d"></div>
+            <!-- 3D Brain Container - Takes most of the space -->
+            <div id="cognition-brain-3d" class="cognition__brain-3d-full"></div>
             
-            <!-- Region Info Panel -->
-            <div class="cognition__info">
-                <div class="cognition__control-group">
-                    <span class="cognition__control-label">Active Regions</span>
-                    <div class="cognition__region-buttons">
-                        <button class="cognition__region-btn" data-region="prefrontal">Prefrontal</button>
-                        <button class="cognition__region-btn" data-region="hippocampus">Hippocampus</button>
-                        <button class="cognition__region-btn" data-region="amygdala">Amygdala</button>
-                        <button class="cognition__region-btn" data-region="temporal">Temporal</button>
-                        <button class="cognition__region-btn" data-region="parietal">Parietal</button>
+            <!-- Controls at Bottom -->
+            <div class="cognition__bottom-controls">
+                <div class="cognition__button-row">
+                    <div class="cognition__button-group">
+                        <span class="cognition__label">Regions:</span>
+                        <button class="cognition__btn-compact" data-region="prefrontal">PFC</button>
+                        <button class="cognition__btn-compact" data-region="hippocampus">HC</button>
+                        <button class="cognition__btn-compact" data-region="amygdala">AMG</button>
+                        <button class="cognition__btn-compact" data-region="temporal">TL</button>
+                        <button class="cognition__btn-compact" data-region="parietal">PL</button>
+                    </div>
+                    <div class="cognition__button-group">
+                        <span class="cognition__label">Aspects:</span>
+                        <button class="cognition__btn-compact" data-aspect="memory">Mem</button>
+                        <button class="cognition__btn-compact" data-aspect="emotion">Emo</button>
+                        <button class="cognition__btn-compact" data-aspect="planning">Plan</button>
+                        <button class="cognition__btn-compact" data-aspect="language">Lang</button>
+                        <button class="cognition__btn-compact" data-aspect="spatial">Spat</button>
                     </div>
                 </div>
-                
-                <div class="cognition__control-group">
-                    <span class="cognition__control-label">Cognitive Aspects</span>
-                    <div class="cognition__aspect-buttons">
-                        <button class="cognition__aspect-btn" data-aspect="memory">Memory</button>
-                        <button class="cognition__aspect-btn" data-aspect="emotion">Emotion</button>
-                        <button class="cognition__aspect-btn" data-aspect="planning">Planning</button>
-                        <button class="cognition__aspect-btn" data-aspect="language">Language</button>
-                        <button class="cognition__aspect-btn" data-aspect="spatial">Spatial</button>
-                    </div>
-                </div>
-                
-                <div class="cognition__controls">
-                    <p class="cognition__hint">Click and drag to rotate • Scroll to zoom</p>
-                    <button onclick="window.cognitionBrain3D && window.cognitionBrain3D.resetHighlight()">Reset View</button>
+                <div class="cognition__hint-row">
+                    <span class="cognition__hint">Drag to rotate • Scroll to zoom</span>
+                    <button class="cognition__reset-btn" onclick="window.cognitionBrain3D && window.cognitionBrain3D.resetHighlight()">Reset</button>
                 </div>
             </div>
         </div>
@@ -2443,9 +2404,16 @@ function initializeEngram3DBrain() {
 function initializeEngramPatterns() {
     console.log('[ENGRAM] Attempting to initialize Patterns...');
     
+    // Check if panel exists first
+    const patternsPanel = document.getElementById('patterns-panel');
+    if (!patternsPanel) {
+        console.log('[ENGRAM] Panel patterns-panel not found');
+        return false;
+    }
+    
     // Check if container exists
-    const panel = document.getElementById('patterns-container');
-    if (!panel) {
+    const container = document.getElementById('patterns-container');
+    if (!container) {
         console.log('[ENGRAM] Container patterns-container not found');
         return false;
     }

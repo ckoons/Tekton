@@ -28,7 +28,7 @@ class CognitionBrain3D {
         
         // Setup camera
         const width = this.container.clientWidth || 800;
-        const height = 350;
+        const height = this.container.clientHeight || 500;
         this.camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
         this.camera.position.set(0, 0, 300);
         this.camera.lookAt(0, 0, 0);
@@ -232,7 +232,7 @@ class CognitionBrain3D {
     
     onWindowResize() {
         const width = this.container.clientWidth;
-        const height = 350;
+        const height = this.container.clientHeight || 500;
         
         this.camera.aspect = width / height;
         this.camera.updateProjectionMatrix();
