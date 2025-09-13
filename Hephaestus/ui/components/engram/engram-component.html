@@ -559,7 +559,7 @@
                     <span class="patterns__status-dot" data-status="active"></span>
                     <span class="patterns__status-text">Detecting patterns...</span>
                     
-                    <select id="pattern-ci-select" class="patterns__select">
+                    <select id="patterns-ci-select" class="patterns__select">
                         <option value="all">All CIs</option>
                         <option value="apollo">Apollo</option>
                         <option value="athena">Athena</option>
@@ -568,7 +568,7 @@
                         <option value="diana">Diana</option>
                     </select>
                     
-                    <select class="patterns__select">
+                    <select id="patterns-filter" class="patterns__select">
                         <option value="all">All Patterns</option>
                         <option value="emerging">Emerging</option>
                         <option value="strengthening">Strengthening</option>
@@ -2444,9 +2444,9 @@ function initializeEngramPatterns() {
     console.log('[ENGRAM] Attempting to initialize Patterns...');
     
     // Check if container exists
-    const panel = document.getElementById('patterns-panel');
+    const panel = document.getElementById('patterns-container');
     if (!panel) {
-        console.log('[ENGRAM] Panel patterns-panel not found');
+        console.log('[ENGRAM] Container patterns-container not found');
         return false;
     }
     
@@ -2476,7 +2476,7 @@ function initializeEngramPatterns() {
     
     try {
         console.log('[ENGRAM] Creating PatternsDiscoveryEngine instance...');
-        window.patternsDiscovery = new PatternsDiscoveryEngine('patterns-panel');
+        window.patternsDiscovery = new PatternsDiscoveryEngine('patterns-container');
         console.log('[ENGRAM] Patterns initialized successfully!');
         return true;
     } catch (error) {
