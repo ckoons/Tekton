@@ -20,7 +20,7 @@ from env import TektonEnviron
 from workflow.endpoint_template import create_workflow_endpoint
 
 import uvicorn
-from fastapi import FastAPI, Request, Depends, HTTPException, Header, File, UploadFile
+from fastapi import FastAPI, Request, Depends, HTTPException, Header, File, UploadFile, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from typing import List, Optional
@@ -934,6 +934,28 @@ try:
     logger.info("ESR API endpoints registered")
 except ImportError as e:
     logger.warning(f"ESR API endpoints not available: {e}")
+
+# Add WebSocket endpoints for real-time monitoring
+try:
+    from engram.api.websocket_handlers import (
+        cognition_websocket_endpoint,
+        experience_websocket_endpoint,
+        manager
+    )
+    
+    @app.websocket("/cognition/stream")
+    async def cognition_stream(websocket: WebSocket, ci_id: str = "apollo"):
+        """WebSocket endpoint for Cognition panel brain visualization"""
+        await cognition_websocket_endpoint(websocket, ci_id)
+    
+    @app.websocket("/experience/stream")
+    async def experience_stream(websocket: WebSocket):
+        """WebSocket endpoint for ESR Experience real-time updates"""
+        await experience_websocket_endpoint(websocket)
+    
+    logger.info("WebSocket endpoints registered for Cognition and Experience monitoring")
+except ImportError as e:
+    logger.warning(f"WebSocket endpoints not available: {e}")
 
 # Note: Engram uses shared MCP bridge for standard operation
 # The fastmcp_server.py provides standalone MCP mode when run with --standalone flag

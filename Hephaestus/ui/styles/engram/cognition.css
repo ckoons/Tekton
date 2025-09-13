@@ -1,0 +1,409 @@
+/**
+ * Cognition Panel Styles
+ * Brain visualization and cognitive state monitoring
+ */
+
+/* Container */
+.cognition__container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 20px;
+    background-color: var(--bg-primary, #1e1e2e);
+    color: var(--text-primary, #f0f0f0);
+}
+
+/* Header */
+.cognition__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color, #444);
+    margin-bottom: 20px;
+}
+
+.cognition__title {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+.cognition__ci-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cognition__select {
+    padding: 6px 12px;
+    background-color: var(--bg-tertiary, #333345);
+    border: 1px solid var(--border-color, #444);
+    border-radius: 4px;
+    color: var(--text-primary, #f0f0f0);
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+/* Main Layout */
+.cognition__main {
+    display: flex;
+    gap: 30px;
+    flex: 1;
+    margin-bottom: 20px;
+}
+
+/* Brain Container */
+.cognition__brain-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--bg-secondary, #252535);
+    border-radius: 8px;
+    padding: 20px;
+    position: relative;
+}
+
+#cognition-brain-svg {
+    width: 100%;
+    height: auto;
+    max-width: 400px;
+}
+
+/* Brain Region Styles */
+.brain-region {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.brain-region:hover circle:first-child {
+    stroke: var(--color-primary, #9C27B0);
+    stroke-width: 2;
+}
+
+.activation-overlay {
+    pointer-events: none;
+    mix-blend-mode: screen;
+    filter: blur(2px);
+}
+
+.thought-particle {
+    pointer-events: none;
+    filter: drop-shadow(0 0 3px #00BCD4);
+}
+
+/* Controls Panel */
+.cognition__controls {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.cognition__metrics,
+.cognition__regions {
+    background-color: var(--bg-secondary, #252535);
+    border-radius: 8px;
+    padding: 15px;
+}
+
+.cognition__controls h4 {
+    margin: 0 0 10px 0;
+    font-size: 1rem;
+    color: var(--text-secondary, #a0a0a0);
+}
+
+.cognition__metric-buttons,
+.cognition__region-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.cognition__toggle {
+    padding: 4px 10px;
+    background-color: var(--bg-tertiary, #333345);
+    border: 1px solid var(--border-color, #444);
+    border-radius: 4px;
+    color: var(--text-secondary, #a0a0a0);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cognition__toggle:hover {
+    background-color: var(--bg-hover, #3a3a4a);
+    color: var(--text-primary, #f0f0f0);
+}
+
+.cognition__toggle.active {
+    background-color: var(--color-primary, #9C27B0);
+    border-color: var(--color-primary, #9C27B0);
+    color: white;
+}
+
+/* Timeline Container */
+.cognition__timeline-container {
+    background-color: var(--bg-secondary, #252535);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.cognition__timeline {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+#cognition-timeline {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: var(--bg-tertiary, #333345);
+    border-radius: 3px;
+    outline: none;
+}
+
+#cognition-timeline::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--color-primary, #9C27B0);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+#cognition-timeline::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--color-primary, #9C27B0);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.cognition__timeline-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--text-secondary, #a0a0a0);
+    margin-top: 5px;
+}
+
+/* Timeline Markers */
+.cognition__marker {
+    position: absolute;
+    top: -4px;
+    width: 2px;
+    height: 14px;
+    background-color: #666;
+    pointer-events: none;
+}
+
+.cognition__marker--consolidation {
+    background-color: #4CAF50;
+}
+
+.cognition__marker--emotional_peak {
+    background-color: #FF9800;
+}
+
+.cognition__marker--pattern {
+    background-color: #00BCD4;
+}
+
+/* Playback Controls */
+.cognition__playback {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.cognition__playback button {
+    padding: 6px 12px;
+    background-color: var(--bg-tertiary, #333345);
+    border: 1px solid var(--border-color, #444);
+    border-radius: 4px;
+    color: var(--text-primary, #f0f0f0);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cognition__playback button:hover {
+    background-color: var(--bg-hover, #3a3a4a);
+}
+
+/* Activity Feed */
+.cognition__activity {
+    background-color: var(--bg-secondary, #252535);
+    border-radius: 8px;
+    padding: 15px;
+    max-height: 200px;
+}
+
+.cognition__activity h4 {
+    margin: 0 0 10px 0;
+    font-size: 1rem;
+    color: var(--text-secondary, #a0a0a0);
+}
+
+.cognition__feed {
+    max-height: 150px;
+    overflow-y: auto;
+    font-size: 0.85rem;
+}
+
+.cognition__feed-item {
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border-color, #444);
+    color: var(--text-secondary, #a0a0a0);
+    animation: slideIn 0.3s ease;
+}
+
+.cognition__feed-item:last-child {
+    border-bottom: none;
+}
+
+.cognition__feed-item .time {
+    color: var(--text-tertiary, #666);
+    margin-right: 8px;
+    font-size: 0.8rem;
+}
+
+.cognition__feed-item--success {
+    color: #4CAF50;
+}
+
+.cognition__feed-item--error {
+    color: #F44336;
+}
+
+.cognition__feed-item--warning {
+    color: #FF9800;
+}
+
+.cognition__feed-item--thought {
+    color: #00BCD4;
+}
+
+.cognition__feed-item--consolidation {
+    color: #9C27B0;
+}
+
+.cognition__feed-item--emotion {
+    color: #FFC107;
+}
+
+.cognition__feed-item--pattern {
+    color: #2196F3;
+}
+
+/* Animations */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+}
+
+/* Scrollbar Styling */
+.cognition__feed::-webkit-scrollbar {
+    width: 6px;
+}
+
+.cognition__feed::-webkit-scrollbar-track {
+    background: var(--bg-tertiary, #333345);
+    border-radius: 3px;
+}
+
+.cognition__feed::-webkit-scrollbar-thumb {
+    background: var(--border-color, #444);
+    border-radius: 3px;
+}
+
+.cognition__feed::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Heat Map Color Classes */
+.heat-high {
+    fill: #FF0000 !important;
+}
+
+.heat-medium-high {
+    fill: #FF6600 !important;
+}
+
+.heat-medium {
+    fill: #FFAA00 !important;
+}
+
+.heat-medium-low {
+    fill: #FFFF00 !important;
+}
+
+.heat-low {
+    fill: #4444FF !important;
+}
+
+/* Responsive Design */
+@media (max-width: 1366px) {
+    .cognition__main {
+        flex-direction: column;
+    }
+    
+    .cognition__controls {
+        width: 100%;
+        flex-direction: row;
+    }
+    
+    .cognition__metrics,
+    .cognition__regions {
+        flex: 1;
+    }
+}
+
+/* Dark Mode Support (already using dark colors by default) */
+@media (prefers-color-scheme: light) {
+    .cognition__container {
+        background-color: #f5f5f5;
+        color: #333;
+    }
+    
+    .cognition__brain-container,
+    .cognition__metrics,
+    .cognition__regions,
+    .cognition__timeline-container,
+    .cognition__activity {
+        background-color: white;
+    }
+    
+    .cognition__select,
+    .cognition__toggle,
+    .cognition__playback button {
+        background-color: #f0f0f0;
+        border-color: #ddd;
+        color: #333;
+    }
+}

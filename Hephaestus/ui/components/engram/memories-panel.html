@@ -1,0 +1,282 @@
+<!-- Memories Panel - Consolidated Browse/Create/Search -->
+<!-- @landmark Panel: Memories - Unified memory management interface -->
+<div id="memories-panel" class="engram__panel" 
+     data-tekton-panel="memories" 
+     data-tekton-panel-for="Memories" 
+     data-tekton-panel-component="engram"
+     data-tekton-state="ready">
+    
+    <!-- Memories Header with CI Selector and Mode Tabs -->
+    <div class="memories__header">
+        <div class="memories__ci-selector">
+            <label>CI:</label>
+            <select id="memories-ci-select" class="memories__select">
+                <option value="all">All CIs</option>
+                <option value="apollo">Apollo</option>
+                <option value="athena">Athena</option>
+                <option value="hermes">Hermes</option>
+                <option value="zeus">Zeus</option>
+                <option value="diana">Diana</option>
+            </select>
+        </div>
+        
+        <!-- Mode Tabs for Browse/Create/Search/Edit/Timeline -->
+        <div class="memories__mode-tabs">
+            <button class="memories__mode-tab active" data-mode="browse">Browse</button>
+            <button class="memories__mode-tab" data-mode="create">Create</button>
+            <button class="memories__mode-tab" data-mode="search">Search</button>
+            <button class="memories__mode-tab" data-mode="timeline">Timeline</button>
+        </div>
+    </div>
+    
+    <!-- Browse Mode -->
+    <div class="memories__mode-content" data-mode-content="browse">
+        <div class="memories__filters">
+            <select class="memories__filter-select">
+                <option value="all">All Types</option>
+                <option value="conversation">Conversation</option>
+                <option value="document">Document</option>
+                <option value="knowledge">Knowledge</option>
+                <option value="task">Task</option>
+                <option value="note">Note</option>
+                <option value="insight">Insight</option>
+            </select>
+            
+            <select class="memories__filter-select">
+                <option value="all">All Times</option>
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+                <option value="year">This Year</option>
+            </select>
+            
+            <select class="memories__filter-select">
+                <option value="all">All Emotions</option>
+                <option value="joy">Joy</option>
+                <option value="sadness">Sadness</option>
+                <option value="anger">Anger</option>
+                <option value="fear">Fear</option>
+                <option value="surprise">Surprise</option>
+                <option value="trust">Trust</option>
+                <option value="neutral">Neutral</option>
+            </select>
+            
+            <select class="memories__filter-select">
+                <option value="all">All Sharing</option>
+                <option value="private">Private</option>
+                <option value="shared">Shared</option>
+            </select>
+        </div>
+        
+        <div class="memories__cards-container">
+            <!-- Memory cards will be populated here -->
+            <div class="memories__card">
+                <div class="memories__card-header">
+                    <h4 class="memories__card-title">Authentication Discussion</h4>
+                    <span class="memories__card-type">Conversation</span>
+                </div>
+                <div class="memories__card-meta">
+                    <span class="memories__card-date">2 hours ago</span>
+                    <span class="memories__card-emotion">😊 Joy</span>
+                    <span class="memories__card-ci">Apollo</span>
+                </div>
+                <div class="memories__card-preview">
+                    Discussed OAuth implementation and discovered a bug in the token refresh logic...
+                </div>
+                <div class="memories__card-tags">
+                    <span class="memories__tag">auth</span>
+                    <span class="memories__tag">oauth</span>
+                    <span class="memories__tag">bug-fix</span>
+                </div>
+                <div class="memories__card-actions">
+                    <button class="memories__btn memories__btn--view">View</button>
+                    <button class="memories__btn memories__btn--edit">Edit</button>
+                    <button class="memories__btn memories__btn--delete">Delete</button>
+                </div>
+            </div>
+            
+            <div class="memories__card">
+                <div class="memories__card-header">
+                    <h4 class="memories__card-title">Pattern Discovery: Code Review Stress</h4>
+                    <span class="memories__card-type">Insight</span>
+                </div>
+                <div class="memories__card-meta">
+                    <span class="memories__card-date">1 day ago</span>
+                    <span class="memories__card-emotion">😤 Frustration</span>
+                    <span class="memories__card-ci">Athena</span>
+                </div>
+                <div class="memories__card-preview">
+                    Detected recurring stress pattern during code reviews, particularly with merge conflicts...
+                </div>
+                <div class="memories__card-tags">
+                    <span class="memories__tag">pattern</span>
+                    <span class="memories__tag">stress</span>
+                    <span class="memories__tag">code-review</span>
+                </div>
+                <div class="memories__card-actions">
+                    <button class="memories__btn memories__btn--view">View</button>
+                    <button class="memories__btn memories__btn--edit">Edit</button>
+                    <button class="memories__btn memories__btn--delete">Delete</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="memories__pagination">
+            <button class="memories__page-btn">← Previous</button>
+            <span>Page 1 of 15</span>
+            <button class="memories__page-btn">Next →</button>
+        </div>
+    </div>
+    
+    <!-- Create Mode -->
+    <div class="memories__mode-content" data-mode-content="create" style="display: none;">
+        <form class="memories__create-form">
+            <div class="memories__form-group">
+                <label>Title</label>
+                <input type="text" class="memories__input" placeholder="Enter memory title" required>
+            </div>
+            
+            <div class="memories__form-group">
+                <label>Type</label>
+                <select class="memories__select" required>
+                    <option value="conversation">Conversation</option>
+                    <option value="document">Document</option>
+                    <option value="knowledge">Knowledge</option>
+                    <option value="task">Task</option>
+                    <option value="note">Note</option>
+                    <option value="insight">Insight</option>
+                </select>
+            </div>
+            
+            <div class="memories__form-group">
+                <label>Content</label>
+                <textarea class="memories__textarea" rows="8" placeholder="Enter memory content"></textarea>
+            </div>
+            
+            <div class="memories__form-group">
+                <label>Emotional Context</label>
+                <div class="memories__emotion-selector">
+                    <input type="range" min="-1" max="1" step="0.1" value="0" class="memories__slider">
+                    <span>Valence: <span class="memories__valence-value">0</span></span>
+                </div>
+                <select class="memories__select">
+                    <option value="neutral">Neutral</option>
+                    <option value="joy">Joy</option>
+                    <option value="sadness">Sadness</option>
+                    <option value="anger">Anger</option>
+                    <option value="fear">Fear</option>
+                    <option value="surprise">Surprise</option>
+                    <option value="trust">Trust</option>
+                </select>
+            </div>
+            
+            <div class="memories__form-group">
+                <label>Tags</label>
+                <input type="text" class="memories__input" placeholder="Enter tags separated by commas">
+            </div>
+            
+            <div class="memories__form-group">
+                <label>
+                    <input type="radio" name="sharing" value="private" checked> Private
+                </label>
+                <label>
+                    <input type="radio" name="sharing" value="shared"> Shared
+                </label>
+            </div>
+            
+            <div class="memories__form-actions">
+                <button type="button" class="memories__btn memories__btn--secondary">Clear</button>
+                <button type="submit" class="memories__btn memories__btn--primary">Save Memory</button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Search Mode -->
+    <div class="memories__mode-content" data-mode-content="search" style="display: none;">
+        <div class="memories__search-bar">
+            <input type="text" class="memories__search-input" placeholder="Search across all memories (natural language or keywords)">
+            <select class="memories__search-type">
+                <option value="semantic">Semantic</option>
+                <option value="keyword">Keyword</option>
+                <option value="combined">Combined</option>
+            </select>
+            <button class="memories__btn memories__btn--primary">Search</button>
+        </div>
+        
+        <div class="memories__search-filters">
+            <div class="memories__filter-group">
+                <label>Memory Types:</label>
+                <div class="memories__checkbox-group">
+                    <label><input type="checkbox" checked> Conversations</label>
+                    <label><input type="checkbox" checked> Documents</label>
+                    <label><input type="checkbox" checked> Knowledge</label>
+                    <label><input type="checkbox" checked> Tasks</label>
+                    <label><input type="checkbox" checked> Insights</label>
+                </div>
+            </div>
+            
+            <div class="memories__filter-group">
+                <label>Date Range:</label>
+                <input type="date" class="memories__date-input">
+                <span>to</span>
+                <input type="date" class="memories__date-input">
+            </div>
+            
+            <div class="memories__filter-group">
+                <label>Emotional Context:</label>
+                <select class="memories__select">
+                    <option value="all">All Emotions</option>
+                    <option value="positive">Positive</option>
+                    <option value="negative">Negative</option>
+                    <option value="neutral">Neutral</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="memories__search-results">
+            <div class="memories__results-header">
+                <h4>Search Results</h4>
+                <span class="memories__results-count">0 results</span>
+                <select class="memories__sort-select">
+                    <option value="relevance">Sort by Relevance</option>
+                    <option value="date-new">Sort by Date (Newest)</option>
+                    <option value="date-old">Sort by Date (Oldest)</option>
+                    <option value="emotion">Sort by Emotional Intensity</option>
+                </select>
+            </div>
+            
+            <div class="memories__results-list">
+                <!-- Search results will appear here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Timeline Mode -->
+    <div class="memories__mode-content" data-mode-content="timeline" style="display: none;">
+        <div class="memories__timeline-controls">
+            <select class="memories__timeline-range">
+                <option value="day">Today</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+                <option value="year">This Year</option>
+                <option value="all">All Time</option>
+            </select>
+            
+            <div class="memories__timeline-filters">
+                <button class="memories__filter-btn active" data-filter="all">All</button>
+                <button class="memories__filter-btn" data-filter="consolidation">Consolidations</button>
+                <button class="memories__filter-btn" data-filter="emotional">Emotional Peaks</button>
+                <button class="memories__filter-btn" data-filter="patterns">Patterns</button>
+            </div>
+        </div>
+        
+        <div class="memories__timeline-container">
+            <!-- Timeline visualization will be rendered here -->
+            <svg id="memories-timeline-svg" width="100%" height="400"></svg>
+        </div>
+        
+        <div class="memories__timeline-details">
+            <!-- Selected memory details will appear here -->
+        </div>
+    </div>
+</div>

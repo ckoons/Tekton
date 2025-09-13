@@ -7,19 +7,24 @@
 <script src="/scripts/shared/team-chat.js"></script>
 <!-- Load Pattern Detective -->
 <script src="/scripts/engram/pattern-detective.js"></script>
+<!-- Load Enhanced Patterns Discovery Engine -->
+<link rel="stylesheet" href="/styles/engram/patterns-discovery.css">
+<script src="/components/engram/patterns-discovery.js"></script>
 <!-- Load ESR Experience -->
 <link rel="stylesheet" href="/styles/engram/esr-experience.css">
 <script src="/components/engram/esr-experience.js"></script>
+<!-- Load Cognition Brain Visualization -->
+<link rel="stylesheet" href="/styles/engram/cognition.css">
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="/components/engram/cognition-brain.js"></script>
 
 <!-- Hidden radio inputs for CSS-first tab functionality -->
 <!-- @landmark Navigation: CSS-first radio buttons for tab switching -->
-<input type="radio" name="engram-tab" id="engram-tab-browse" checked style="display: none;">
-<input type="radio" name="engram-tab" id="engram-tab-create" style="display: none;">
-<input type="radio" name="engram-tab" id="engram-tab-search" style="display: none;">
+<input type="radio" name="engram-tab" id="engram-tab-memories" checked style="display: none;">
+<input type="radio" name="engram-tab" id="engram-tab-cognition" style="display: none;">
 <input type="radio" name="engram-tab" id="engram-tab-patterns" style="display: none;">
 <input type="radio" name="engram-tab" id="engram-tab-chat" style="display: none;">
 <input type="radio" name="engram-tab" id="engram-tab-teamchat" style="display: none;">
-<input type="radio" name="engram-tab" id="engram-tab-esr" style="display: none;">
 <div class="engram" data-tekton-area="engram" data-tekton-component="engram" data-tekton-type="component-workspace" data-tekton-ai="engram-assistant" data-tekton-ai-ready="false">
     <!-- Component Header with Title -->
     <!-- @landmark Header: Component title and branding -->
@@ -37,29 +42,21 @@
     <!-- @landmark Menu: Tab navigation for 6 memory management views -->
     <div class="engram__menu-bar" data-tekton-zone="menu" data-tekton-nav="component-menu">
         <div class="engram__tabs" data-tekton-zone="menu">
-            <!-- Browse Tab -->
-            <label for="engram-tab-browse" class="engram__tab" data-tab="browse" 
-                 data-tekton-menu-item="Browse" 
+            <!-- Memories Tab (Consolidated Browse/Create/Search) -->
+            <label for="engram-tab-memories" class="engram__tab" data-tab="memories" 
+                 data-tekton-menu-item="Memories" 
                  data-tekton-menu-component="engram" 
-                 data-tekton-menu-panel="browse-panel" 
-                 data-tekton-nav-target="browse">
-                <span class="engram__tab-label">Browse</span>
+                 data-tekton-menu-panel="memories-panel" 
+                 data-tekton-nav-target="memories">
+                <span class="engram__tab-label">Memories</span>
             </label>
-            <!-- Create Tab -->
-            <label for="engram-tab-create" class="engram__tab" data-tab="create" 
-                 data-tekton-menu-item="Create" 
+            <!-- Cognition Tab (formerly Experience) -->
+            <label for="engram-tab-cognition" class="engram__tab" data-tab="cognition" 
+                 data-tekton-menu-item="Cognition" 
                  data-tekton-menu-component="engram" 
-                 data-tekton-menu-panel="create-panel" 
-                 data-tekton-nav-target="create">
-                <span class="engram__tab-label">Create</span>
-            </label>
-            <!-- Search Tab -->
-            <label for="engram-tab-search" class="engram__tab" data-tab="search" 
-                 data-tekton-menu-item="Search" 
-                 data-tekton-menu-component="engram" 
-                 data-tekton-menu-panel="search-panel" 
-                 data-tekton-nav-target="search">
-                <span class="engram__tab-label">Search</span>
+                 data-tekton-menu-panel="cognition-panel" 
+                 data-tekton-nav-target="cognition">
+                <span class="engram__tab-label">Cognition</span>
             </label>
             <!-- Patterns Tab (Pattern Detective) -->
             <label for="engram-tab-patterns" class="engram__tab" data-tab="patterns" 
@@ -84,14 +81,6 @@
                  data-tekton-menu-panel="teamchat-panel" 
                  data-tekton-nav-target="teamchat">
                 <span class="engram__tab-label">Team Chat</span>
-            </label>
-            <!-- ESR Experience Tab -->
-            <label for="engram-tab-esr" class="engram__tab" data-tab="esr" 
-                 data-tekton-menu-item="Experience" 
-                 data-tekton-menu-component="engram" 
-                 data-tekton-menu-panel="esr-panel" 
-                 data-tekton-nav-target="esr">
-                <span class="engram__tab-label">Experience</span>
             </label>
         </div>
         <div class="engram__actions">
@@ -798,20 +787,18 @@
         </div>
     </div>
     
-    <!-- ESR Experience Panel -->
-    <!-- @landmark Panel: ESR Experience - Natural memory visualization for CIs -->
-    <!-- Include the ESR Experience HTML -->
-    <div id="esr-panel" class="engram__panel" 
-         data-tekton-panel="esr-experience" 
-         data-tekton-panel-for="Experience" 
+    <!-- Cognition Panel -->
+    <!-- @landmark Panel: Cognition - Real-time CI cognitive state visualization -->
+    <div id="cognition-panel" class="engram__panel" 
+         data-tekton-panel="cognition" 
+         data-tekton-panel-for="Cognition" 
          data-tekton-panel-component="engram"
-         data-tekton-esr="experience-panel"
+         data-tekton-cognition="brain-monitor"
          data-tekton-state="ready">
-        <!-- ESR Experience content will be loaded here -->
-        <iframe src="/components/engram/esr-experience.html" 
-                style="width: 100%; height: 100%; border: none;"
-                data-tekton-iframe="esr-experience"
-                data-tekton-state="ready"></iframe>
+        <!-- Cognition content will be loaded here -->
+        <div class="cognition__container">
+            <!-- Brain visualization will be inserted here -->
+        </div>
     </div>
 </div>
 
@@ -897,13 +884,11 @@
     }
     
     /* CSS-first navigation - radio button controls active state */
-    #engram-tab-browse:checked ~ .engram .engram__tab[data-tab="browse"],
-    #engram-tab-create:checked ~ .engram .engram__tab[data-tab="create"],
-    #engram-tab-search:checked ~ .engram .engram__tab[data-tab="search"],
-    #engram-tab-insights:checked ~ .engram .engram__tab[data-tab="insights"],
+    #engram-tab-memories:checked ~ .engram .engram__tab[data-tab="memories"],
+    #engram-tab-cognition:checked ~ .engram .engram__tab[data-tab="cognition"],
+    #engram-tab-patterns:checked ~ .engram .engram__tab[data-tab="patterns"],
     #engram-tab-chat:checked ~ .engram .engram__tab[data-tab="chat"],
-    #engram-tab-teamchat:checked ~ .engram .engram__tab[data-tab="teamchat"],
-    #engram-tab-esr:checked ~ .engram .engram__tab[data-tab="esr"] {
+    #engram-tab-teamchat:checked ~ .engram .engram__tab[data-tab="teamchat"] {
         border-bottom-color: var(--color-primary, #9C27B0); /* Purple for Engram */
         font-weight: 500;
     }
@@ -949,13 +934,11 @@
     }
     
     /* CSS-first panel visibility */
-    #engram-tab-browse:checked ~ .engram #browse-panel,
-    #engram-tab-create:checked ~ .engram #create-panel,
-    #engram-tab-search:checked ~ .engram #search-panel,
+    #engram-tab-memories:checked ~ .engram #memories-panel,
+    #engram-tab-cognition:checked ~ .engram #cognition-panel,
     #engram-tab-patterns:checked ~ .engram #patterns-panel,
     #engram-tab-chat:checked ~ .engram #chat-panel,
-    #engram-tab-teamchat:checked ~ .engram #teamchat-panel,
-    #engram-tab-esr:checked ~ .engram #esr-panel {
+    #engram-tab-teamchat:checked ~ .engram #teamchat-panel {
         display: block;
     }
     
