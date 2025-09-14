@@ -1,13 +1,21 @@
 /**
- * Enhanced Patterns Analytics Engine
- * Advanced cognitive pattern analysis with interactive concept formation graph
+ * Combined Patterns Analytics Engine with Boundary Constraints
+ * Enhanced cognitive pattern analysis with interactive concept formation graph
+ * Features combined Active Patterns & Cognitive Insights panel
  */
 
-class EnhancedPatternsAnalytics {
+class CombinedPatternsAnalytics {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
         this.concepts = new Map();
         this.edges = [];
+        this.patterns = new Map();
+        this.insights = {
+            blindSpots: [],
+            inefficiencies: [],
+            strengths: [],
+            evolution: []
+        };
         this.timeline = [];
         this.currentTime = 0;
         this.selectedConcept = null;
@@ -98,13 +106,13 @@ class EnhancedPatternsAnalytics {
                         </div>
                     </div>
                     
-                    <!-- Learning Trajectory Timeline (RIGHT - Text Detail) -->
+                    <!-- Learning Trajectory Timeline (RIGHT TOP) -->
                     <div class="analytics-section trajectory-section">
                         <h4>Learning Trajectory</h4>
                         <div id="trajectory-timeline" class="timeline-container"></div>
                     </div>
                     
-                    <!-- Combined Active Patterns & Cognitive Insights -->
+                    <!-- Combined Active Patterns & Cognitive Insights (RIGHT BOTTOM) -->
                     <div class="analytics-section combined-section">
                         <h4>Active Patterns & Cognitive Insights</h4>
                         <div id="combined-dashboard" class="combined-container"></div>
@@ -482,9 +490,39 @@ class EnhancedPatternsAnalytics {
             .pattern-stable::before { background: #9C27B0; }
             .pattern-fading::before { background: #FF9800; }
             
-            .insights-container {
-                flex: 1;
-                overflow-y: auto;
+            .pattern-header {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 6px;
+            }
+            
+            .pattern-type {
+                font-weight: 500;
+                color: #fff;
+                font-size: 0.9rem;
+            }
+            
+            .pattern-strength {
+                font-size: 0.8rem;
+                color: #888;
+            }
+            
+            .pattern-description {
+                font-size: 0.8rem;
+                color: #aaa;
+                line-height: 1.3;
+            }
+            
+            .pattern-detail {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 4px;
+            }
+            
+            .pattern-state {
+                font-size: 0.75rem;
+                color: #888;
+                text-transform: capitalize;
             }
             
             .insight-item {
@@ -499,6 +537,46 @@ class EnhancedPatternsAnalytics {
             
             .insight-item.highlighted {
                 background: rgba(156, 39, 176, 0.2);
+            }
+            
+            .insight-blind-spot {
+                border-left: 3px solid #F44336;
+                background: rgba(244, 67, 54, 0.1);
+            }
+            
+            .insight-inefficiency {
+                border-left: 3px solid #FF9800;
+                background: rgba(255, 152, 0, 0.1);
+            }
+            
+            .insight-strength {
+                border-left: 3px solid #4CAF50;
+                background: rgba(76, 175, 80, 0.1);
+            }
+            
+            .insight-evolution {
+                border-left: 3px solid #9C27B0;
+                background: rgba(156, 39, 176, 0.1);
+            }
+            
+            .insight-label {
+                font-weight: 500;
+                margin-bottom: 4px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            
+            .insight-text {
+                color: #ccc;
+                line-height: 1.3;
+            }
+            
+            .insight-meta {
+                font-size: 0.7rem;
+                color: #666;
+                margin-top: 4px;
+                font-style: italic;
             }
             
             .concept-tooltip {
@@ -595,6 +673,10 @@ class EnhancedPatternsAnalytics {
         this.nodeLayer = this.svg.append('g').attr('class', 'nodes');
         this.labelLayer = this.svg.append('g').attr('class', 'labels');
         
+        // Store dimensions for boundary enforcement
+        this.graphWidth = width;
+        this.graphHeight = height;
+        
         // Initialize force simulation with boundary constraints
         this.simulation = d3.forceSimulation()
             .force('link', d3.forceLink().id(d => d.id).distance(80))
@@ -602,10 +684,6 @@ class EnhancedPatternsAnalytics {
             .force('center', d3.forceCenter(width / 2, height / 2))
             .force('collision', d3.forceCollide().radius(30))
             .force('boundary', this.createBoundaryForce(width, height));
-        
-        // Store dimensions for boundary enforcement
-        this.graphWidth = width;
-        this.graphHeight = height;
         
         // Setup zoom
         const zoom = d3.zoom()
@@ -617,42 +695,49 @@ class EnhancedPatternsAnalytics {
         d3.select('#concept-graph-svg').call(zoom);
     }
     
+    createBoundaryForce(width, height) {
+        const padding = 30;
+        return () => {
+            this.concepts.forEach(node => {
+                // Constrain X position
+                if (node.x < padding) {
+                    node.x = padding;
+                    if (node.vx < 0) node.vx *= -0.5;
+                }
+                if (node.x > width - padding) {
+                    node.x = width - padding;
+                    if (node.vx > 0) node.vx *= -0.5;
+                }
+                
+                // Constrain Y position
+                if (node.y < padding) {
+                    node.y = padding;
+                    if (node.vy < 0) node.vy *= -0.5;
+                }
+                if (node.y > height - padding) {
+                    node.y = height - padding;
+                    if (node.vy > 0) node.vy *= -0.5;
+                }
+            });
+        };
+    }
+    
     startSimulation() {
         // Generate initial concepts
         this.generateInitialConcepts();
+        this.seedPatternsAndInsights();
         
         // Start real-time updates
         this.simulationInterval = setInterval(() => {
             this.addNewConcept();
             this.updateConnections();
+            this.detectPatterns();
+            this.generateInsights();
             this.updateVisualization();
         }, 3000);
         
         // Initial render
         this.updateVisualization();
-    }
-    
-    createBoundaryForce(width, height) {
-        const padding = 30; // Keep nodes at least 30px from edges
-        return () => {
-            this.concepts.forEach(node => {
-                // Constrain X position
-                if (node.x < padding) node.x = padding;
-                if (node.x > width - padding) node.x = width - padding;
-                
-                // Constrain Y position
-                if (node.y < padding) node.y = padding;
-                if (node.y > height - padding) node.y = height - padding;
-                
-                // Add velocity damping at boundaries
-                if (node.vx && (node.x <= padding || node.x >= width - padding)) {
-                    node.vx *= -0.5;
-                }
-                if (node.vy && (node.y <= padding || node.y >= height - padding)) {
-                    node.vy *= -0.5;
-                }
-            });
-        };
     }
     
     generateInitialConcepts() {
@@ -683,6 +768,38 @@ class EnhancedPatternsAnalytics {
             { source: 'c3', target: 'c4', type: 'causal' },
             { source: 'c4', target: 'c5', type: 'transforms' }
         ];
+    }
+    
+    seedPatternsAndInsights() {
+        // Add initial patterns
+        this.patterns.set('p1', {
+            id: 'p1',
+            name: 'Problem Decomposition',
+            state: 'strengthening',
+            strength: 75,
+            description: 'Breaking complex tasks into components'
+        });
+        
+        this.patterns.set('p2', {
+            id: 'p2', 
+            name: 'Error Recovery',
+            state: 'stable',
+            strength: 92,
+            description: 'Quick adaptation when approach fails'
+        });
+        
+        // Add initial insights
+        this.insights.blindSpots.push({
+            text: 'Assuming JavaScript issues over HTML structure',
+            frequency: 3,
+            severity: 'high'
+        });
+        
+        this.insights.strengths.push({
+            text: 'Systematic debugging approach',
+            consistency: 87,
+            impact: 'high'
+        });
     }
     
     addNewConcept() {
@@ -736,6 +853,80 @@ class EnhancedPatternsAnalytics {
         return thoughts[Math.floor(Math.random() * thoughts.length)];
     }
     
+    detectPatterns() {
+        const patternTypes = [
+            { name: 'Abstraction Building', state: 'emerging', desc: 'Creating mental models' },
+            { name: 'Solution Synthesis', state: 'strengthening', desc: 'Combining approaches' },
+            { name: 'Iterative Refinement', state: 'stable', desc: 'Progressive enhancement' }
+        ];
+        
+        if (Math.random() > 0.7 && this.patterns.size < 6) {
+            const pattern = patternTypes[Math.floor(Math.random() * patternTypes.length)];
+            const id = `p${this.patterns.size + 1}`;
+            this.patterns.set(id, {
+                id,
+                name: pattern.name,
+                state: pattern.state,
+                strength: 20 + Math.random() * 60,
+                description: pattern.desc
+            });
+        }
+        
+        // Update existing pattern strengths
+        this.patterns.forEach(pattern => {
+            pattern.strength = Math.min(100, pattern.strength + Math.random() * 5);
+            if (pattern.strength > 80 && pattern.state === 'emerging') {
+                pattern.state = 'strengthening';
+            } else if (pattern.strength > 95 && pattern.state === 'strengthening') {
+                pattern.state = 'stable';
+            }
+        });
+    }
+    
+    generateInsights() {
+        if (Math.random() > 0.85) {
+            const insightTypes = [
+                {
+                    type: 'blindSpots',
+                    data: {
+                        text: 'Overlooking edge cases in implementation',
+                        frequency: Math.floor(Math.random() * 5) + 1,
+                        severity: ['low', 'medium', 'high'][Math.floor(Math.random() * 3)]
+                    }
+                },
+                {
+                    type: 'inefficiencies',
+                    data: {
+                        text: 'Redundant file reads',
+                        timeWasted: Math.floor(Math.random() * 10) + 5,
+                        suggestion: 'Cache frequently accessed data'
+                    }
+                },
+                {
+                    type: 'strengths',
+                    data: {
+                        text: 'Pattern recognition in debugging',
+                        consistency: 80 + Math.floor(Math.random() * 20),
+                        impact: 'high'
+                    }
+                },
+                {
+                    type: 'evolution',
+                    data: {
+                        from: 'Linear problem solving',
+                        to: 'Parallel hypothesis testing',
+                        improvement: `+${20 + Math.floor(Math.random() * 30)}%`
+                    }
+                }
+            ];
+            
+            const insight = insightTypes[Math.floor(Math.random() * insightTypes.length)];
+            if (this.insights[insight.type].length < 3) {
+                this.insights[insight.type].push(insight.data);
+            }
+        }
+    }
+    
     addToTimeline(concept) {
         const timelineContainer = document.getElementById('trajectory-timeline');
         const node = document.createElement('div');
@@ -780,6 +971,17 @@ class EnhancedPatternsAnalytics {
             target: this.concepts.get(e.target)
         })).filter(e => e.source && e.target);
         
+        // Update D3 visualization
+        this.updateD3Graph(nodes, links);
+        
+        // Update combined dashboard
+        this.renderCombinedDashboard();
+        
+        // Update count
+        document.getElementById('pattern-count').textContent = `${nodes.length} concepts`;
+    }
+    
+    updateD3Graph(nodes, links) {
         // Update edges
         const edgeSelection = this.edgeLayer.selectAll('.concept-edge')
             .data(links, d => `${d.source.id}-${d.target.id}`);
@@ -861,9 +1063,100 @@ class EnhancedPatternsAnalytics {
                 .attr('x', d => d.x)
                 .attr('y', d => d.y);
         });
+    }
+    
+    renderCombinedDashboard() {
+        const container = document.getElementById('combined-dashboard');
+        if (!container) return;
         
-        // Update count
-        document.getElementById('pattern-count').textContent = `${nodes.length} concepts`;
+        let html = '';
+        
+        // Active Patterns Section
+        html += '<div class="section-divider"><span class="section-divider-icon">🔄</span> ACTIVE PATTERNS</div>';
+        
+        Array.from(this.patterns.values()).forEach(pattern => {
+            html += `
+                <div class="pattern-card pattern-${pattern.state}" data-pattern-id="${pattern.id}">
+                    <div class="pattern-header">
+                        <span class="pattern-type">${pattern.name}</span>
+                        <span class="pattern-strength">${Math.round(pattern.strength)}%</span>
+                    </div>
+                    <div class="pattern-description">${pattern.description}</div>
+                    <div class="pattern-detail">
+                        <span class="pattern-state">${pattern.state}</span>
+                    </div>
+                </div>
+            `;
+        });
+        
+        // Cognitive Insights Section
+        html += '<div class="section-divider"><span class="section-divider-icon">💡</span> COGNITIVE INSIGHTS</div>';
+        
+        // Interleave different types of insights
+        const allInsights = [];
+        
+        // Add blind spots
+        this.insights.blindSpots.forEach(spot => {
+            allInsights.push({
+                type: 'blind-spot',
+                icon: '🔴',
+                label: 'Blind Spot',
+                content: spot.text,
+                meta: `Frequency: ${spot.frequency}x | Impact: ${spot.severity || 'medium'}`
+            });
+        });
+        
+        // Add inefficiencies
+        this.insights.inefficiencies.forEach(item => {
+            allInsights.push({
+                type: 'inefficiency',
+                icon: '⚠️',
+                label: 'Inefficiency',
+                content: item.text,
+                meta: item.suggestion ? `Suggestion: ${item.suggestion}` : `Time impact: ${item.timeWasted || '?'}min`
+            });
+        });
+        
+        // Add strengths
+        this.insights.strengths.forEach(strength => {
+            allInsights.push({
+                type: 'strength',
+                icon: '✅',
+                label: 'Strength',
+                content: strength.text,
+                meta: `Consistency: ${strength.consistency}% | Impact: ${strength.impact}`
+            });
+        });
+        
+        // Add evolution
+        this.insights.evolution.forEach(evo => {
+            allInsights.push({
+                type: 'evolution',
+                icon: '🔄',
+                label: 'Evolution',
+                content: `${evo.from} → ${evo.to}`,
+                meta: `Improvement: ${evo.improvement}`
+            });
+        });
+        
+        // Render all insights
+        allInsights.forEach(insight => {
+            html += `
+                <div class="insight-item insight-${insight.type}">
+                    <div class="insight-label">${insight.icon} ${insight.label}</div>
+                    <div class="insight-text">${insight.content}</div>
+                    ${insight.meta ? `<div class="insight-meta">${insight.meta}</div>` : ''}
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+        
+        // Add click handlers for cross-highlighting
+        container.querySelectorAll('.pattern-card, .insight-item').forEach(elem => {
+            elem.addEventListener('mouseenter', () => this.highlightRelatedConcepts(elem));
+            elem.addEventListener('mouseleave', () => this.clearHighlight());
+        });
     }
     
     highlightConcept(conceptId) {
@@ -886,8 +1179,37 @@ class EnhancedPatternsAnalytics {
             node.classList.toggle('highlighted', node.dataset.conceptId === conceptId);
         });
         
-        // Highlight related patterns
-        this.highlightRelatedPatterns(concept);
+        // Highlight related patterns and insights
+        this.highlightRelatedItems(concept);
+    }
+    
+    highlightRelatedItems(concept) {
+        // Highlight patterns that match concept type
+        document.querySelectorAll('.pattern-card').forEach(card => {
+            const shouldHighlight = card.textContent.toLowerCase().includes(concept.type);
+            card.classList.toggle('highlighted', shouldHighlight);
+        });
+        
+        // Highlight insights related to concept
+        document.querySelectorAll('.insight-item').forEach(item => {
+            const shouldHighlight = Math.random() > 0.5; // Simulate relevance
+            item.classList.toggle('highlighted', shouldHighlight);
+        });
+    }
+    
+    highlightRelatedConcepts(element) {
+        // Highlight concepts that relate to this pattern/insight
+        const text = element.textContent.toLowerCase();
+        
+        this.nodeLayer.selectAll('.concept-node')
+            .classed('highlighted', d => {
+                return d.thought.toLowerCase().includes(text.substring(0, 10)) ||
+                       text.includes(d.type);
+            })
+            .classed('dimmed', d => {
+                return !d.thought.toLowerCase().includes(text.substring(0, 10)) &&
+                       !text.includes(d.type);
+            });
     }
     
     clearHighlight() {
@@ -914,20 +1236,6 @@ class EnhancedPatternsAnalytics {
         });
     }
     
-    highlightRelatedPatterns(concept) {
-        // Highlight patterns that match concept type
-        document.querySelectorAll('.pattern-card').forEach(card => {
-            const shouldHighlight = card.textContent.toLowerCase().includes(concept.type);
-            card.classList.toggle('highlighted', shouldHighlight);
-        });
-        
-        // Highlight insights related to concept
-        document.querySelectorAll('.insight-item').forEach(item => {
-            const shouldHighlight = Math.random() > 0.5; // Simulate relevance
-            item.classList.toggle('highlighted', shouldHighlight);
-        });
-    }
-    
     showTooltip(event, concept) {
         const tooltip = document.getElementById('concept-tooltip');
         tooltip.querySelector('.tooltip-type').textContent = concept.type;
@@ -935,7 +1243,10 @@ class EnhancedPatternsAnalytics {
         tooltip.querySelector('.tooltip-content').textContent = concept.thought;
         tooltip.querySelector('.tooltip-time').textContent = this.formatTime(concept.timestamp);
         
-        const connections = this.edges.filter(e => e.source === concept.id || e.target === concept.id).length;
+        const connections = this.edges.filter(e => 
+            (e.source === concept.id || e.target === concept.id) ||
+            (e.source.id === concept.id || e.target.id === concept.id)
+        ).length;
         tooltip.querySelector('.tooltip-connections').textContent = `${connections} connections`;
         
         // Position tooltip
@@ -979,9 +1290,11 @@ class EnhancedPatternsAnalytics {
         // Filter edges connected to visible nodes
         this.edgeLayer.selectAll('.concept-edge')
             .style('display', d => {
-                const sourceVisible = this.concepts.get(d.source.id).timestamp >= cutoffTime;
-                const targetVisible = this.concepts.get(d.target.id).timestamp >= cutoffTime;
-                return sourceVisible && targetVisible ? null : 'none';
+                const source = this.concepts.get(d.source.id || d.source);
+                const target = this.concepts.get(d.target.id || d.target);
+                return source && target && 
+                       source.timestamp >= cutoffTime && 
+                       target.timestamp >= cutoffTime ? null : 'none';
             });
         
         // Filter labels
@@ -1015,16 +1328,16 @@ class EnhancedPatternsAnalytics {
 }
 
 // Initialize when patterns panel is shown
-function initializeEnhancedPatterns() {
+function initializeCombinedPatterns() {
     const container = document.getElementById('patterns-container');
     if (container) {
         // Clean up any existing instance
-        if (window.enhancedPatterns) {
-            window.enhancedPatterns.destroy();
+        if (window.combinedPatterns) {
+            window.combinedPatterns.destroy();
         }
         
-        console.log('Initializing Enhanced Patterns Analytics');
-        window.enhancedPatterns = new EnhancedPatternsAnalytics('patterns-container');
+        console.log('Initializing Combined Patterns Analytics');
+        window.combinedPatterns = new CombinedPatternsAnalytics('patterns-container');
     }
 }
 
@@ -1032,7 +1345,7 @@ function initializeEnhancedPatterns() {
 document.addEventListener('DOMContentLoaded', () => {
     const patternsPanel = document.getElementById('patterns-panel');
     if (patternsPanel && patternsPanel.style.display !== 'none') {
-        setTimeout(initializeEnhancedPatterns, 100);
+        setTimeout(initializeCombinedPatterns, 100);
     }
 });
 
@@ -1041,6 +1354,6 @@ document.addEventListener('click', (e) => {
     if (e.target.closest('[data-tab="patterns"]') || 
         e.target.closest('#engram-tab-patterns') ||
         e.target.closest('[data-tekton-menu-panel="patterns-panel"]')) {
-        setTimeout(initializeEnhancedPatterns, 100);
+        setTimeout(initializeCombinedPatterns, 100);
     }
 });
