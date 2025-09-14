@@ -42,7 +42,13 @@ class PatternsDiscoveryEngine {
         const vizContainer = document.getElementById('patterns-container');
         if (vizContainer) {
             console.log('Using existing patterns structure from HTML');
-            // Don't replace the HTML, just use what's there
+            // Make sure SVG exists inside the container
+            if (!document.getElementById('patterns-svg')) {
+                vizContainer.innerHTML = `
+                    <svg id="patterns-svg" width="100%" height="100%"></svg>
+                    <canvas id="patterns-canvas" style="display: none;"></canvas>
+                `;
+            }
             return;
         }
         
@@ -146,8 +152,15 @@ class PatternsDiscoveryEngine {
         
         this.svg = d3.select('#patterns-svg');
         if (this.svg.empty()) {
-            console.error('SVG element not found');
-            return;
+            console.error('SVG element not found, creating it now');
+            // Create SVG if it doesn't exist
+            const container = this.container || document.getElementById('patterns-container');
+            if (container) {
+                container.innerHTML = '<svg id="patterns-svg" width="100%" height="100%"></svg>';
+                this.svg = d3.select('#patterns-svg');
+            } else {
+                return;
+            }
         }
         
         this.canvas = document.getElementById('patterns-canvas');
@@ -155,8 +168,9 @@ class PatternsDiscoveryEngine {
             this.ctx = this.canvas.getContext('2d');
         }
         
-        const width = 1200;
-        const height = 400;
+        const container = this.container || document.getElementById('patterns-container');
+        const width = container ? container.clientWidth || 1200 : 1200;
+        const height = container ? container.clientHeight || 400 : 400;
         
         console.log('Creating patterns visualization:', width, 'x', height);
         
@@ -758,10 +772,13 @@ class PatternsDiscoveryEngine {
             });
         });
         
-        // Detect patterns button
-        document.getElementById('patterns-detect-btn').addEventListener('click', () => {
-            this.detectNewPatterns();
-        });
+        // Detect patterns button (if it exists)
+        const detectBtn = document.getElementById('patterns-detect-btn');
+        if (detectBtn) {
+            detectBtn.addEventListener('click', () => {
+                this.detectNewPatterns();
+            });
+        }
     }
     
     /**
@@ -806,6 +823,11 @@ class PatternsDiscoveryEngine {
      * @landmark Animation Loop: Continuous updates
      */
     startAnimation() {
+        // Create demo patterns if none exist
+        if (this.patterns.size === 0) {
+            this.createDemoPatterns();
+        }
+        
         const animate = () => {
             if (this.visualization === 'pulse') {
                 this.createPulseVisualization();
@@ -815,6 +837,118 @@ class PatternsDiscoveryEngine {
         };
         
         animate();
+    }
+    
+    createDemoPatterns() {
+        console.log('Creating demo patterns');
+        // Create some demo patterns for visualization
+        const demoPatterns = [
+            { id: 'p1', type: 'emerging', name: 'Memory Formation', strength: 0.3, state: 'emerging', x: 200, y: 150 },
+            { id: 'p2', type: 'strengthening', name: 'Pattern Recognition', strength: 0.6, state: 'strengthening', x: 400, y: 200 },
+            { id: 'p3', type: 'stable', name: 'Language Processing', strength: 0.9, state: 'stable', x: 600, y: 100 },
+            { id: 'p4', type: 'cyclical', name: 'Attention Cycling', strength: 0.7, state: 'cyclical', x: 800, y: 250 },
+            { id: 'p5', type: 'fading', name: 'Old Memory', strength: 0.2, state: 'fading', x: 350, y: 300 }
+        ];
+        
+        demoPatterns.forEach(p => {
+            this.patterns.set(p.id, p);
+        });
+        
+        console.log('Demo patterns created:', this.patterns.size);
+        // Render the demo patterns
+        this.renderStreamVisualization();
+    }
+    
+    renderStreamVisualization() {
+        console.log('Rendering stream visualization, svg:', this.svg);
+        if (!this.svg || this.svg.empty()) {
+            console.error('SVG not available for rendering');
+            return;
+        }
+        
+        // Clear existing content
+        this.svg.selectAll('*').remove();
+        
+        // Get container dimensions
+        const container = this.container || document.getElementById('patterns-container');
+        const width = container ? container.clientWidth || 800 : 800;
+        const height = container ? container.clientHeight || 400 : 400;
+        
+        console.log('Rendering patterns in area:', width, 'x', height);
+        
+        // Set SVG size
+        this.svg
+            .attr('width', width)
+            .attr('height', height)
+            .attr('viewBox', `0 0 ${width} ${height}`);
+        
+        // Add background
+        this.svg.append('rect')
+            .attr('width', width)
+            .attr('height', height)
+            .attr('fill', '#000000');
+        
+        // Create pattern nodes
+        const patterns = Array.from(this.patterns.values());
+        console.log('Rendering', patterns.length, 'patterns');
+        
+        // Position patterns across the width and height
+        patterns.forEach((p, i) => {
+            if (!p.x || !p.y) {
+                p.x = (width / (patterns.length + 1)) * (i + 1);
+                p.y = height / 2 + (Math.random() - 0.5) * (height * 0.6);
+            }
+        });
+        
+        const nodes = this.svg.selectAll('.pattern-node')
+            .data(patterns)
+            .enter()
+            .append('g')
+            .attr('class', 'pattern-node')
+            .attr('transform', d => `translate(${d.x}, ${d.y})`);
+        
+        // Add circles for patterns
+        nodes.append('circle')
+            .attr('r', d => 10 + (d.strength || 0.5) * 20)
+            .attr('class', d => `pattern-${d.type}`)
+            .attr('fill', d => {
+                const colors = {
+                    emerging: '#00BCD4',
+                    strengthening: '#4CAF50',
+                    stable: '#9C27B0',
+                    fading: '#FF9800',
+                    cyclical: '#2196F3'
+                };
+                return colors[d.type] || '#666';
+            })
+            .attr('opacity', d => 0.3 + (d.strength || 0.5) * 0.7);
+        
+        // Add labels
+        nodes.append('text')
+            .attr('dy', -20)
+            .attr('text-anchor', 'middle')
+            .attr('fill', '#ffffff')
+            .attr('font-size', '12px')
+            .text(d => d.name || d.id);
+        
+        // Add animation
+        nodes.selectAll('circle')
+            .attr('r', d => 10 + (d.strength || 0.5) * 20)
+            .transition()
+            .duration(2000)
+            .attr('r', d => 15 + (d.strength || 0.5) * 20)
+            .transition()
+            .duration(2000)
+            .attr('r', d => 10 + (d.strength || 0.5) * 20)
+            .on('end', function() {
+                d3.select(this.parentNode).select('circle')
+                    .transition()
+                    .duration(2000)
+                    .attr('r', d => 15 + (d.strength || 0.5) * 20)
+                    .transition()
+                    .duration(2000)
+                    .attr('r', d => 10 + (d.strength || 0.5) * 20);
+            });
     }
     
     /**

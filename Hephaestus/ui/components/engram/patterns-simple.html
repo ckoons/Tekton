@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .patterns-simple {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pattern-circle {
+            position: absolute;
+            border-radius: 50%;
+            animation: pulse 3s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+        
+        .pattern-label {
+            position: absolute;
+            color: white;
+            font-size: 12px;
+            text-align: center;
+            width: 120px;
+            margin-left: -60px;
+        }
+        
+        .emerging { background: radial-gradient(circle, #00BCD4, transparent); }
+        .strengthening { background: radial-gradient(circle, #4CAF50, transparent); }
+        .stable { background: radial-gradient(circle, #9C27B0, transparent); }
+        .cyclical { background: radial-gradient(circle, #2196F3, transparent); }
+        .fading { background: radial-gradient(circle, #FF9800, transparent); }
+    </style>
+</head>
+<body>
+    <div class="patterns-simple">
+        <!-- Pattern 1: Memory Formation -->
+        <div class="pattern-circle emerging" style="width: 60px; height: 60px; left: 15%; top: 40%;"></div>
+        <div class="pattern-label" style="left: 15%; top: 55%;">Memory Formation</div>
+        
+        <!-- Pattern 2: Pattern Recognition -->
+        <div class="pattern-circle strengthening" style="width: 80px; height: 80px; left: 35%; top: 30%;"></div>
+        <div class="pattern-label" style="left: 35%; top: 50%;">Pattern Recognition</div>
+        
+        <!-- Pattern 3: Language Processing -->
+        <div class="pattern-circle stable" style="width: 100px; height: 100px; left: 55%; top: 45%;"></div>
+        <div class="pattern-label" style="left: 55%; top: 70%;">Language Processing</div>
+        
+        <!-- Pattern 4: Attention Cycling -->
+        <div class="pattern-circle cyclical" style="width: 70px; height: 70px; left: 75%; top: 25%;"></div>
+        <div class="pattern-label" style="left: 75%; top: 42%;">Attention Cycling</div>
+        
+        <!-- Pattern 5: Old Memory -->
+        <div class="pattern-circle fading" style="width: 50px; height: 50px; left: 85%; top: 60%; opacity: 0.5;"></div>
+        <div class="pattern-label" style="left: 85%; top: 73%;">Old Memory</div>
+    </div>
+</body>
+</html>
