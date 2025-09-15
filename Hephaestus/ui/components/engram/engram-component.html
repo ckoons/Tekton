@@ -25,7 +25,17 @@
 <input type="radio" name="engram-tab" id="engram-tab-patterns" style="display: none;">
 <input type="radio" name="engram-tab" id="engram-tab-chat" style="display: none;">
 <input type="radio" name="engram-tab" id="engram-tab-teamchat" style="display: none;">
-<div class="engram" data-tekton-area="engram" data-tekton-component="engram" data-tekton-type="component-workspace" data-tekton-ai="engram-assistant" data-tekton-ai-ready="false">
+<div class="engram" 
+     data-tekton-area="engram" 
+     data-tekton-component="engram-main" 
+     data-tekton-type="memory-system"
+     data-tekton-zone="workspace"
+     data-tekton-ai="engram-assistant" 
+     data-tekton-ai-ready="false"
+     data-tekton-state="active"
+     data-tekton-status="initialized"
+     data-tekton-registry="engram-memories"
+     data-tekton-construct="knowledge-builder">
     <!-- Component Header with Title -->
     <!-- @landmark Header: Component title and branding -->
     <div class="engram__header" data-tekton-zone="header" data-tekton-section="header">
@@ -548,8 +558,25 @@
         
         <!-- Patterns Tab (Pattern Detective) -->
         <!-- @landmark Panel: Patterns - Intelligent pattern recognition system -->
-        <div id="patterns-panel" class="engram__panel">
-            <div id="patterns-container" style="width: 100%; height: 100%;"></div>
+        <div id="patterns-panel" class="engram__panel"
+             data-tekton-panel="patterns"
+             data-tekton-component="patterns-analysis"
+             data-tekton-type="cognitive-patterns"
+             data-tekton-zone="insights"
+             data-tekton-ci="sophia-noesis"
+             data-tekton-ci-collaboration="active"
+             data-tekton-ci-ensemble="pattern-discovery"
+             data-tekton-state="active"
+             data-tekton-construct="pattern-formation"
+             data-tekton-registry="patterns-knowledge">
+            <div id="patterns-container" 
+                 style="width: 100%; height: 100%;"
+                 data-tekton-visualization="patterns-combined"
+                 data-tekton-construct="knowledge-graph"
+                 data-tekton-ci-orchestrated="true"
+                 data-tekton-interaction="force-directed"
+                 data-tekton-registry-action="browse"
+                 data-tekton-update="realtime"></div>
         </div>
         
         <!-- OLD patterns content hidden -->

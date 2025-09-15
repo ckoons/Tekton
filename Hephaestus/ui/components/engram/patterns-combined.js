@@ -71,33 +71,67 @@ class CombinedPatternsAnalytics {
     
     setupUI() {
         this.container.innerHTML = `
-            <div class="patterns-enhanced">
-                <div class="analytics-header">
-                    <h3>Cognitive Pattern Analytics</h3>
-                    <div class="analytics-controls">
-                        <div class="timeline-control">
+            <div class="patterns-enhanced"
+                 data-tekton-component="patterns-analytics"
+                 data-tekton-type="cognitive-analysis"
+                 data-tekton-ci-orchestrated="true"
+                 data-tekton-ci-ensemble="sophia-noesis">
+                <div class="analytics-header"
+                     data-tekton-zone="header"
+                     data-tekton-element="analytics-header">
+                    <h3 data-tekton-element="title">Cognitive Pattern Analytics</h3>
+                    <div class="analytics-controls"
+                         data-tekton-zone="controls"
+                         data-tekton-interaction="user-controls">
+                        <div class="timeline-control"
+                             data-tekton-control="timeline"
+                             data-tekton-temporal="navigation">
                             <span class="timeline-label">Timeline:</span>
-                            <input type="range" id="timeline-slider" min="0" max="100" value="100">
-                            <span id="timeline-time">Now</span>
+                            <input type="range" id="timeline-slider" min="0" max="100" value="100"
+                                   data-tekton-input="timeline-slider"
+                                   data-tekton-action="navigate-time">
+                            <span id="timeline-time"
+                                  data-tekton-display="current-time"
+                                  data-tekton-temporal="current">Now</span>
                         </div>
-                        <div class="analytics-status">
-                            <span class="status-indicator active"></span>
-                            <span id="pattern-count">0 concepts</span>
+                        <div class="analytics-status"
+                             data-tekton-status="analytics"
+                             data-tekton-state="active">
+                            <span class="status-indicator active"
+                                  data-tekton-indicator="status"
+                                  data-tekton-ci-state="active"></span>
+                            <span id="pattern-count"
+                                  data-tekton-metric="concept-count"
+                                  data-tekton-update="realtime">0 concepts</span>
                         </div>
                     </div>
                 </div>
                 
-                <div class="analytics-grid-enhanced">
+                <div class="analytics-grid-enhanced"
+                     data-tekton-layout="grid"
+                     data-tekton-zone="main-content">
                     <!-- Concept Formation Graph (LEFT - Visual Priority) -->
-                    <div class="analytics-section concept-graph-section">
-                        <h4>Concept Formation</h4>
-                        <div id="concept-graph-container">
-                            <svg id="concept-graph-svg"></svg>
+                    <div class="analytics-section concept-graph-section"
+                         data-tekton-section="concept-graph"
+                         data-tekton-visualization="force-directed"
+                         data-tekton-construct="knowledge-formation"
+                         data-tekton-ci-participant="noesis-ai">
+                        <h4 data-tekton-element="section-title">Concept Formation</h4>
+                        <div id="concept-graph-container"
+                             data-tekton-container="graph"
+                             data-tekton-interaction="interactive"
+                             data-tekton-registry-action="explore">
+                            <svg id="concept-graph-svg"
+                                 data-tekton-svg="concept-graph"
+                                 data-tekton-render="d3js"></svg>
                         </div>
-                        <div class="graph-legend">
+                        <div class="graph-legend"
+                             data-tekton-element="legend"
+                             data-tekton-info="visual-guide">
                             <div class="legend-section">
                                 <span class="legend-title">Thought Types:</span>
-                                <div class="legend-items thought-types"></div>
+                                <div class="legend-items thought-types"
+                                     data-tekton-legend="thought-types"></div>
                             </div>
                             <div class="legend-section">
                                 <span class="legend-title">Relationships:</span>
@@ -107,28 +141,53 @@ class CombinedPatternsAnalytics {
                     </div>
                     
                     <!-- Learning Trajectory Timeline (RIGHT TOP) -->
-                    <div class="analytics-section trajectory-section">
-                        <h4>Learning Trajectory</h4>
-                        <div id="trajectory-timeline" class="timeline-container"></div>
+                    <div class="analytics-section trajectory-section"
+                         data-tekton-section="learning-trajectory"
+                         data-tekton-visualization="timeline"
+                         data-tekton-ci-participant="sophia-ai"
+                         data-tekton-registry="learning-history">
+                        <h4 data-tekton-element="section-title">Learning Trajectory</h4>
+                        <div id="trajectory-timeline" class="timeline-container"
+                             data-tekton-container="timeline"
+                             data-tekton-temporal="sequence"
+                             data-tekton-update="progressive"></div>
                     </div>
                     
                     <!-- Combined Active Patterns & Cognitive Insights (RIGHT BOTTOM) -->
-                    <div class="analytics-section combined-section">
-                        <h4>Active Patterns & Cognitive Insights</h4>
-                        <div id="combined-dashboard" class="combined-container"></div>
+                    <div class="analytics-section combined-section"
+                         data-tekton-section="active-insights"
+                         data-tekton-construct="insight-synthesis"
+                         data-tekton-ci-collaboration="active"
+                         data-tekton-ci-participants="sophia-ai,noesis-ai">
+                        <h4 data-tekton-element="section-title">Active Patterns & Cognitive Insights</h4>
+                        <div id="combined-dashboard" class="combined-container"
+                             data-tekton-container="dashboard"
+                             data-tekton-registry-action="aggregate"
+                             data-tekton-update="realtime"></div>
                     </div>
                 </div>
                 
                 <!-- Concept Detail Tooltip -->
-                <div id="concept-tooltip" class="concept-tooltip" style="display: none;">
-                    <div class="tooltip-header">
-                        <span class="tooltip-type"></span>
-                        <span class="tooltip-confidence"></span>
+                <div id="concept-tooltip" class="concept-tooltip" style="display: none;"
+                     data-tekton-element="tooltip"
+                     data-tekton-interaction="hover-detail"
+                     data-tekton-visibility="hidden">
+                    <div class="tooltip-header"
+                         data-tekton-zone="tooltip-header">
+                        <span class="tooltip-type"
+                              data-tekton-display="concept-type"></span>
+                        <span class="tooltip-confidence"
+                              data-tekton-display="confidence-level"></span>
                     </div>
-                    <div class="tooltip-content"></div>
-                    <div class="tooltip-meta">
-                        <span class="tooltip-time"></span>
-                        <span class="tooltip-connections"></span>
+                    <div class="tooltip-content"
+                         data-tekton-zone="tooltip-content"
+                         data-tekton-content="concept-detail"></div>
+                    <div class="tooltip-meta"
+                         data-tekton-zone="tooltip-meta">
+                        <span class="tooltip-time"
+                              data-tekton-temporal="timestamp"></span>
+                        <span class="tooltip-connections"
+                              data-tekton-metric="connection-count"></span>
                     </div>
                 </div>
             </div>

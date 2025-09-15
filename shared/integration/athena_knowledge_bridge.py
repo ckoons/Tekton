@@ -22,6 +22,42 @@ from pathlib import Path
 from shared.env import TektonEnviron
 from shared.urls import tekton_url
 
+# Import landmarks with fallback
+try:
+    from landmarks import (
+        architecture_decision,
+        integration_point,
+        state_checkpoint,
+        ci_collaboration,
+        performance_boundary
+    )
+except ImportError:
+    # Define no-op decorators when landmarks not available
+    def architecture_decision(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def integration_point(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def state_checkpoint(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def ci_collaboration(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+    
+    def performance_boundary(**kwargs):
+        def decorator(func_or_class):
+            return func_or_class
+        return decorator
+
 # Add necessary paths
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "Engram"))
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "Noesis"))
@@ -65,6 +101,30 @@ class KnowledgeType(Enum):
     LEARNING = "learning"
 
 
+@architecture_decision(
+    title="Unified Knowledge Bridge",
+    description="Central integration point for all cognitive engines and ESR knowledge graph",
+    rationale="Single bridge ensures consistent knowledge representation and prevents duplication",
+    alternatives_considered=["Direct engine connections", "Separate bridges per engine", "Message bus"],
+    impacts=["knowledge_consistency", "engine_integration", "query_performance"],
+    decided_by="System Design",
+    decision_date="2024-09"
+)
+@ci_collaboration(
+    title="Knowledge Bridge Collaboration",
+    description="Coordinates Noesis discovery and Sophia learning through shared knowledge",
+    participants=["noesis-ai", "sophia-ai", "athena-ai"],
+    coordination_method="shared_knowledge_graph",
+    synchronization="async_with_queues"
+)
+@state_checkpoint(
+    title="Knowledge Graph State",
+    description="Persistent knowledge storage with in-memory cache",
+    state_type="graph_database",
+    persistence=True,
+    consistency_requirements="Strong consistency for relationships, eventual for content",
+    recovery_strategy="Reload from ESR on initialization"
+)
 class AthenaKnowledgeBridge:
     """
     Bridge between Noesis/Sophia engines and ESR Knowledge Graph.
