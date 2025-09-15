@@ -194,6 +194,197 @@
     filter: drop-shadow(0 0 3px #00BCD4);
 }
 
+/* Bottom Controls Layout */
+.cognition__bottom-controls {
+    background-color: var(--bg-secondary, #252535);
+    border-top: 1px solid var(--border-color, #444);
+    padding: 8px 15px;
+    flex-shrink: 0;
+}
+
+/* Button Rows */
+.cognition__button-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.cognition__button-row:last-child {
+    margin-bottom: 0;
+}
+
+/* Aspects row with controls */
+.cognition__aspects-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cognition__button-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Controls on the right */
+.cognition__controls-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+    padding-left: 20px;
+}
+
+.cognition__hint {
+    color: var(--text-secondary, #888);
+    font-size: 0.85rem;
+    font-style: italic;
+    white-space: nowrap;
+}
+
+.cognition__reset-btn {
+    padding: 6px 16px;
+    background-color: #F44336 !important;
+    border: none;
+    border-radius: 4px;
+    color: white !important;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.cognition__reset-btn:hover {
+    background-color: #D32F2F !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(244, 67, 54, 0.3);
+}
+
+.cognition__label {
+    color: var(--text-secondary, #aaa);
+    font-weight: 500;
+    margin-right: 8px;
+    min-width: 70px;
+}
+
+/* Region Buttons with Brain Colors */
+.cognition__btn-region {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.cognition__btn-region:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.cognition__btn-region:active {
+    transform: translateY(0);
+}
+
+/* Individual Region Colors matching 3D brain */
+.cognition__btn-pfc {
+    background-color: #4CAF50; /* Green - Prefrontal Cortex */
+}
+
+.cognition__btn-hc {
+    background-color: #2196F3; /* Blue - Hippocampus */
+}
+
+.cognition__btn-amg {
+    background-color: #FF9800; /* Orange - Amygdala */
+}
+
+.cognition__btn-tl {
+    background-color: #9C27B0; /* Purple - Temporal Lobe */
+}
+
+.cognition__btn-pl {
+    background-color: #00BCD4; /* Cyan - Parietal Lobe */
+}
+
+.cognition__btn-ol {
+    background-color: #FFEB3B; /* Yellow - Occipital Lobe */
+    color: #333; /* Dark text for contrast on yellow */
+}
+
+.cognition__btn-cb {
+    background-color: #795548; /* Brown - Cerebellum */
+}
+
+/* Aspect Buttons with Contrasting Colors */
+.cognition__btn-aspect {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.cognition__btn-aspect:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    filter: brightness(1.1);
+}
+
+.cognition__btn-aspect:active {
+    transform: translateY(0);
+}
+
+/* Individual Aspect Colors */
+.cognition__btn-memory {
+    background-color: #E91E63; /* Pink - Memory */
+}
+
+.cognition__btn-emotion {
+    background-color: #FF5722; /* Deep Orange - Emotion */
+}
+
+.cognition__btn-planning {
+    background-color: #3F51B5; /* Indigo - Planning */
+}
+
+.cognition__btn-language {
+    background-color: #009688; /* Teal - Language */
+}
+
+.cognition__btn-spatial {
+    background-color: #673AB7; /* Deep Purple - Spatial */
+}
+
+.cognition__btn-attention {
+    background-color: #FFC107; /* Amber - Attention */
+    color: #333; /* Dark text for contrast */
+}
+
+.cognition__btn-learning {
+    background-color: #4CAF50; /* Green - Learning */
+}
+
+.cognition__btn-reasoning {
+    background-color: #607D8B; /* Blue Grey - Reasoning */
+}
+
+/* Active/Selected State */
+.cognition__btn-region.active,
+.cognition__btn-aspect.active {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+}
+
 /* Controls Panel */
 .cognition__controls {
     width: 250px;

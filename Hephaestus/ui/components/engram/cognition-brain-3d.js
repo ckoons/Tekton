@@ -305,6 +305,42 @@ class CognitionBrain3D {
             region.material.emissiveIntensity = 0.2;
         });
     }
+    
+    showAspect(aspectName) {
+        // Map aspects to relevant brain regions
+        const aspectRegions = {
+            memory: ['hippocampus', 'temporalLobe', 'prefrontalCortex'],
+            emotion: ['amygdala', 'cingulateCortex', 'prefrontalCortex'],
+            planning: ['prefrontalCortex', 'parietalLobe', 'basalGanglia'],
+            language: ['temporalLobe', 'prefrontalCortex'],
+            spatial: ['parietalLobe', 'occipitalLobe', 'hippocampus'],
+            attention: ['cingulateCortex', 'parietalLobe', 'thalamus'],
+            learning: ['hippocampus', 'cerebellum', 'basalGanglia'],
+            reasoning: ['prefrontalCortex', 'parietalLobe', 'temporalLobe']
+        };
+        
+        const regions = aspectRegions[aspectName] || [];
+        
+        Object.entries(this.regions).forEach(([name, region]) => {
+            if (regions.includes(name)) {
+                region.material.opacity = 0.8;
+                region.material.emissiveIntensity = 0.4;
+                // Add pulsing effect for active aspects
+                region.userData.aspectActive = true;
+            }
+        });
+    }
+    
+    hideAspect(aspectName) {
+        // Reset regions associated with this aspect
+        Object.values(this.regions).forEach(region => {
+            if (region.userData.aspectActive) {
+                region.userData.aspectActive = false;
+                region.material.opacity = region.userData.baseOpacity;
+                region.material.emissiveIntensity = 0.2;
+            }
+        });
+    }
 }
 
 // Initialize when ready
@@ -352,27 +388,38 @@ document.addEventListener('click', (e) => {
     }
     
     // Handle region button clicks
-    if (e.target.closest('.cognition__region-btn')) {
-        const btn = e.target.closest('.cognition__region-btn');
+    if (e.target.closest('.cognition__btn-region')) {
+        const btn = e.target.closest('.cognition__btn-region');
         const region = btn.getAttribute('data-region');
         
-        // Toggle active state
-        btn.classList.toggle('active');
+        // Remove active from all region buttons
+        document.querySelectorAll('.cognition__btn-region').forEach(b => b.classList.remove('active'));
+        
+        // Toggle active state on clicked button
+        btn.classList.add('active');
         
         // Highlight region in 3D brain if exists
         if (window.cognitionBrain3D) {
-            if (btn.classList.contains('active')) {
-                window.cognitionBrain3D.highlightRegion(region);
-            } else {
-                window.cognitionBrain3D.resetHighlight();
-            }
+            window.cognitionBrain3D.highlightRegion(region);
         }
     }
     
     // Handle aspect button clicks
-    if (e.target.closest('.cognition__aspect-btn')) {
-        const btn = e.target.closest('.cognition__aspect-btn');
+    if (e.target.closest('.cognition__btn-aspect')) {
+        const btn = e.target.closest('.cognition__btn-aspect');
+        const aspect = btn.getAttribute('data-aspect');
+        
+        // Toggle active state
         btn.classList.toggle('active');
+        
+        // Trigger aspect visualization if brain exists
+        if (window.cognitionBrain3D) {
+            if (btn.classList.contains('active')) {
+                window.cognitionBrain3D.showAspect(aspect);
+            } else {
+                window.cognitionBrain3D.hideAspect(aspect);
+            }
+        }
     }
 });
 

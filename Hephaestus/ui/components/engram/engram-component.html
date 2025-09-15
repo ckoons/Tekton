@@ -875,27 +875,37 @@
             
             <!-- Controls at Bottom -->
             <div class="cognition__bottom-controls">
+                <!-- Brain Regions buttons -->
                 <div class="cognition__button-row">
-                    <div class="cognition__button-group">
+                    <div class="cognition__button-group cognition__regions-group">
                         <span class="cognition__label">Regions:</span>
-                        <button class="cognition__btn-compact" data-region="prefrontal">PFC</button>
-                        <button class="cognition__btn-compact" data-region="hippocampus">HC</button>
-                        <button class="cognition__btn-compact" data-region="amygdala">AMG</button>
-                        <button class="cognition__btn-compact" data-region="temporal">TL</button>
-                        <button class="cognition__btn-compact" data-region="parietal">PL</button>
-                    </div>
-                    <div class="cognition__button-group">
-                        <span class="cognition__label">Aspects:</span>
-                        <button class="cognition__btn-compact" data-aspect="memory">Mem</button>
-                        <button class="cognition__btn-compact" data-aspect="emotion">Emo</button>
-                        <button class="cognition__btn-compact" data-aspect="planning">Plan</button>
-                        <button class="cognition__btn-compact" data-aspect="language">Lang</button>
-                        <button class="cognition__btn-compact" data-aspect="spatial">Spat</button>
+                        <button class="cognition__btn-region cognition__btn-pfc" data-region="prefrontal">Prefrontal Cortex</button>
+                        <button class="cognition__btn-region cognition__btn-hc" data-region="hippocampus">Hippocampus</button>
+                        <button class="cognition__btn-region cognition__btn-amg" data-region="amygdala">Amygdala</button>
+                        <button class="cognition__btn-region cognition__btn-tl" data-region="temporal">Temporal Lobe</button>
+                        <button class="cognition__btn-region cognition__btn-pl" data-region="parietal">Parietal Lobe</button>
+                        <button class="cognition__btn-region cognition__btn-ol" data-region="occipital">Occipital Lobe</button>
+                        <button class="cognition__btn-region cognition__btn-cb" data-region="cerebellum">Cerebellum</button>
                     </div>
                 </div>
-                <div class="cognition__hint-row">
-                    <span class="cognition__hint">Drag to rotate • Scroll to zoom</span>
-                    <button class="cognition__reset-btn" onclick="window.cognitionBrain3D && window.cognitionBrain3D.resetHighlight()">Reset</button>
+                
+                <!-- Cognitive Aspects buttons with controls on same line -->
+                <div class="cognition__button-row cognition__aspects-row">
+                    <div class="cognition__button-group cognition__aspects-group">
+                        <span class="cognition__label">Aspects:</span>
+                        <button class="cognition__btn-aspect cognition__btn-memory" data-aspect="memory">Memory</button>
+                        <button class="cognition__btn-aspect cognition__btn-emotion" data-aspect="emotion">Emotion</button>
+                        <button class="cognition__btn-aspect cognition__btn-planning" data-aspect="planning">Planning</button>
+                        <button class="cognition__btn-aspect cognition__btn-language" data-aspect="language">Language</button>
+                        <button class="cognition__btn-aspect cognition__btn-spatial" data-aspect="spatial">Spatial</button>
+                        <button class="cognition__btn-aspect cognition__btn-attention" data-aspect="attention">Attention</button>
+                        <button class="cognition__btn-aspect cognition__btn-learning" data-aspect="learning">Learning</button>
+                        <button class="cognition__btn-aspect cognition__btn-reasoning" data-aspect="reasoning">Reasoning</button>
+                    </div>
+                    <div class="cognition__controls-right">
+                        <span class="cognition__hint">Drag to rotate • Scroll to zoom</span>
+                        <button class="cognition__reset-btn" onclick="window.cognitionBrain3D && window.cognitionBrain3D.resetHighlight()">Reset</button>
+                    </div>
                 </div>
             </div>
         </div>
