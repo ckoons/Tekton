@@ -110,11 +110,7 @@
                     <label>CI:</label>
                     <select id="memories-ci-select" class="memories__select">
                         <option value="all">All CIs</option>
-                        <option value="apollo">Apollo</option>
-                        <option value="athena">Athena</option>
-                        <option value="hermes">Hermes</option>
-                        <option value="zeus">Zeus</option>
-                        <option value="diana">Diana</option>
+                        <!-- CIs will be populated dynamically from registry -->
                     </select>
                     
                     <select class="memories__filter-select" id="memory-type-filter">
@@ -860,14 +856,13 @@
             <!-- Compact Header -->
             <div class="cognition__header">
                 <h3 class="cognition__title">Cognitive State Monitor</h3>
-                <select id="cognition-ci-select" class="cognition__select">
-                    <option value="all">All CIs</option>
-                    <option value="apollo">Apollo</option>
-                    <option value="athena">Athena</option>
-                    <option value="hermes">Hermes</option>
-                    <option value="zeus">Zeus</option>
-                    <option value="diana">Diana</option>
-                </select>
+                <div class="cognition__ci-selector">
+                    <label for="cognition-ci-select" style="color: #aaa; font-size: 0.9rem;">CI:</label>
+                    <select id="cognition-ci-select" class="cognition__select">
+                        <option value="all">All CIs</option>
+                        <!-- CIs will be populated dynamically from registry -->
+                    </select>
+                </div>
             </div>
             
             <!-- 3D Brain Container - Takes most of the space -->
@@ -2435,6 +2430,7 @@
 <script src="/scripts/tekton-urls.js"></script>
 <script src="/scripts/shared/ai-chat.js"></script>
 <script src="/scripts/engram/engram-component.js"></script>
+<script src="/scripts/engram/engram-selectors.js"></script>
 <!-- Include visualization libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -2624,6 +2620,12 @@ document.addEventListener('click', function(e) {
 });
 </script>
 <script type="text/javascript">
+try {
+    console.log('[ENGRAM] Second script block starting execution');
+} catch (e) {
+    console.error('[ENGRAM] Error at start of second script:', e);
+}
+
 // Initialize chat components
 function engram_initChats() {
     console.log('[ENGRAM] Initializing chats');
@@ -2644,13 +2646,171 @@ function engram_initChats() {
     }
 }
 
+// Function to load CI Registry and populate dropdowns
+function loadEngramCIRegistry() {
+    console.log('[ENGRAM] Starting loadEngramCIRegistry function');
+    
+    // First check if selectors exist
+    const memoriesSelect = document.getElementById('memories-ci-select');
+    const cognitionSelect = document.getElementById('cognition-ci-select');
+    
+    console.log('[ENGRAM] Memories selector found:', !!memoriesSelect);
+    console.log('[ENGRAM] Cognition selector found:', !!cognitionSelect);
+    
+    // Use fallback list for now to ensure selectors work
+    const fallbackCIs = [
+        'apollo', 'athena', 'engram', 'ergon', 'harmonia', 
+        'hermes', 'metis', 'noesis', 'numa', 'penia',
+        'prometheus', 'rhetor', 'sophia', 'synthesis', 'telos'
+    ];
+    
+    // Populate Memories selector
+    if (memoriesSelect) {
+        // Keep "All CIs" option
+        memoriesSelect.innerHTML = '<option value="all">All CIs</option>';
+        
+        fallbackCIs.forEach(ci => {
+            const option = document.createElement('option');
+            option.value = ci;
+            option.textContent = ci.charAt(0).toUpperCase() + ci.slice(1);
+            memoriesSelect.appendChild(option);
+        });
+        console.log('[ENGRAM] Populated memories selector with', fallbackCIs.length, 'CIs');
+    }
+    
+    // Populate Cognition selector
+    if (cognitionSelect) {
+        // Keep "All CIs" option
+        cognitionSelect.innerHTML = '<option value="all">All CIs</option>';
+        
+        fallbackCIs.forEach(ci => {
+            const option = document.createElement('option');
+            option.value = ci;
+            option.textContent = ci.charAt(0).toUpperCase() + ci.slice(1);
+            cognitionSelect.appendChild(option);
+        });
+        console.log('[ENGRAM] Populated cognition selector with', fallbackCIs.length, 'CIs');
+    }
+}
+
+// Original async function to try loading from registry (commented out for now)
+async function loadEngramCIRegistryAsync() {
+    try {
+        const apolloUrl = window.TektonConfig ? 
+            window.TektonConfig.getApolloUrl('/api/ci-registry') : 
+            'http://localhost:8112/api/ci-registry';
+            
+        const response = await fetch(apolloUrl);
+        
+        if (response.ok) {
+            const data = await response.json();
+            
+            // Update both Memories and Cognition CI selectors
+            const selectors = ['memories-ci-select', 'cognition-ci-select'];
+            
+            selectors.forEach(selectorId => {
+                const select = document.getElementById(selectorId);
+                if (select && data.active_cis) {
+                    // Clear existing options except "All CIs"
+                    while (select.options.length > 1) {
+                        select.remove(1);
+                    }
+                    
+                    // Add CIs from registry
+                    Object.entries(data.active_cis).forEach(([id, info]) => {
+                        const option = document.createElement('option');
+                        option.value = id;
+                        
+                        // Format the display name
+                        const displayName = info.name || id.replace(/-ci$/, '')
+                            .replace(/-/g, ' ')
+                            .split(' ')
+                            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                            .join(' ');
+                        
+                        option.textContent = displayName;
+                        
+                        // Add type as data attribute for potential filtering
+                        if (info.type) {
+                            option.setAttribute('data-ci-type', info.type);
+                        }
+                        
+                        select.appendChild(option);
+                    });
+                    
+                    console.log(`[ENGRAM] Loaded ${Object.keys(data.active_cis).length} CIs into ${selectorId}`);
+                }
+            });
+        } else {
+            console.warn('[ENGRAM] Failed to load CI registry, using fallback list');
+            // Fallback to common CIs if registry is unavailable
+            const fallbackCIs = [
+                'apollo', 'athena', 'engram', 'ergon', 'harmonia', 
+                'hermes', 'metis', 'noesis', 'numa', 'penia',
+                'prometheus', 'rhetor', 'sophia', 'synthesis', 'telos'
+            ];
+            
+            const selectors = ['memories-ci-select', 'cognition-ci-select'];
+            selectors.forEach(selectorId => {
+                const select = document.getElementById(selectorId);
+                if (select) {
+                    // Clear old options
+                    while (select.options.length > 1) {
+                        select.remove(1);
+                    }
+                    
+                    fallbackCIs.forEach(ci => {
+                        const option = document.createElement('option');
+                        option.value = ci;
+                        option.textContent = ci.charAt(0).toUpperCase() + ci.slice(1);
+                        select.appendChild(option);
+                    });
+                }
+            });
+            console.log('[ENGRAM] Registry loaded with CIs');
+        }
+    } catch (error) {
+        console.error('[ENGRAM] Error loading CI registry:', error);
+    }
+}
+
 // Listen for tab changes and initialize chats
+console.log('[ENGRAM] About to add DOMContentLoaded listener');
 document.addEventListener('DOMContentLoaded', function() {
     console.log('[ENGRAM] DOMContentLoaded event fired');
     // Initialize chat components
     setTimeout(() => {
         engram_initChats();
     }, 100);
+    
+    // Load CI Registry for both Memories and Cognition panels
+    loadEngramCIRegistry();
+    
+    // Test if selector is clickable
+    setTimeout(() => {
+        const cogSelect = document.getElementById('cognition-ci-select');
+        if (cogSelect) {
+            console.log('[ENGRAM] Cognition selector found, adding test listener');
+            cogSelect.addEventListener('click', () => {
+                console.log('[ENGRAM] Cognition selector clicked!');
+            });
+            cogSelect.addEventListener('change', (e) => {
+                console.log('[ENGRAM] Cognition selector changed to:', e.target.value);
+            });
+            
+            // Check computed styles
+            const styles = window.getComputedStyle(cogSelect);
+            console.log('[ENGRAM] Cognition selector styles:', {
+                display: styles.display,
+                visibility: styles.visibility,
+                pointerEvents: styles.pointerEvents,
+                zIndex: styles.zIndex,
+                position: styles.position
+            });
+        } else {
+            console.log('[ENGRAM] Cognition selector NOT found');
+        }
+    }, 500);
 });
 
 // Also try immediate initialization if DOM is already loaded

@@ -341,6 +341,52 @@ class CognitionBrain3D {
             }
         });
     }
+    
+    setActiveCI(ciName) {
+        // Store the active CI for filtering data
+        this.activeCI = ciName;
+        
+        // Update visualization based on CI type
+        if (ciName === 'all') {
+            // Show aggregate activity across all CIs
+            this.resetHighlight();
+            console.log('[Cognition] Showing aggregate activity for all CIs');
+        } else {
+            // Highlight regions based on CI specialization
+            const ciSpecializations = {
+                'apollo': ['prefrontalCortex', 'temporalLobe'], // Insight generation
+                'athena': ['hippocampus', 'temporalLobe'], // Knowledge management
+                'engram': ['hippocampus', 'cingulateCortex'], // Memory system
+                'sophia': ['prefrontalCortex', 'parietalLobe'], // Learning
+                'noesis': ['parietalLobe', 'occipitalLobe'], // Discovery
+                'hermes': ['temporalLobe', 'basalGanglia'], // Communication
+                'rhetor': ['temporalLobe', 'prefrontalCortex'], // Language models
+                'harmonia': ['cingulateCortex', 'prefrontalCortex'], // Orchestration
+                'prometheus': ['prefrontalCortex', 'parietalLobe'], // Planning
+                'ergon': ['basalGanglia', 'cerebellum'], // Solution building
+                'metis': ['prefrontalCortex', 'hippocampus'], // Workflows
+                'synthesis': ['parietalLobe', 'temporalLobe'], // Integration
+                'telos': ['prefrontalCortex', 'cingulateCortex'], // Requirements
+                'numa': ['prefrontalCortex', 'temporalLobe'], // Companion
+                'penia': ['basalGanglia', 'hippocampus'] // Cost analysis
+            };
+            
+            const regions = ciSpecializations[ciName] || [];
+            if (regions.length > 0) {
+                Object.entries(this.regions).forEach(([name, region]) => {
+                    if (regions.includes(name)) {
+                        region.material.opacity = 0.8;
+                        region.material.emissiveIntensity = 0.4;
+                    } else {
+                        region.material.opacity = 0.3;
+                        region.material.emissiveIntensity = 0.1;
+                    }
+                });
+            }
+            
+            console.log(`[Cognition] Showing activity for CI: ${ciName}`);
+        }
+    }
 }
 
 // Initialize when ready
@@ -360,6 +406,26 @@ function initializeCognitionBrain3D() {
         
         // Connect to WebSocket for real-time updates
         connectCognitionWebSocket();
+        
+        // Add event handler for CI selector
+        const ciSelector = document.getElementById('cognition-ci-select');
+        if (ciSelector) {
+            ciSelector.addEventListener('change', (e) => {
+                const selectedCI = e.target.value;
+                console.log(`[Cognition] CI selected: ${selectedCI}`);
+                
+                // Update brain visualization based on selected CI
+                if (window.cognitionBrain3D) {
+                    window.cognitionBrain3D.setActiveCI(selectedCI);
+                }
+                
+                // Reconnect WebSocket with new CI filter
+                if (window.cognitionWebSocket) {
+                    window.cognitionWebSocket.close();
+                }
+                connectCognitionWebSocket(selectedCI);
+            });
+        }
     } else {
         console.log('Container cognition-brain-3d not found yet');
     }
@@ -423,19 +489,41 @@ document.addEventListener('click', (e) => {
     }
 });
 
-function connectCognitionWebSocket() {
-    const ws = new WebSocket('ws://localhost:8100/cognition/stream');
+function connectCognitionWebSocket(ciFilter = 'all') {
+    // Close existing connection if any
+    if (window.cognitionWebSocket) {
+        window.cognitionWebSocket.close();
+    }
+    
+    const wsUrl = ciFilter === 'all' 
+        ? 'ws://localhost:8100/cognition/stream'
+        : `ws://localhost:8100/cognition/stream?ci=${ciFilter}`;
+        
+    const ws = new WebSocket(wsUrl);
+    window.cognitionWebSocket = ws;
+    
+    ws.onopen = () => {
+        console.log(`[Cognition] WebSocket connected for CI: ${ciFilter}`);
+    };
     
     ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
         
         if (data.type === 'region_activation' && window.cognitionBrain3D) {
-            window.cognitionBrain3D.updateRegionActivity(data.region, data.intensity);
+            // Only update if it matches our filter
+            if (ciFilter === 'all' || data.ci === ciFilter) {
+                window.cognitionBrain3D.updateRegionActivity(data.region, data.intensity);
+            }
         }
     };
     
     ws.onerror = (error) => {
         console.log('WebSocket error, will retry in 5 seconds');
-        setTimeout(connectCognitionWebSocket, 5000);
+        setTimeout(() => connectCognitionWebSocket(ciFilter), 5000);
+    };
+    
+    ws.onclose = () => {
+        console.log('[Cognition] WebSocket disconnected');
+        window.cognitionWebSocket = null;
     };
 }

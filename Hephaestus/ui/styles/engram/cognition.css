@@ -21,6 +21,8 @@
     padding: 5px 10px;
     margin-bottom: 10px;
     flex-shrink: 0;
+    position: relative;
+    z-index: 100; /* Ensure header is above other elements */
 }
 
 .cognition__title {
@@ -35,14 +37,36 @@
     gap: 10px;
 }
 
+/* CI Selector - Simple styling like memories */
 .cognition__select {
     padding: 6px 12px;
     background-color: var(--bg-tertiary, #333345);
     border: 1px solid var(--border-color, #444);
     border-radius: 4px;
     color: var(--text-primary, #f0f0f0);
-    font-size: 0.95rem;
     cursor: pointer;
+    min-width: 120px;
+}
+
+.cognition__select:hover {
+    background-color: var(--bg-hover, #3a3a4a);
+    border-color: var(--color-primary, #9C27B0);
+}
+
+.cognition__select:focus {
+    outline: none;
+    border-color: var(--color-primary, #9C27B0);
+    box-shadow: 0 0 0 2px rgba(156, 39, 176, 0.2);
+}
+
+.cognition__select option {
+    background-color: var(--bg-secondary, #252535);
+    color: var(--text-primary, #f0f0f0);
+    padding: 8px;
+}
+
+.cognition__select option:hover {
+    background-color: var(--bg-hover, #3a3a4a);
 }
 
 /* 3D Brain Container - Full Height */

@@ -130,6 +130,10 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
             # Handle command history endpoint
             self.handle_command_history("GET")
             return
+        elif self.path == "/api/ci-registry":
+            # Handle CI registry endpoint
+            self.handle_ci_registry()
+            return
         elif self.path.startswith("/api/"):
             self.proxy_api_request("GET")
             return
@@ -1030,6 +1034,34 @@ class TektonUIRequestHandler(SimpleHTTPRequestHandler):
         # Convert to JSON and send
         import json
         self.wfile.write(json.dumps(port_vars).encode('utf-8'))
+
+    @api_contract("GET /api/ci-registry - Returns complete CI registry including all CI types")
+    def handle_ci_registry(self):
+        """Serve CI registry data from aish CI registry"""
+        try:
+            # Import CI registry
+            from shared.aish.src.registry.ci_registry import CIRegistry
+            
+            # Get registry instance and fetch all CIs
+            registry = CIRegistry()
+            all_cis = registry.get_all()
+            
+            # Send response
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
+            self.send_header("Pragma", "no-cache")
+            self.send_header("Expires", "0")
+            self.end_headers()
+            
+            # Convert to JSON and send
+            import json
+            self.wfile.write(json.dumps(all_cis).encode('utf-8'))
+            
+        except Exception as e:
+            logger.error(f"Error serving CI registry: {e}")
+            self.send_error(500, f"Internal server error: {str(e)}")
 
     @api_contract("GET/POST /api/environment - Manages environment variables and Tekton configuration")
     def handle_environment_request(self, method):
