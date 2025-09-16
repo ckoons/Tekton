@@ -2431,6 +2431,7 @@
 <script src="/scripts/shared/ai-chat.js"></script>
 <script src="/scripts/engram/engram-component.js"></script>
 <script src="/scripts/engram/engram-selectors.js"></script>
+<script src="/scripts/engram/memory-diagnostic.js"></script>
 <!-- Include visualization libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -2788,23 +2789,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 100);
     
     // Load CI Registry for both Memories and Cognition panels
-    // Delay to ensure external script is loaded
+    // Note: The external script handles loading automatically, so we just verify it exists
     setTimeout(() => {
         // Check if the external script version is available
         if (typeof loadEngramCIRegistry === 'function') {
-            console.log('[ENGRAM] Using external loadEngramCIRegistry from engram-selectors.js');
-            loadEngramCIRegistry();
+            console.log('[ENGRAM] External loadEngramCIRegistry is available from engram-selectors.js');
+            // Don't call it here - the external script handles initialization
         } else {
             console.error('[ENGRAM] External loadEngramCIRegistry not found! Make sure engram-selectors.js is loaded');
-            // Try again after another delay
-            setTimeout(() => {
-                if (typeof loadEngramCIRegistry === 'function') {
-                    console.log('[ENGRAM] Found loadEngramCIRegistry on second try');
-                    loadEngramCIRegistry();
-                } else {
-                    console.error('[ENGRAM] Still no loadEngramCIRegistry function!');
-                }
-            }, 500);
         }
     }, 200);
     

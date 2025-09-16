@@ -65,7 +65,7 @@ document.addEventListener('change', (e) => {
  */
 window.engram.loadMemories = async function(type = 'all', sharing = 'all', page = 1) {
     const container = document.getElementById('memory-cards-container');
-    const limit = 20;
+    const limit = 10; // Reduced from 20 to prevent memory issues
     const offset = (page - 1) * limit;
     
     try {
@@ -619,8 +619,22 @@ window.engram.deleteMemory = async function(memoryId) {
  * Initialize component when DOM is ready
  */
 document.addEventListener('DOMContentLoaded', function() {
-    // Load initial data for browse tab
-    engram.loadMemories();
+    // Only load initial data if the Engram tab is active
+    const engramTab = document.getElementById('engram-tab-browse');
+    if (engramTab && engramTab.checked) {
+        engram.loadMemories();
+    } else {
+        console.log('[ENGRAM] Browse tab not active, deferring memory load');
+        // Add listener to load when tab becomes active
+        if (engramTab) {
+            engramTab.addEventListener('change', function() {
+                if (this.checked && !window.engram._memoriesLoaded) {
+                    window.engram._memoriesLoaded = true;
+                    engram.loadMemories();
+                }
+            }, { once: true });
+        }
+    }
     
     // Set up filter change handlers
     const typeFilter = document.getElementById('memory-type-filter');

@@ -76,22 +76,19 @@ class MemoryTier(Enum):
 class MemoryConfig:
     """Configuration for memory middleware."""
     namespace: str
-    enabled: bool = True
-    injection_style: InjectionStyle = InjectionStyle.NATURAL
+    enabled: bool = False  # DISABLED by default - must opt-in
+    injection_style: InjectionStyle = InjectionStyle.MINIMAL  # Minimal by default
     memory_tiers: List[MemoryTier] = field(default_factory=lambda: [
-        MemoryTier.RECENT,
-        MemoryTier.SESSION,
-        MemoryTier.DOMAIN,
-        MemoryTier.ASSOCIATIONS
+        MemoryTier.RECENT,  # Only recent by default
     ])
-    store_inputs: bool = True
-    store_outputs: bool = True
-    inject_context: bool = True
-    context_depth: int = 10
-    relevance_threshold: float = 0.7
-    max_context_size: int = 2000  # tokens
+    store_inputs: bool = False  # Don't store by default
+    store_outputs: bool = False  # Don't store by default
+    inject_context: bool = False  # Don't inject by default
+    context_depth: int = 3  # Very limited context
+    relevance_threshold: float = 0.9  # High threshold
+    max_context_size: int = 500  # Small context
     enable_collective: bool = False
-    performance_sla_ms: int = 200
+    performance_sla_ms: int = 50  # Tight SLA
 
 
 @dataclass
@@ -160,6 +157,10 @@ class MemoryMiddleware:
         self.config = config
         self.memory_manager = None
         self._init_memory_manager()
+        
+        # Add memory limiter to prevent excessive memory usage
+        from .memory_limiter import get_memory_limiter
+        self.limiter = get_memory_limiter(config.namespace)
         
     def _init_memory_manager(self):
         """Initialize the memory manager."""

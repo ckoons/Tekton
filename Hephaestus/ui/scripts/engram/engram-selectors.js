@@ -205,8 +205,13 @@ async function loadEngramCIRegistry() {
         const count = populateSelector(cognitionSelect);
         console.log('[ENGRAM-SELECTORS] Populated cognition selector with', count, 'CIs');
         
-        // Add event handler for CI selection
-        cognitionSelect.addEventListener('change', (e) => {
+        // Remove any existing change handlers to prevent duplicates
+        if (cognitionSelect._changeHandler) {
+            cognitionSelect.removeEventListener('change', cognitionSelect._changeHandler);
+        }
+        
+        // Create and store new handler
+        cognitionSelect._changeHandler = (e) => {
             const selectedCI = e.target.value;
             console.log(`[ENGRAM-SELECTORS] CI selected: ${selectedCI}`);
             
@@ -214,25 +219,38 @@ async function loadEngramCIRegistry() {
             if (window.cognitionBrain3D && window.cognitionBrain3D.setActiveCI) {
                 window.cognitionBrain3D.setActiveCI(selectedCI);
             }
-        });
+        };
+        
+        // Add event handler for CI selection
+        cognitionSelect.addEventListener('change', cognitionSelect._changeHandler);
     }
 }
 
-// Try to load immediately
-console.log('[ENGRAM-SELECTORS] Attempting immediate load');
-loadEngramCIRegistry();
+// Track if we've already loaded to prevent multiple calls
+let engramCIRegistryLoaded = false;
 
-// Also try on DOM ready
+// Wrapped loader to ensure single execution
+async function loadEngramCIRegistryOnce() {
+    if (engramCIRegistryLoaded) {
+        console.log('[ENGRAM-SELECTORS] Registry already loaded, skipping');
+        return;
+    }
+    engramCIRegistryLoaded = true;
+    console.log('[ENGRAM-SELECTORS] Loading CI registry (once)');
+    await loadEngramCIRegistry();
+}
+
+// Load when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         console.log('[ENGRAM-SELECTORS] DOM loaded, loading CI registry');
-        loadEngramCIRegistry();
+        loadEngramCIRegistryOnce();
     });
 } else {
-    // DOM already loaded
+    // DOM already loaded - single delayed call
     setTimeout(() => {
         console.log('[ENGRAM-SELECTORS] DOM already loaded, loading CI registry with delay');
-        loadEngramCIRegistry();
+        loadEngramCIRegistryOnce();
     }, 100);
 }
 
