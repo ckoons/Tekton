@@ -228,6 +228,82 @@ async def coordinate_specialists(task: dict):
     pass
 ```
 
+### Memory Decorators
+
+#### 11. @with_memory
+**Purpose**: Automatically handle memory storage and retrieval for functions
+```python
+@with_memory(
+    namespace="apollo",
+    store_inputs=True,
+    store_outputs=True,
+    inject_context=True,
+    memory_tiers=["recent", "session", "domain", "associations"]
+)
+async def process_request(message: str) -> str:
+    # Memory context automatically available via self.memory_context
+    # Response automatically stored after return
+    return response
+```
+
+#### 12. @memory_aware
+**Purpose**: Mark functions that should receive memory context but not store
+```python
+@memory_aware(
+    namespace="athena",
+    context_depth=10,
+    relevance_threshold=0.7
+)
+async def analyze_pattern(data: dict) -> dict:
+    # Receives memory context but doesn't auto-store
+    # Useful for read-only analytical functions
+    relevant_memories = self.memory_context.get("relevant")
+    return analysis
+```
+
+#### 13. @memory_trigger
+**Purpose**: Define conditions that trigger memory operations
+```python
+@memory_trigger(
+    on_event="task_completion",
+    consolidation_type="immediate",
+    reflection_depth="full"
+)
+async def on_task_complete(task_result: dict):
+    # Automatically triggers memory consolidation
+    # Initiates reflection process
+    pass
+```
+
+#### 14. @collective_memory
+**Purpose**: Mark functions that contribute to shared CI memory
+```python
+@collective_memory(
+    share_with=["apollo", "athena", "rhetor"],
+    memory_type="breakthrough",
+    visibility="family"
+)
+async def share_insight(insight: dict):
+    # Automatically shares memory with specified CIs
+    # Contributes to collective intelligence
+    pass
+```
+
+#### 15. @memory_context
+**Purpose**: Define memory retrieval patterns for specific contexts
+```python
+@memory_context(
+    context_type="conversation",
+    lookback_window="30_minutes",
+    include_associations=True,
+    semantic_clustering=True
+)
+async def get_conversation_context(topic: str) -> dict:
+    # Retrieves contextually relevant memories
+    # Groups by semantic similarity
+    return context
+```
+
 ### Landmark Implementation Pattern
 
 Always include fallback for environments without landmarks:
@@ -242,7 +318,13 @@ try:
         ci_orchestrated,
         message_buffer,
         fuzzy_match,
-        ci_collaboration
+        ci_collaboration,
+        # Memory decorators
+        with_memory,
+        memory_aware,
+        memory_trigger,
+        collective_memory,
+        memory_context
     )
 except ImportError:
     # Define no-op decorators when landmarks not available
