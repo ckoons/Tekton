@@ -7,9 +7,17 @@ This module provides functions for dependency injection in FastAPI routes.
 from typing import Optional
 from fastapi import Header, HTTPException, Depends
 
-from engram.core.memory import MemoryService
-from engram.core.structured_memory import StructuredMemory
-from engram.core.nexus import NexusInterface
+# Use the new turn-based storage service
+from engram.services.storage_service import StorageService
+
+# Keep these for compatibility, though they may not be used
+try:
+    from engram.core.structured_memory import StructuredMemory
+    from engram.core.nexus import NexusInterface
+except ImportError:
+    # These modules may not exist in the simplified architecture
+    StructuredMemory = None
+    NexusInterface = None
 
 # Global memory manager instance
 memory_manager = None
@@ -30,12 +38,12 @@ async def get_memory_manager():
     return memory_manager
 
 
-# Helper to get memory service for client
-async def get_memory_service(client_id: str = Depends(get_client_id)) -> MemoryService:
-    """Get memory service for the specified client."""
-    if memory_manager is None:
-        raise HTTPException(status_code=500, detail="Memory manager not initialized")
-    return await memory_manager.get_memory_service(client_id)
+# Helper to get storage service for client
+async def get_memory_service(client_id: str = Depends(get_client_id)) -> StorageService:
+    """Get storage service for the specified client."""
+    # For now, return a simple storage service instance
+    # In the turn-based architecture, we don't need complex memory management
+    return StorageService()
 
 
 # Helper to get structured memory for client

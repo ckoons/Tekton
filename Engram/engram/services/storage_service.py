@@ -157,6 +157,28 @@ class StorageService:
         
         return memories
     
+    # Compatibility methods for old MemoryService interface
+    async def get(self, memory_id: str, namespace: str = None) -> Optional[Dict[str, Any]]:
+        """Get a specific memory by ID (compatibility method)."""
+        # For now, return None as we don't have ID-based retrieval
+        logger.warning(f"get() called with memory_id={memory_id}, namespace={namespace} - not implemented")
+        return None
+    
+    async def get_relevant_context(
+        self,
+        query: str,
+        namespaces: Optional[List[str]] = None,
+        limit: int = 5
+    ) -> List[Dict[str, Any]]:
+        """Get relevant context for a query (compatibility method)."""
+        # Simple implementation using retrieve
+        return self.retrieve(ci_name="default", query=query, limit=limit)
+    
+    async def get_namespaces(self) -> List[str]:
+        """Get list of namespaces (compatibility method)."""
+        # Return empty list as we don't use namespaces
+        return []
+    
     def get_previous_turn(self, ci_name: str) -> Optional[Dict[str, Any]]:
         """
         Get the previous turn summary for a CI.

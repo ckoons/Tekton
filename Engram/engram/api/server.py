@@ -98,7 +98,7 @@ logger = setup_component_logging("engram")
 
 # Import Engram component and services
 from engram.core.engram_component import EngramComponent
-from engram.core import MemoryService
+# Removed MemoryService import - using StorageService instead
 
 @architecture_decision(
     title="Engram Memory System Architecture",
@@ -185,17 +185,14 @@ async def startup_event():
 async def get_memory_service(
     request: Request,
     x_client_id: str = Header(None)
-) -> MemoryService:
-    client_id = x_client_id or engram_component.default_client_id
+):
+    """Return a simple storage service instead of the complex memory service."""
+    # Import here to avoid circular dependencies
+    from engram.services.storage_service import StorageService
     
-    if engram_component.memory_manager is None:
-        raise HTTPException(status_code=500, detail="Memory manager not initialized")
-    
-    try:
-        return await engram_component.memory_manager.get_memory_service(client_id)
-    except Exception as e:
-        logger.error(f"Error getting memory service: {e}")
-        raise HTTPException(status_code=500, detail=f"Error getting memory service: {str(e)}")
+    # Return a new storage service instance
+    # In the turn-based architecture, we don't need complex memory management
+    return StorageService()
 
 # Define routes
 @routers.root.get("/")
@@ -252,7 +249,7 @@ async def health():
 )
 async def add_memory(
     request: Request,
-    memory_service: MemoryService = Depends(get_memory_service)
+    memory_service = Depends(get_memory_service)
 ):
     """Add a memory."""
     try:
@@ -303,7 +300,7 @@ async def add_memory(
 async def get_memory(
     memory_id: str,
     namespace: str = "conversations",
-    memory_service: MemoryService = Depends(get_memory_service)
+    memory_service = Depends(get_memory_service)
 ):
     """Get a memory by ID."""
     try:
@@ -365,7 +362,7 @@ async def get_memory(
 )
 async def search_memory(
     request: Request,
-    memory_service: MemoryService = Depends(get_memory_service)
+    memory_service = Depends(get_memory_service)
 ):
     """Search for memories."""
     try:
@@ -411,7 +408,7 @@ async def search_memory(
 )
 async def get_context(
     request: Request,
-    memory_service: MemoryService = Depends(get_memory_service)
+    memory_service = Depends(get_memory_service)
 ):
     """Get relevant context from multiple namespaces."""
     try:
@@ -442,7 +439,7 @@ async def get_context(
 
 @routers.v1.get("/namespaces")
 async def list_namespaces(
-    memory_service: MemoryService = Depends(get_memory_service)
+    memory_service = Depends(get_memory_service)
 ):
     """List available namespaces."""
     try:
@@ -458,7 +455,7 @@ async def list_namespaces(
 @routers.v1.post("/compartments")
 async def create_compartment(
     request: Request,
-    memory_service: MemoryService = Depends(get_memory_service)
+    memory_service = Depends(get_memory_service)
 ):
     """Create a new memory compartment."""
     try:
@@ -493,7 +490,7 @@ async def create_compartment(
 @routers.v1.get("/compartments")
 async def list_compartments(
     include_inactive: bool = False,
-    memory_service: MemoryService = Depends(get_memory_service)
+    memory_service = Depends(get_memory_service)
 ):
     """List memory compartments."""
     try:
@@ -509,7 +506,7 @@ async def list_compartments(
 @routers.v1.post("/compartments/{compartment_id}/activate")
 async def activate_compartment(
     compartment_id: str,
-    memory_service: MemoryService = Depends(get_memory_service)
+    memory_service = Depends(get_memory_service)
 ):
     """Activate a memory compartment."""
     try:
@@ -532,7 +529,7 @@ async def activate_compartment(
 @routers.v1.post("/compartments/{compartment_id}/deactivate")
 async def deactivate_compartment(
     compartment_id: str,
-    memory_service: MemoryService = Depends(get_memory_service)
+    memory_service = Depends(get_memory_service)
 ):
     """Deactivate a memory compartment."""
     try:
@@ -572,7 +569,7 @@ async def deactivate_compartment(
 )
 async def upload_memory_file(
     file: UploadFile = File(...),
-    memory_service: MemoryService = Depends(get_memory_service)
+    memory_service = Depends(get_memory_service)
 ):
     """Upload a file and create a memory from it."""
     try:
@@ -639,7 +636,7 @@ async def browse_memories(
     sharing: Optional[str] = None,
     limit: int = 20,
     offset: int = 0,
-    memory_service: MemoryService = Depends(get_memory_service)
+    memory_service = Depends(get_memory_service)
 ):
     """Get paginated list of memories with filtering."""
     try:
@@ -704,7 +701,7 @@ async def browse_memories(
 async def update_memory(
     memory_id: str,
     request: Request,
-    memory_service: MemoryService = Depends(get_memory_service)
+    memory_service = Depends(get_memory_service)
 ):
     """Update an existing memory."""
     try:
@@ -731,7 +728,7 @@ async def update_memory(
 )
 async def delete_memory(
     memory_id: str,
-    memory_service: MemoryService = Depends(get_memory_service)
+    memory_service = Depends(get_memory_service)
 ):
     """Delete a memory."""
     try:
@@ -764,7 +761,7 @@ async def delete_memory(
     measured_impact="Real-time insights without blocking memory operations"
 )
 async def get_insights(
-    memory_service: MemoryService = Depends(get_memory_service)
+    memory_service = Depends(get_memory_service)
 ):
     """Get memory insights based on emotional analysis."""
     try:
@@ -820,7 +817,7 @@ async def get_insights(
 async def get_insight_memories(
     insight_name: str,
     limit: int = 20,
-    memory_service: MemoryService = Depends(get_memory_service)
+    memory_service = Depends(get_memory_service)
 ):
     """Get memories matching a specific insight category."""
     try:
