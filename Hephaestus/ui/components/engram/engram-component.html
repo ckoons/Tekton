@@ -2647,6 +2647,9 @@ function engram_initChats() {
 }
 
 // Function to load CI Registry and populate dropdowns
+// COMMENTED OUT - Using external script version from /scripts/engram/engram-selectors.js
+// This inline version was overriding the external script and only showing Greek Chorus CIs
+/*
 function loadEngramCIRegistry() {
     console.log('[ENGRAM] Starting loadEngramCIRegistry function');
     
@@ -2692,6 +2695,7 @@ function loadEngramCIRegistry() {
         console.log('[ENGRAM] Populated cognition selector with', fallbackCIs.length, 'CIs');
     }
 }
+*/
 
 // Original async function to try loading from registry (commented out for now)
 async function loadEngramCIRegistryAsync() {
@@ -2784,7 +2788,25 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 100);
     
     // Load CI Registry for both Memories and Cognition panels
-    loadEngramCIRegistry();
+    // Delay to ensure external script is loaded
+    setTimeout(() => {
+        // Check if the external script version is available
+        if (typeof loadEngramCIRegistry === 'function') {
+            console.log('[ENGRAM] Using external loadEngramCIRegistry from engram-selectors.js');
+            loadEngramCIRegistry();
+        } else {
+            console.error('[ENGRAM] External loadEngramCIRegistry not found! Make sure engram-selectors.js is loaded');
+            // Try again after another delay
+            setTimeout(() => {
+                if (typeof loadEngramCIRegistry === 'function') {
+                    console.log('[ENGRAM] Found loadEngramCIRegistry on second try');
+                    loadEngramCIRegistry();
+                } else {
+                    console.error('[ENGRAM] Still no loadEngramCIRegistry function!');
+                }
+            }, 500);
+        }
+    }, 200);
     
     // Test if selector is clickable
     setTimeout(() => {
