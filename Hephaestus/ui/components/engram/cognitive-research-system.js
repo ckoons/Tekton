@@ -147,8 +147,13 @@ class CognitiveResearchSystem {
         // Directly observe Engram patterns if component is available
         if (!this.engram) return;
         
+        // Clear any existing interval
+        if (this.patternObserverInterval) {
+            clearInterval(this.patternObserverInterval);
+        }
+        
         // Monitor pattern changes
-        setInterval(() => {
+        this.patternObserverInterval = setInterval(() => {
             if (this.engram.patterns) {
                 this.analyzePatterns(this.engram.patterns);
             }
@@ -486,12 +491,17 @@ class CognitiveResearchSystem {
             });
         }
         
-        // Store in learning history
+        // Store in learning history with limit
         this.learningHistory.push({
             pattern: pattern,
             timestamp: Date.now(),
             source: 'sophia'
         });
+        
+        // Keep only last 100 entries to prevent memory leak
+        if (this.learningHistory.length > 100) {
+            this.learningHistory = this.learningHistory.slice(-100);
+        }
         
         // Trigger UI update
         this.updateUIWithLearnedPattern(pattern);
@@ -776,6 +786,11 @@ class CognitiveResearchSystem {
     startCognitiveMonitoring() {
         console.log('[CRS] Starting cognitive monitoring');
         
+        // Clear any existing monitor interval
+        if (this.monitorInterval) {
+            clearInterval(this.monitorInterval);
+        }
+        
         // Monitor Engram patterns
         this.monitorInterval = setInterval(() => {
             this.checkForPatterns();
@@ -842,6 +857,32 @@ class CognitiveResearchSystem {
         // Clear queues
         this.researchQueue = [];
         
+        this.initialized = false;
+    }
+    
+    /**
+     * Clean up intervals and resources
+     */
+    cleanup() {
+        console.log('[CRS] Cleaning up intervals and resources');
+        
+        // Clear all intervals
+        if (this.patternObserverInterval) {
+            clearInterval(this.patternObserverInterval);
+            this.patternObserverInterval = null;
+        }
+        
+        if (this.monitorInterval) {
+            clearInterval(this.monitorInterval);
+            this.monitorInterval = null;
+        }
+        
+        // Clear data structures
+        this.connections.clear();
+        this.researchQueue = [];
+        this.learningHistory = [];
+        this.currentInsights = [];
+        this.discoveryHistory = [];
         this.initialized = false;
     }
 }

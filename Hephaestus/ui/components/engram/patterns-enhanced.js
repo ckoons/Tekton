@@ -717,6 +717,11 @@ class EnhancedPatternsAnalytics {
                 target: targetId,
                 type: edgeTypes[Math.floor(Math.random() * edgeTypes.length)]
             });
+            
+            // Limit edges to prevent memory leak
+            if (this.edges.length > 200) {
+                this.edges = this.edges.slice(-200);
+            }
         }
     }
     

@@ -712,7 +712,12 @@ class ESRExperienceUI {
      * @landmark Update Loop: Periodic metrics refresh
      */
     startMetricsUpdate() {
-        setInterval(() => {
+        // Clear any existing interval
+        if (this.metricsInterval) {
+            clearInterval(this.metricsInterval);
+        }
+        
+        this.metricsInterval = setInterval(() => {
             this.refreshMetrics();
         }, 30000); // Every 30 seconds
     }
@@ -721,7 +726,12 @@ class ESRExperienceUI {
      * @landmark Memory Decay: Simulate natural forgetting
      */
     startMemoryDecay() {
-        setInterval(() => {
+        // Clear any existing interval
+        if (this.decayInterval) {
+            clearInterval(this.decayInterval);
+        }
+        
+        this.decayInterval = setInterval(() => {
             // Decay working memory attention
             this.workingMemory.forEach(thought => {
                 const thoughtEl = document.querySelector(`[data-thought-id="${thought.id}"]`);
@@ -911,6 +921,34 @@ class ESRExperienceUI {
         this.emotionGraphData.timestamps.push(Date.now());
         
         this.drawEmotionGraph();
+    }
+    
+    /**
+     * Clean up intervals and resources
+     */
+    cleanup() {
+        console.log('[ESR] Cleaning up intervals and resources');
+        
+        // Clear all intervals
+        if (this.metricsInterval) {
+            clearInterval(this.metricsInterval);
+            this.metricsInterval = null;
+        }
+        
+        if (this.decayInterval) {
+            clearInterval(this.decayInterval);
+            this.decayInterval = null;
+        }
+        
+        // Close WebSocket if open
+        if (this.ws) {
+            this.ws.close();
+            this.ws = null;
+        }
+        
+        // Clear data
+        this.workingMemory = [];
+        this.promises.clear();
     }
 }
 
