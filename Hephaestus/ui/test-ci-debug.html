@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CI Registry Debug</title>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        .group { margin: 20px 0; padding: 10px; border: 1px solid #ccc; }
+        .group h3 { margin-top: 0; }
+        pre { background: #f4f4f4; padding: 10px; overflow-x: auto; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>CI Registry Debug</h1>
+    
+    <div class="group">
+        <h3>1. Registry Endpoint Test</h3>
+        <div id="endpoint-test"></div>
+    </div>
+    
+    <div class="group">
+        <h3>2. CI Types Found</h3>
+        <div id="types-test"></div>
+    </div>
+    
+    <div class="group">
+        <h3>3. Grouping Test</h3>
+        <div id="grouping-test"></div>
+    </div>
+    
+    <div class="group">
+        <h3>4. Selector Population Test</h3>
+        <select id="test-selector">
+            <option value="all">All CIs</option>
+        </select>
+    </div>
+
+    <script>
+    async function debugRegistry() {
+        const endpointDiv = document.getElementById('endpoint-test');
+        const typesDiv = document.getElementById('types-test');
+        const groupingDiv = document.getElementById('grouping-test');
+        
+        try {
+            // Test endpoint
+            const response = await fetch('/api/ci-registry');
+            const data = await response.json();
+            
+            endpointDiv.innerHTML = `<span class="success">✓ Registry returned ${Object.keys(data).length} CIs</span>`;
+            
+            // Analyze types
+            const typeCount = {};
+            Object.values(data).forEach(ci => {
+                const type = ci.type || 'unknown';
+                typeCount[type] = (typeCount[type] || 0) + 1;
+            });
+            
+            typesDiv.innerHTML = `<pre>${JSON.stringify(typeCount, null, 2)}</pre>`;
+            
+            // Test grouping logic (matching engram-selectors.js)
+            const ciList = [];
+            Object.entries(data).forEach(([id, info]) => {
+                ciList.push({
+                    id: id,
+                    name: info.name || id.replace(/[-_]/g, ' ')
+                        .split(' ')
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                        .join(' '),
+                    type: info.type || 'unknown'
+                });
+            });
+            
+            const groupedCIs = {
+                'Greek Chorus': [],
+                'CI Terminals': [],
+                'Terminals': [],
+                'AI Specialists': [],
+                'Other': []
+            };
+            
+            ciList.forEach(ci => {
+                if (ci.type === 'ci_terminal') {
+                    groupedCIs['CI Terminals'].push(ci);
+                } else if (ci.type === 'terminal') {
+                    groupedCIs['Terminals'].push(ci);
+                } else if (ci.type === 'greek') {
+                    groupedCIs['Greek Chorus'].push(ci);
+                } else if (ci.type === 'ai_specialist') {
+                    groupedCIs['AI Specialists'].push(ci);
+                } else {
+                    groupedCIs['Other'].push(ci);
+                }
+            });
+            
+            // Display grouping results
+            let groupingHtml = '';
+            Object.entries(groupedCIs).forEach(([group, cis]) => {
+                if (cis.length > 0) {
+                    groupingHtml += `<h4>${group} (${cis.length}):</h4><ul>`;
+                    cis.forEach(ci => {
+                        groupingHtml += `<li>${ci.name} (id: ${ci.id}, type: ${ci.type})</li>`;
+                    });
+                    groupingHtml += '</ul>';
+                }
+            });
+            groupingDiv.innerHTML = groupingHtml;
+            
+            // Populate test selector
+            const select = document.getElementById('test-selector');
+            Object.entries(groupedCIs).forEach(([groupName, cis]) => {
+                if (cis.length > 0) {
+                    // Add separator
+                    if (select.options.length > 1) {
+                        const separator = document.createElement('option');
+                        separator.disabled = true;
+                        separator.textContent = '──────────';
+                        select.appendChild(separator);
+                    }
+                    
+                    // Add group label
+                    const groupLabel = document.createElement('option');
+                    groupLabel.disabled = true;
+                    groupLabel.textContent = `── ${groupName} ──`;
+                    select.appendChild(groupLabel);
+                    
+                    // Add CIs
+                    cis.forEach(ci => {
+                        const option = document.createElement('option');
+                        option.value = ci.id;
+                        option.textContent = `  ${ci.name}`;
+                        select.appendChild(option);
+                    });
+                }
+            });
+            
+        } catch (error) {
+            endpointDiv.innerHTML = `<span class="error">✗ Error: ${error.message}</span>`;
+        }
+    }
+    
+    // Run debug
+    debugRegistry();
+    </script>
+</body>
+</html>

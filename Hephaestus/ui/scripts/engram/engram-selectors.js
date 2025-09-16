@@ -47,12 +47,14 @@ async function loadEngramCIRegistry() {
             
             // The new endpoint returns a flat object with all CIs
             // Process each CI directly
+            console.log('[ENGRAM-SELECTORS] Processing registry data with', Object.keys(data).length, 'entries');
+            
             Object.entries(data).forEach(([id, info]) => {
-                // Clean up the ID (remove -ci suffix if present)
-                const cleanId = id.replace(/-ci$/, '').replace(/_ci$/, '');
+                // Clean up the ID (remove -ci suffix if present for CI terminals, but keep for display)
+                const cleanId = id;  // Keep original ID to match what aish uses
                 
                 // Get display name
-                const displayName = info.name || cleanId.replace(/[-_]/g, ' ')
+                const displayName = info.name || id.replace(/[-_]/g, ' ')
                     .split(' ')
                     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                     .join(' ');
@@ -61,7 +63,7 @@ async function loadEngramCIRegistry() {
                 ciList.push({
                     id: cleanId,
                     name: displayName,
-                    type: info.type || 'specialist'
+                    type: info.type || 'unknown'
                 });
                 
                 console.log(`[ENGRAM-SELECTORS] Added ${cleanId} (${displayName}) type: ${info.type}`);
@@ -101,16 +103,16 @@ async function loadEngramCIRegistry() {
                 name: id.replace('-', ' ').split(' ')
                     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                     .join(' '),
-                type: 'specialist'
+                type: 'greek'  // Use the actual type from registry
             });
         });
         
         // Add CI Terminals
         ciTerminals.forEach(id => {
             ciList.push({
-                id: id.toLowerCase(),
+                id: id + '-ci',  // Add -ci suffix to match registry format
                 name: id,
-                type: 'ci-terminal'
+                type: 'ci_terminal'  // Use the actual type from registry
             });
         });
         
@@ -119,7 +121,7 @@ async function loadEngramCIRegistry() {
             ciList.push({
                 id: id,
                 name: id.charAt(0).toUpperCase() + id.slice(1),
-                type: 'project-ci'
+                type: 'ai_specialist'  // Archon is actually an AI specialist
             });
         });
     }
@@ -128,17 +130,20 @@ async function loadEngramCIRegistry() {
     const groupedCIs = {
         'Greek Chorus': [],
         'CI Terminals': [],
-        'Project CIs': [],
+        'Terminals': [],
+        'AI Specialists': [],
         'Other': []
     };
     
     ciList.forEach(ci => {
-        if (ci.type === 'ci-terminal' || ci.type === 'ci_terminal') {
+        if (ci.type === 'ci_terminal') {
             groupedCIs['CI Terminals'].push(ci);
-        } else if (ci.type === 'project-ci' || ci.type === 'project_ci') {
-            groupedCIs['Project CIs'].push(ci);
-        } else if (['specialist', 'greek-chorus', 'active-ci'].includes(ci.type)) {
+        } else if (ci.type === 'terminal') {
+            groupedCIs['Terminals'].push(ci);
+        } else if (ci.type === 'greek') {
             groupedCIs['Greek Chorus'].push(ci);
+        } else if (ci.type === 'ai_specialist') {
+            groupedCIs['AI Specialists'].push(ci);
         } else {
             groupedCIs['Other'].push(ci);
         }
