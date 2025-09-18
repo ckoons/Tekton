@@ -40,6 +40,14 @@ except ImportError:
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from aish.src.registry.ci_registry import get_registry
 
+# Import memory pipeline to prevent overflow
+try:
+    from shared.ai.memory_pipeline import process_through_pipeline
+    memory_pipeline_available = True
+except ImportError:
+    memory_pipeline_available = False
+    print("[WARNING] Memory pipeline not available - risk of overflow!", file=sys.stderr)
+
 
 @architecture_decision(
     title="Claude Process Handler",
@@ -177,18 +185,52 @@ class ClaudeHandler:
             claude_cmd += f' {args}'
         
         # For normal Claude forwarding, check if --continue should be added
+        # CRITICAL: Disable --continue to prevent heap overflow from loading huge history
         if '--continue' not in claude_cmd and next_prompt is None:
             # Check if CI needs fresh start (after sundown)
             needs_fresh = registry.get_needs_fresh_start(ci_name) if hasattr(registry, 'get_needs_fresh_start') else False
-            
+
             if not needs_fresh:
-                # Add --continue for normal conversation flow
-                claude_cmd = claude_cmd.replace('--print', '--print --continue')
+                # DISABLED: --continue causes heap overflow when history is large
+                # TODO: Implement conversation history cleanup before re-enabling
+                # claude_cmd = claude_cmd.replace('--print', '--print --continue')
+                print(f"[Claude Handler] Skipping --continue to prevent heap overflow")
+                pass
             else:
                 # Clear the fresh start flag after use
                 if hasattr(registry, 'set_needs_fresh_start'):
                     registry.set_needs_fresh_start(ci_name, False)
         
+        # MEMORY PIPELINE INTEGRATION - Prevent overflow!
+        if memory_pipeline_available:
+            try:
+                # Process through Apollo/Rhetor pipeline
+                # This replaces direct memory access
+                import asyncio
+
+                # Build context for pipeline
+                pipeline_context = {
+                    'ci_name': ci_name,
+                    'has_forward': bool(forward_state),
+                    'model': model_name if 'model_name' in locals() else 'claude'
+                }
+
+                # Process message through pipeline (Apollo + Rhetor)
+                # This ensures <128KB total with proper prioritization
+                processed_message = await process_through_pipeline(
+                    ci_name,
+                    message,
+                    pipeline_context
+                )
+
+                # Use processed message instead of raw
+                message = processed_message
+
+            except Exception as e:
+                print(f"[WARNING] Memory pipeline failed: {e}, using raw message", file=sys.stderr)
+                # Fall back to raw message if pipeline fails
+                pass
+
         # Check for buffered messages from other CIs
         from shared.aish.src.core.unified_sender import get_buffered_messages
         buffered = get_buffered_messages(ci_name, clear=False)  # Don't clear yet
@@ -265,8 +307,8 @@ class ClaudeHandler:
                 )
                 
                 # Prepend sundown prompt to user message
-                combined_message = sundown_prompt + combined_message
-                print(f"[Claude Handler] Injected sundown prompt, keeping context with --continue")
+                message = sundown_prompt + message
+                print(f"[Claude Handler] Injected sundown prompt into message")
                 
                 # Mark that after THIS response, we need fresh start
                 # TODO: Need to monitor response and set flag after
@@ -362,6 +404,17 @@ class ClaudeHandler:
             
             env['TEKTON_NAME'] = terminal_name
             
+            # Log message size for debugging heap overflow
+            message_bytes = message.encode('utf-8')
+            message_size_mb = len(message_bytes) / (1024 * 1024)
+            print(f"[Claude Handler] Sending {len(message_bytes):,} bytes ({message_size_mb:.2f} MB) to Claude")
+            print(f"[Claude Handler] Command: {claude_cmd}")
+
+            # SAFETY CHECK: Prevent sending huge messages that will crash Claude
+            if message_size_mb > 10:  # 10MB limit
+                print(f"[Claude Handler] ERROR: Message too large ({message_size_mb:.2f} MB), will crash Claude!")
+                return f"ERROR: Message size ({message_size_mb:.2f} MB) exceeds safe limit. This would crash Claude.\nPlease use sundown/sunrise to reset conversation context."
+
             # Create subprocess with specified working directory
             process = await asyncio.create_subprocess_exec(
                 *cmd_parts,
@@ -371,10 +424,10 @@ class ClaudeHandler:
                 cwd=launch_dir,  # Set working directory for Claude
                 env=env  # Pass environment with TEKTON_NAME
             )
-            
+
             # Send message and get response - NO TIMEOUT for Claude
             # Claude can take 5+ minutes for complex tasks
-            stdout, stderr = await process.communicate(input=message.encode())
+            stdout, stderr = await process.communicate(input=message_bytes)
             
             if process.returncode != 0:
                 error_msg = stderr.decode('utf-8', errors='replace')

@@ -27,11 +27,10 @@ class MemoryIntegratedClaudeHandler(ClaudeHandler):
     def __init__(self, engram_client=None, enable_memory: bool = True):
         super().__init__()
         self.memory_manager: Optional[MemoryPhaseManager] = None
-        self.memory_enabled = enable_memory
+        self.memory_enabled = False  # FORCE DISABLE MEMORY FOR DEBUGGING
         
-        if enable_memory:
-            self.memory_manager = MemoryPhaseManager(engram_client)
-            logger.info("Memory middleware integrated with Claude handler")
+        # Don't even initialize memory manager for now
+        logger.info("Memory middleware DISABLED for debugging Node.js issues")
     
     async def handle_forwarded_message(self, ci_name: str, message: str) -> str:
         """
@@ -44,32 +43,11 @@ class MemoryIntegratedClaudeHandler(ClaudeHandler):
         Returns:
             Response from Claude with memory processing
         """
-        # Prepare context
-        context = {
-            'ci_name': ci_name,
-            'timestamp': str(asyncio.get_event_loop().time()),
-            'forwarded': True
-        }
+        # COMPLETE NO-OP FOR CLAUDE CIs - Direct passthrough, no memory at all
+        # This bypasses ALL memory processing to debug Node.js heap issues
         
-        # Phase 1: Memory injection (if enabled)
-        if self.memory_enabled and self.memory_manager:
-            enriched_message = await self.memory_manager.process_with_memory(
-                ci_name, message, context
-            )
-        else:
-            enriched_message = message
-        
-        # Phase 2: Normal Claude processing
-        response = await super().handle_forwarded_message(ci_name, enriched_message)
-        
-        # Phase 3: Memory extraction (if enabled)
-        if self.memory_enabled and self.memory_manager:
-            # Fire and forget - don't block response
-            asyncio.create_task(
-                self.memory_manager._extract_phase(
-                    ci_name, message, response, context
-                )
-            )
+        # Pure prompt/response - no memory injection, no extraction, nothing
+        response = await super().handle_forwarded_message(ci_name, message)
         
         return response
     

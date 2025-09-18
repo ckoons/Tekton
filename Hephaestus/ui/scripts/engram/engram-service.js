@@ -323,9 +323,9 @@ class EngramService extends window.tektonUI.componentUtils.BaseService {
     }
     
     /**
-     * Get all memory entries
+     * Get memory entries (LIMITED to prevent overflow)
      * @param {Object} options - Query options
-     * @param {number} options.limit - Maximum number of entries to return
+     * @param {number} options.limit - Maximum number of entries (max 200)
      * @param {number} options.offset - Offset for pagination
      * @param {string} options.sort - Sort field and direction (e.g., 'timestamp:desc')
      * @param {string} options.compartment - Filter by compartment ID
@@ -333,8 +333,11 @@ class EngramService extends window.tektonUI.componentUtils.BaseService {
      */
     async getEntries(options = {}) {
         await this.ensureConnected();
-        
-        const limit = options.limit || 50;
+
+        // CRITICAL FIX: Much stricter limits to prevent Greek Chorus crashes!
+        // Default 10, max 20 items - this prevents the heap overflow
+        const limit = Math.min(options.limit || 10, 20);
+        console.warn(`[ENGRAM CRITICAL] Limited to ${limit} items to prevent crash`);
         const offset = options.offset || 0;
         const sort = options.sort || 'timestamp:desc';
         
@@ -360,8 +363,27 @@ class EngramService extends window.tektonUI.componentUtils.BaseService {
                 throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
             }
             
+            // Check response size before parsing
+            const contentLength = response.headers.get('content-length');
+            if (contentLength && parseInt(contentLength) > 65536) {
+                console.error(`[Engram] Response too large (${contentLength} bytes), aborting`);
+                throw new Error('Memory response exceeds 64KB limit - use pagination');
+            }
+
             const data = await response.json();
-            
+
+            // Limit cache size to prevent memory issues
+            if (this.memoryCache.size > 500) {
+                // Clear oldest entries
+                const entriesToDelete = this.memoryCache.size - 400;
+                let deleted = 0;
+                for (const key of this.memoryCache.keys()) {
+                    if (deleted >= entriesToDelete) break;
+                    this.memoryCache.delete(key);
+                    deleted++;
+                }
+            }
+
             // Cache the results
             data.items.forEach(entry => {
                 this.memoryCache.set(entry.id, entry);

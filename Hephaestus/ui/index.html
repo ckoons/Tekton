@@ -24,6 +24,9 @@
         document.documentElement.setAttribute('data-theme-base', 'pure-black');
     </script>
     
+    <!-- CRITICAL: Memory overflow guard MUST load first -->
+    <script src="scripts/engram/engram-overflow-guard.js"></script>
+
     <!-- Debug instrumentation -->
     <script src="scripts/debug-shim.js"></script>
     <!-- Diagnostic tools for debugging component issues -->

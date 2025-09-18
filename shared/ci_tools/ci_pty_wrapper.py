@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 PTY-based CI wrapper for terminal programs with message injection
+Enhanced with mandatory sundown/sunrise hooks for memory management
 """
 
 import sys
@@ -14,9 +15,18 @@ import json
 import select
 import signal
 from datetime import datetime
+from pathlib import Path
+
+# Import hook system
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+try:
+    from shared.ci_tools.ci_wrapper_hooks import CIHookSystem
+    hooks_available = True
+except ImportError:
+    hooks_available = False
 
 class PTYWrapper:
-    def __init__(self, name, command, delimiter=None):
+    def __init__(self, name, command, delimiter=None, enable_hooks=True):
         self.name = name
         self.command = command
         self.delimiter = delimiter  # Store default delimiter for auto-execution
@@ -24,6 +34,13 @@ class PTYWrapper:
         self.master_fd = None
         self.child_pid = None
         self.running = True
+        self.enable_hooks = enable_hooks and hooks_available
+
+        # Initialize hook system for mandatory operations
+        if self.enable_hooks:
+            self.hook_system = CIHookSystem(name)
+            self.session_output = []
+            self.output_buffer = []
         
     def setup_socket(self):
         """Set up Unix socket for receiving messages"""
@@ -226,12 +243,44 @@ class PTYWrapper:
                         if self.master_fd in r:
                             try:
                                 data = os.read(self.master_fd, 10240)
-                                if data and has_terminal:
-                                    try:
-                                        os.write(sys.stdout.fileno(), data)
-                                    except (BrokenPipeError, OSError):
-                                        # stdout closed, continue without output
-                                        pass
+                                if data:
+                                    # Process through hooks if enabled
+                                    if self.enable_hooks:
+                                        try:
+                                            output_str = data.decode('utf-8', errors='replace')
+                                            self.output_buffer.append(output_str)
+
+                                            # Check for complete lines to process
+                                            full_output = ''.join(self.output_buffer)
+                                            if '\n' in full_output or len(full_output) > 1024:
+                                                # Process through hooks
+                                                context = {
+                                                    'output': full_output,
+                                                    'ci_name': self.name,
+                                                    'session_output': '\n'.join(self.session_output)
+                                                }
+                                                context = self.hook_system.execute_hooks('post_output', context)
+
+                                                # Store for session history
+                                                self.session_output.append(full_output)
+
+                                                # Check if sundown required
+                                                if context.get('require_sundown'):
+                                                    sundown_prompt = self.hook_system._get_sundown_prompt()
+                                                    prompt_bytes = sundown_prompt.encode('utf-8')
+                                                    # Inject sundown prompt to PTY
+                                                    os.write(self.master_fd, prompt_bytes)
+
+                                                self.output_buffer = []
+                                        except Exception as e:
+                                            print(f"[Hook Error] {e}", file=sys.stderr)
+
+                                    if has_terminal:
+                                        try:
+                                            os.write(sys.stdout.fileno(), data)
+                                        except (BrokenPipeError, OSError):
+                                            # stdout closed, continue without output
+                                            pass
                                 elif not data:
                                     # EOF from child
                                     break
@@ -274,9 +323,37 @@ class PTYWrapper:
                 self.cleanup()
     
     def cleanup(self):
-        """Clean up resources"""
+        """Clean up resources with mandatory sundown check"""
         self.running = False
-        
+
+        # Execute pre-sundown hooks if enabled
+        if self.enable_hooks and hasattr(self, 'session_output') and self.session_output:
+            try:
+                context = {
+                    'session_output': '\n'.join(self.session_output),
+                    'ci_name': self.name
+                }
+
+                # Check for sundown
+                context = self.hook_system.execute_hooks('pre_sundown', context)
+
+                if context.get('block_exit'):
+                    # Sundown required but not provided
+                    print("\n" + "="*60, file=sys.stderr)
+                    print("WARNING: Session ending without sundown notes!", file=sys.stderr)
+                    print("Next session will start without context.", file=sys.stderr)
+                    print("="*60 + "\n", file=sys.stderr)
+
+                    # Try auto-generation one more time
+                    if context.get('auto_sundown'):
+                        print("Auto-generated sundown stored:", file=sys.stderr)
+                        print(context['auto_sundown'][:500] + "...", file=sys.stderr)
+
+                # Execute post-sundown hooks
+                self.hook_system.execute_hooks('post_sundown', context)
+            except Exception as e:
+                print(f"[Sundown Error] {e}", file=sys.stderr)
+
         # Terminate child process if still running
         if self.child_pid:
             try:
@@ -326,6 +403,7 @@ def main():
     parser = argparse.ArgumentParser(description='PTY wrapper with message injection')
     parser.add_argument('--name', '-n', help='CI name for socket')
     parser.add_argument('--delimiter', '-d', default=None, help='Default delimiter for auto-execution')
+    parser.add_argument('--no-hooks', action='store_true', help='Disable mandatory sundown hooks')
     parser.add_argument('command', nargs='*', help='Command to wrap')
     
     args = parser.parse_args()
@@ -354,7 +432,17 @@ def main():
         print("Please use a unique name", file=sys.stderr)
         sys.exit(1)
     
-    wrapper = PTYWrapper(args.name, args.command, args.delimiter)
+    # Create wrapper with hooks enabled by default
+    enable_hooks = not args.no_hooks
+    if hooks_available:
+        if enable_hooks:
+            print(f"[PTY Wrapper] Sundown/sunrise hooks ENABLED for {args.name}", file=sys.stderr)
+        else:
+            print(f"[PTY Wrapper] Hooks disabled for {args.name}", file=sys.stderr)
+    else:
+        print(f"[PTY Wrapper] Hook system not available", file=sys.stderr)
+
+    wrapper = PTYWrapper(args.name, args.command, args.delimiter, enable_hooks=enable_hooks)
     wrapper.run()
 
 if __name__ == "__main__":
