@@ -296,6 +296,40 @@ Even brief notes are better than none!
 
         return parsed
 
+    def save_to_working_memory(self, ci_name: str, sundown_data: Dict[str, Any]) -> bool:
+        """
+        Save sundown data to /tmp for working memory.
+
+        Args:
+            ci_name: CI name
+            sundown_data: Parsed sundown data
+
+        Returns:
+            Success boolean
+        """
+        try:
+            # Create directory for CI
+            sundown_path = Path(f"/tmp/sundown/{ci_name}")
+            sundown_path.mkdir(parents=True, exist_ok=True)
+
+            # Save as latest.json
+            latest_file = sundown_path / "latest.json"
+            with open(latest_file, 'w') as f:
+                json.dump(sundown_data, f, indent=2)
+
+            # Also save timestamped version
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            timestamped_file = sundown_path / f"{timestamp}.json"
+            with open(timestamped_file, 'w') as f:
+                json.dump(sundown_data, f, indent=2)
+
+            print(f"[Sundown] Saved to working memory: {latest_file}")
+            return True
+
+        except Exception as e:
+            print(f"[Sundown] Failed to save to working memory: {e}")
+            return False
+
 
 class QuestionEncourager:
     """Encourages CIs to ask questions, especially at task start."""

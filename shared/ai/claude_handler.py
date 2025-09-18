@@ -184,18 +184,27 @@ class ClaudeHandler:
         if args and 'claude' not in args:
             claude_cmd += f' {args}'
         
-        # For normal Claude forwarding, check if --continue should be added
-        # CRITICAL: Disable --continue to prevent heap overflow from loading huge history
+        # Working memory replaces --continue
+        # Load context from working memory instead of using --continue flag
         if '--continue' not in claude_cmd and next_prompt is None:
             # Check if CI needs fresh start (after sundown)
             needs_fresh = registry.get_needs_fresh_start(ci_name) if hasattr(registry, 'get_needs_fresh_start') else False
 
             if not needs_fresh:
-                # DISABLED: --continue causes heap overflow when history is large
-                # TODO: Implement conversation history cleanup before re-enabling
-                # claude_cmd = claude_cmd.replace('--print', '--print --continue')
-                print(f"[Claude Handler] Skipping --continue to prevent heap overflow")
-                pass
+                # Use working memory for context instead of --continue
+                try:
+                    from shared.ai.working_memory import get_working_memory
+                    working_mem = get_working_memory(ci_name)
+
+                    # Load previous sundown if exists
+                    working_mem.load_sundown_notes()
+
+                    # Add context about working memory to the message
+                    if working_mem.sundown_context:
+                        print(f"[Claude Handler] Using working memory context for {ci_name}")
+                        # Context will be added through memory pipeline
+                except Exception as e:
+                    print(f"[Claude Handler] Working memory error: {e}")
             else:
                 # Clear the fresh start flag after use
                 if hasattr(registry, 'set_needs_fresh_start'):
@@ -333,7 +342,18 @@ class ClaudeHandler:
         
         # Execute Claude with the combined message
         response = await self.execute_claude(claude_cmd, combined_message, ci_name, forward_state)
-        
+
+        # Save exchange to working memory
+        try:
+            from shared.ai.working_memory import get_working_memory
+            working_mem = get_working_memory(ci_name)
+
+            # Add the exchange (original message, not combined)
+            working_mem.add_exchange(message, response)
+            print(f"[Claude Handler] Saved exchange to working memory for {ci_name}")
+        except Exception as e:
+            print(f"[Claude Handler] Failed to save to working memory: {e}")
+
         # Monitor response for sundown completion
         try:
             from shared.ai.response_monitor import handle_post_response
@@ -341,7 +361,7 @@ class ClaudeHandler:
         except Exception as e:
             # Don't fail if monitor has issues
             print(f"[Claude Handler] Response monitor error (non-fatal): {e}")
-        
+
         return response
     
     @performance_boundary(

@@ -8,6 +8,7 @@ Enforces 64KB limits and prevents direct Engram access.
 
 import sys
 import asyncio
+import json
 import logging
 from typing import Dict, Any, Optional, List
 from pathlib import Path
@@ -59,21 +60,26 @@ class MemoryPipeline:
             context: Optional context (sundown, memory requests, etc.)
 
         Returns:
-            Optimized prompt ready for Claude (<128KB total)
+            Optimized prompt ready for Claude (<533KB working memory)
         """
         logger.info(f"Processing message for {ci_name} through memory pipeline")
 
+        # Initialize working memory
+        from shared.ai.working_memory import get_working_memory
+        working_mem = get_working_memory(ci_name)
+
+        # Load sundown notes into working memory
+        working_mem.load_sundown_notes()
+        working_mem.set_current_task(message)
+
         # Step 1: Get sundown notes if available
-        sundown_notes = await self._get_sundown_notes(ci_name)
+        sundown_notes = None
         memory_requests = None
 
-        if sundown_notes:
-            # Parse memory requests from sundown
-            if not self.sundown_manager:
-                self.sundown_manager = EnhancedCISundown(ci_name)
-            parsed = self.sundown_manager.parse_enhanced_sundown_notes(sundown_notes)
-            if parsed:
-                memory_requests = parsed.get('memory_requests', [])
+        if working_mem.sundown_context:
+            # Use sundown from working memory
+            sundown_notes = json.dumps(working_mem.sundown_context, indent=2)
+            memory_requests = working_mem.sundown_context.get('memory_requests', [])
 
         # Step 2: Get relevant memories through Apollo
         apollo_digest = await self._get_apollo_digest(
@@ -83,6 +89,9 @@ class MemoryPipeline:
             memory_requests
         )
 
+        # Set Apollo digest in working memory
+        working_mem.set_apollo_digest(apollo_digest)
+
         # Step 3: Optimize through Rhetor
         optimized_prompt = self._optimize_with_rhetor(
             sundown_notes,
@@ -90,14 +99,18 @@ class MemoryPipeline:
             apollo_digest
         )
 
-        # Step 4: Final size check
-        prompt_bytes = optimized_prompt.encode('utf-8')
-        if len(prompt_bytes) > 128 * 1024:
-            logger.warning(f"Prompt still too large ({len(prompt_bytes)} bytes), forcing truncation")
-            optimized_prompt = self._force_truncate(optimized_prompt, 128)
+        # Step 4: Build full working memory context
+        # Use working memory's get_context_prompt which handles all size limits
+        full_context = working_mem.get_context_prompt()
 
-        logger.info(f"Pipeline complete: {len(prompt_bytes)} bytes")
-        return optimized_prompt
+        # Step 5: Final size check (should be under 533KB)
+        context_bytes = full_context.encode('utf-8')
+        if len(context_bytes) > 533 * 1024:
+            logger.warning(f"Context still too large ({len(context_bytes)} bytes), forcing truncation")
+            full_context = self._force_truncate(full_context, 533)
+
+        logger.info(f"Pipeline complete: {len(context_bytes)} bytes")
+        return full_context
 
     async def _get_sundown_notes(self, ci_name: str) -> Optional[str]:
         """
@@ -171,20 +184,101 @@ class MemoryPipeline:
         context: Dict[str, Any]
     ) -> List[Dict[str, Any]]:
         """
-        Fetch LIMITED memories (not all!).
+        Fetch LIMITED memories from ESR system.
 
-        This is the key fix - we never fetch everything.
+        Connects to real Engram storage with strict limits.
         """
         memories = []
 
         try:
-            # Would connect to Engram with LIMITS
-            # For now, return empty to prevent overflow
-            pass
+            # Import ESR system
+            from Engram.engram.core.storage.unified_interface import ESRMemorySystem
+            from Engram.engram.core.storage.cognitive_workflows import CognitiveWorkflows
+
+            # Initialize with strict limits
+            esr = ESRMemorySystem()
+            workflows = CognitiveWorkflows()
+
+            # Set hard limits for safety
+            MAX_ITEMS = 20
+            MAX_SIZE_KB = 100  # 100KB max from Engram (before Apollo)
+
+            # Try cognitive workflow first for intelligent retrieval
+            try:
+                # Get task-relevant thoughts
+                thoughts = await workflows.retrieve_thoughts(
+                    context=context.get('objective', ''),
+                    max_results=10
+                )
+
+                # Convert thoughts to memory format
+                for thought in thoughts[:MAX_ITEMS]:
+                    memories.append({
+                        'content': thought.get('content', ''),
+                        'type': 'thought',
+                        'timestamp': thought.get('timestamp', ''),
+                        'relevance': thought.get('relevance', 0.5)
+                    })
+
+            except Exception as e:
+                logger.debug(f"Cognitive workflow not available: {e}")
+
+            # Fallback to ESR query
+            if not memories:
+                try:
+                    result = await esr.query_memories(
+                        query=context.get('objective', ''),
+                        filters={
+                            'ci_name': ci_name,
+                            'limit': MAX_ITEMS,
+                            'recency': '7d'  # Last 7 days
+                        }
+                    )
+
+                    if isinstance(result, dict) and 'memories' in result:
+                        memories = result['memories'][:MAX_ITEMS]
+                    elif isinstance(result, list):
+                        memories = result[:MAX_ITEMS]
+
+                except Exception as e:
+                    logger.debug(f"ESR query failed: {e}")
+
+            # If still no memories, try storage service
+            if not memories:
+                try:
+                    from Engram.engram.core.storage_service import StorageService
+                    storage = StorageService()
+
+                    # Get recent memories for CI
+                    stored = storage.get_memories(ci_name, limit=MAX_ITEMS)
+                    if stored:
+                        memories = stored
+
+                except Exception as e:
+                    logger.debug(f"Storage service failed: {e}")
+
+            # Size check - ensure we don't return too much
+            total_size = sum(len(str(m)) for m in memories)
+            if total_size > MAX_SIZE_KB * 1024:
+                # Truncate to size limit
+                truncated = []
+                current_size = 0
+                for memory in memories:
+                    mem_size = len(str(memory))
+                    if current_size + mem_size > MAX_SIZE_KB * 1024:
+                        break
+                    truncated.append(memory)
+                    current_size += mem_size
+
+                logger.warning(f"Truncated memories from {len(memories)} to {len(truncated)}")
+                memories = truncated
 
         except Exception as e:
-            logger.error(f"Memory fetch failed: {e}")
+            logger.error(f"Memory fetch failed completely: {e}")
+            # Return empty rather than crash
+            memories = []
 
+        logger.info(f"Fetched {len(memories)} memories for {ci_name}")
         return memories
 
     def _optimize_with_rhetor(

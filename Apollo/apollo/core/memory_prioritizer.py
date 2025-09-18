@@ -63,6 +63,29 @@ class MemoryPrioritizer:
         if not memories:
             return "# Memory Digest\nNo relevant memories found.\n"
 
+        # Try semantic search for better initial filtering
+        if context.get('objective'):
+            try:
+                # Import here to avoid circular dependency
+                import asyncio
+                from Apollo.apollo.core.semantic_search import semantic_memory_search
+
+                # Run async semantic search in sync context
+                loop = asyncio.get_event_loop() if asyncio.get_event_loop().is_running() else asyncio.new_event_loop()
+                semantic_memories = loop.run_until_complete(
+                    semantic_memory_search(
+                        context['objective'],
+                        memories,
+                        max_results=min(50, len(memories))  # Top 50 semantic matches
+                    )
+                )
+
+                if semantic_memories:
+                    logger.debug(f"Using {len(semantic_memories)} semantic matches from {len(memories)} total")
+                    memories = semantic_memories
+            except Exception as e:
+                logger.debug(f"Semantic search not available: {e}")
+
         # Score all memories
         scored_memories = []
         for memory in memories:
