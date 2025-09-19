@@ -203,12 +203,15 @@ class MemoryPipeline:
             MAX_ITEMS = 20
             MAX_SIZE_KB = 100  # 100KB max from Engram (before Apollo)
 
-            # Try cognitive workflow first for intelligent retrieval
+            # Try cognitive workflow first for intelligent retrieval (with timeout)
             try:
-                # Get task-relevant thoughts
-                thoughts = await workflows.retrieve_thoughts(
-                    context=context.get('objective', ''),
-                    max_results=10
+                # Get task-relevant thoughts (with timeout to prevent hanging)
+                thoughts = await asyncio.wait_for(
+                    workflows.retrieve_thoughts(
+                        context=context.get('objective', ''),
+                        max_results=10
+                    ),
+                    timeout=1.0  # 1 second timeout
                 )
 
                 # Convert thoughts to memory format
@@ -220,19 +223,24 @@ class MemoryPipeline:
                         'relevance': thought.get('relevance', 0.5)
                     })
 
+            except asyncio.TimeoutError:
+                logger.debug("Cognitive workflow timed out - using fallback")
             except Exception as e:
                 logger.debug(f"Cognitive workflow not available: {e}")
 
-            # Fallback to ESR query
+            # Fallback to ESR query (also with timeout)
             if not memories:
                 try:
-                    result = await esr.query_memories(
-                        query=context.get('objective', ''),
-                        filters={
-                            'ci_name': ci_name,
-                            'limit': MAX_ITEMS,
-                            'recency': '7d'  # Last 7 days
-                        }
+                    result = await asyncio.wait_for(
+                        esr.query_memories(
+                            query=context.get('objective', ''),
+                            filters={
+                                'ci_name': ci_name,
+                                'limit': MAX_ITEMS,
+                                'recency': '7d'  # Last 7 days
+                            }
+                        ),
+                        timeout=0.5  # 500ms timeout for ESR
                     )
 
                     if isinstance(result, dict) and 'memories' in result:
@@ -240,6 +248,8 @@ class MemoryPipeline:
                     elif isinstance(result, list):
                         memories = result[:MAX_ITEMS]
 
+                except asyncio.TimeoutError:
+                    logger.debug("ESR query timed out - using storage service")
                 except Exception as e:
                     logger.debug(f"ESR query failed: {e}")
 

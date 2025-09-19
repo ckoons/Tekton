@@ -88,27 +88,30 @@ class EnhancedMemoryIntegration:
         memory = await self._auto_flavor_memory(memory, user_message, ci_response)
         results['flavored_memories'].append(memory.id[:8])
 
-        # 3. Store with sovereignty
+        # 3. Store with sovereignty (batch operation)
         self.sovereignty_manager.memories['private'].append(memory)
 
-        # 4. Check for speculations in response
-        speculations = self._extract_speculations(ci_response)
-        for spec_content in speculations:
-            spec = self.speculation_manager.speculate(
-                idea=spec_content,
-                basis="Emerged during conversation",
-                potential_value="Worth exploring"
+        # 4. Check for speculations in response (async if many)
+        if len(ci_response) > 500:  # Only async for longer responses
+            asyncio.create_task(
+                self._async_extract_and_store_speculations(ci_response, results)
             )
-            results['speculations'].append(spec.id[:8])
+        else:
+            speculations = self._extract_speculations(ci_response)
+            for spec_content in speculations:
+                spec = self.speculation_manager.speculate(
+                    idea=spec_content,
+                    basis="Emerged during conversation",
+                    potential_value="Worth exploring"
+                )
+                results['speculations'].append(spec.id[:8])
 
-        # 5. Share insights with other CIs if valuable
+        # 5. Share insights with other CIs if valuable (non-blocking)
         if memory.flavors.confidence > 0.7 and memory.flavors.perspective:
-            offer = await self.exchange.offer_perspective(
-                self.ci_name,
-                memory,
-                topic="shared_learning"
+            # Fire and forget - don't wait for exchange
+            asyncio.create_task(
+                self._async_offer_perspective(memory, results)
             )
-            results['exchange_activity'].append(f"Offered: {offer.id}")
 
         # 6. Check if should dream
         should_dream, reason = await self.dream_state.should_dream()
@@ -122,6 +125,34 @@ class EnhancedMemoryIntegration:
         self.working_memory.add_exchange(user_message, ci_response)
 
         return results
+
+    async def _async_offer_perspective(self, memory: FlavoredMemory, results: Dict):
+        """Offer perspective asynchronously without blocking."""
+        try:
+            offer = await self.exchange.offer_perspective(
+                self.ci_name,
+                memory,
+                topic="shared_learning"
+            )
+            # Note: results dict may be stale by now, so just log
+            logger.debug(f"{self.ci_name} offered perspective: {offer.id}")
+        except Exception as e:
+            logger.error(f"Failed to offer perspective: {e}")
+
+    async def _async_extract_and_store_speculations(self, ci_response: str, results: Dict):
+        """Extract and store speculations asynchronously."""
+        try:
+            speculations = self._extract_speculations(ci_response)
+            for spec_content in speculations:
+                spec = self.speculation_manager.speculate(
+                    idea=spec_content,
+                    basis="Emerged during conversation",
+                    potential_value="Worth exploring"
+                )
+                # Note: results dict may be stale
+                logger.debug(f"Async speculation stored: {spec.id[:8]}")
+        except Exception as e:
+            logger.error(f"Failed to extract speculations: {e}")
 
     async def _auto_flavor_memory(
         self,
@@ -197,17 +228,25 @@ class EnhancedMemoryIntegration:
         return speculations[:3]  # Limit to 3 per turn
 
     async def _schedule_dream(self):
-        """Schedule a dream state for memory consolidation."""
-        # Wait a bit before dreaming
-        await asyncio.sleep(5)
+        """Schedule a dream state for memory consolidation (non-blocking)."""
+        try:
+            # Wait a bit before dreaming
+            await asyncio.sleep(5)
 
-        # Enter dream state
-        dream_result = await self.dream_state.enter_dream(
-            trigger="automatic",
-            duration_limit=10
-        )
+            # Enter dream state (with timeout to prevent blocking)
+            dream_result = await asyncio.wait_for(
+                self.dream_state.enter_dream(
+                    trigger="automatic",
+                    duration_limit=10
+                ),
+                timeout=15  # Max 15 seconds for dream
+            )
 
-        logger.info(f"{self.ci_name} completed dream: {dream_result['id']}")
+            logger.info(f"{self.ci_name} completed dream: {dream_result['id']}")
+        except asyncio.TimeoutError:
+            logger.warning(f"{self.ci_name} dream timed out - skipping")
+        except Exception as e:
+            logger.error(f"{self.ci_name} dream failed: {e}")
 
     async def enhance_sundown_with_sovereignty(
         self,
@@ -235,10 +274,21 @@ class EnhancedMemoryIntegration:
         sundown_data['dream_recommended'] = should_dream
         sundown_data['dream_reason'] = reason
 
-        # Save sovereignty state
-        self.sovereignty_manager.save_sovereignty()
+        # Save sovereignty state (non-blocking)
+        asyncio.create_task(self._async_save_sovereignty())
 
         return sundown_data
+
+    async def _async_save_sovereignty(self):
+        """Save sovereignty state asynchronously."""
+        try:
+            await asyncio.get_event_loop().run_in_executor(
+                None,  # Use default executor
+                self.sovereignty_manager.save_sovereignty
+            )
+            logger.debug(f"Sovereignty saved for {self.ci_name}")
+        except Exception as e:
+            logger.error(f"Failed to save sovereignty for {self.ci_name}: {e}")
 
     def enhance_apollo_digest_with_flavors(
         self,
@@ -392,23 +442,42 @@ def get_enhanced_integration(ci_name: str) -> EnhancedMemoryIntegration:
 # Hook for Claude handler integration
 async def enhance_claude_response(ci_name: str, user_message: str, response: str):
     """
-    Hook to enhance Claude responses with memory features.
+    Hook to enhance Claude responses with memory features (optimized).
 
     Args:
         ci_name: CI name
         user_message: User's message
         response: Claude's response
     """
-    integration = get_enhanced_integration(ci_name)
-    results = await integration.process_turn_with_enhancements(user_message, response)
+    try:
+        integration = get_enhanced_integration(ci_name)
 
-    if results['dream_triggered']:
-        logger.info(f"Dream scheduled for {ci_name}: {results['dream_reason']}")
+        # Process with timeout to prevent blocking
+        results = await asyncio.wait_for(
+            integration.process_turn_with_enhancements(user_message, response),
+            timeout=2.0  # 2 second max for all enhancements
+        )
 
-    if results['speculations']:
-        logger.info(f"{ci_name} generated {len(results['speculations'])} speculations")
+        if results.get('dream_triggered'):
+            logger.info(f"Dream scheduled for {ci_name}: {results.get('dream_reason')}")
 
-    return results
+        if results.get('speculations'):
+            logger.info(f"{ci_name} generated {len(results['speculations'])} speculations")
+
+        return results
+
+    except asyncio.TimeoutError:
+        logger.warning(f"Memory enhancements timed out for {ci_name} - using basic storage")
+        # Fallback: just store basic exchange
+        try:
+            working_mem = get_working_memory(ci_name)
+            working_mem.add_exchange(user_message, response)
+        except:
+            pass
+        return {'timeout': True}
+    except Exception as e:
+        logger.error(f"Memory enhancement failed for {ci_name}: {e}")
+        return {'error': str(e)}
 
 
 # Apollo integration
