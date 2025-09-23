@@ -68,6 +68,7 @@ from .fastmcp_endpoints import fastmcp_router, fastmcp_startup, fastmcp_shutdown
 from .registry import router as registry_router
 from .sandbox import router as sandbox_router
 from .construct import router as construct_router
+from .packager_endpoints import router as packager_router
 
 # Import ergon component
 from ..core.ergon_component import ErgonComponent
@@ -741,6 +742,9 @@ app.include_router(sandbox_router)
 
 # Include Construct router (note: construct has its own /api/ergon/construct prefix)
 app.include_router(construct_router)
+
+# Include Packager router (note: packager has its own /api/ergon/packager prefix)
+app.include_router(packager_router)
 
 # Include FastMCP router at its special path
 app.include_router(fastmcp_router, prefix="/api/mcp/v2")  # Mount FastMCP router under /api/mcp/v2

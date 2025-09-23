@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ergon Construct - Solution Packager</title>
+    <link rel="stylesheet" href="solution-packager.css">
+</head>
+<body>
+    <div class="packager-container">
+        <!-- Zone 1: Configuration Form -->
+        <div class="config-zone">
+            <form id="packager-config" class="config-form">
+                <!-- Session ID (hidden) -->
+                <input type="hidden" name="session_id" id="session_id" value="">
+
+                <!-- GitHub URL Input -->
+                <div class="form-group">
+                    <label for="github_url">GitHub Repository URL</label>
+                    <input type="url"
+                           id="github_url"
+                           name="github_url"
+                           class="github-input"
+                           placeholder="https://github.com/user/repository"
+                           required>
+                    <span class="input-hint">Enter the full GitHub URL of the project to package</span>
+                </div>
+
+                <!-- Apply Standards Section -->
+                <div class="config-section">
+                    <input type="checkbox" id="apply-standards" class="section-toggle" checked>
+                    <label for="apply-standards" class="section-label">
+                        <span class="checkbox-icon"></span>
+                        <input type="checkbox" name="enable_standards" checked style="margin-right: 8px;">
+                        Apply Programming Standards
+                    </label>
+                    <div class="section-content">
+                        <div id="standards-list" class="standards-grid">
+                            <!-- Standards will be loaded here -->
+                            <label class="standard-item">
+                                <input type="checkbox" name="standards" value="extract_hardcoded" checked>
+                                <span>Extract Hardcoded Values</span>
+                            </label>
+                            <label class="standard-item">
+                                <input type="checkbox" name="standards" value="split_large_files">
+                                <span>Split Large Files (&gt;500 lines)</span>
+                            </label>
+                            <label class="standard-item">
+                                <input type="checkbox" name="standards" value="add_documentation" checked>
+                                <span>Add Missing Documentation</span>
+                            </label>
+                            <label class="standard-item">
+                                <input type="checkbox" name="standards" value="add_error_handling">
+                                <span>Add Error Handling</span>
+                            </label>
+                            <label class="standard-item">
+                                <input type="checkbox" name="standards" value="enforce_naming">
+                                <span>Enforce Naming Conventions</span>
+                            </label>
+                            <label class="standard-item">
+                                <input type="checkbox" name="standards" value="add_config_example" checked>
+                                <span>Add Configuration Examples</span>
+                            </label>
+                        </div>
+                        <div class="standard-actions">
+                            <button type="button" class="btn-small" onclick="selectAllStandards()">Select All</button>
+                            <button type="button" class="btn-small" onclick="clearAllStandards()">Clear All</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Include CI Guide Section -->
+                <div class="config-section">
+                    <input type="checkbox" id="include-ci" class="section-toggle" checked>
+                    <label for="include-ci" class="section-label">
+                        <span class="checkbox-icon"></span>
+                        <input type="checkbox" name="enable_ci" checked style="margin-right: 8px;">
+                        Include CI Guide
+                    </label>
+                    <div class="section-content">
+                        <div class="ci-config">
+                            <div class="form-group">
+                                <label for="ci_provider">Provider</label>
+                                <select id="ci_provider" name="ci_provider" class="ci-select">
+                                    <option value="anthropic">Anthropic</option>
+                                    <option value="openai">OpenAI</option>
+                                    <option value="gemini">Google Gemini</option>
+                                    <option value="xai">xAI</option>
+                                    <option value="ollama">Ollama (Local)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="ci_model">Model</label>
+                                <select id="ci_model" name="ci_model" class="ci-select">
+                                    <option value="claude-3-5-sonnet">Claude 3.5 Sonnet</option>
+                                    <option value="gpt-4">GPT-4</option>
+                                    <option value="gemini-pro">Gemini Pro</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="ci_name">CI Name</label>
+                                <input type="text"
+                                       id="ci_name"
+                                       name="ci_name"
+                                       value="Auto-generate from project"
+                                       class="ci-input">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add to Menu Section -->
+                <div class="config-section">
+                    <input type="checkbox" id="add-to-menu" class="section-toggle">
+                    <label for="add-to-menu" class="section-label">
+                        <span class="checkbox-icon"></span>
+                        <input type="checkbox" name="enable_menu" style="margin-right: 8px;">
+                        Add to Menu of the Day
+                    </label>
+                    <div class="section-content">
+                        <div class="menu-config">
+                            <div class="form-group">
+                                <label for="menu_category">Category</label>
+                                <select id="menu_category" name="menu_category" class="menu-select">
+                                    <option value="development_tools">Development Tools</option>
+                                    <option value="web_services">Web Services</option>
+                                    <option value="data_processing">Data Processing</option>
+                                    <option value="infrastructure">Infrastructure</option>
+                                    <option value="utilities">Utilities</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="build_command">Build Command</label>
+                                <input type="text"
+                                       id="build_command"
+                                       name="build_command"
+                                       placeholder="docker build . -t solution"
+                                       class="menu-input">
+                            </div>
+                            <div class="form-group">
+                                <label for="run_command">Run Command</label>
+                                <input type="text"
+                                       id="run_command"
+                                       name="run_command"
+                                       placeholder="docker run -p 8080:8080 solution"
+                                       class="menu-input">
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea id="description"
+                                          name="description"
+                                          placeholder="Brief description for the menu"
+                                          class="menu-textarea"
+                                          rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button type="button" id="plan-btn" class="btn btn-plan" onclick="planSolution()">PLAN</button>
+                    <button type="button" id="build-btn" class="btn btn-build" disabled onclick="buildSolution()">BUILD</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Zone 2: Planning Assistant (Scrolling) -->
+        <div class="ci-dialog-zone">
+            <div class="ci-dialog-header">
+                <h3>Planning Assistant</h3>
+                <button id="apply-recommendations-btn" class="apply-btn" onclick="applyRecommendations()" style="display: none;">Apply Ergon's Advice</button>
+            </div>
+            <div id="ci-messages" class="ci-messages">
+                <!-- Messages will be injected here -->
+                <div class="ci-message welcome">
+                    Welcome! I'll help you package any GitHub project into a deployable solution.
+                    Enter a GitHub URL above and click PLAN to begin.
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat input will be handled by parent Ergon component -->
+    </div>
+
+    <!-- Include JavaScript -->
+    <script src="solution-packager.js"></script>
+</body>
+</html>

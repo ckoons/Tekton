@@ -1,0 +1,500 @@
+/* Solution Packager CSS - CSS-first approach with minimal JavaScript needed */
+
+:root {
+    /* Color palette */
+    --primary: #00ff00;
+    --primary-dark: #00cc00;
+    --secondary: #0080ff;
+    --background: #0a0a0a;
+    --surface: #1a1a1a;
+    --surface-light: #2a2a2a;
+    --text: #e0e0e0;
+    --text-dim: #808080;
+    --border: #333;
+    --error: #ff4444;
+    --warning: #ffaa00;
+    --success: #00ff00;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Monaco', 'Courier New', monospace;
+    background: var(--background);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+.packager-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    gap: 10px;
+}
+
+/* Header - removed, no longer needed */
+
+/* Zone 1: Configuration Form */
+.config-zone {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 15px;
+    flex-shrink: 0;
+    max-height: 40vh;
+    overflow-y: auto;
+}
+
+.config-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    color: var(--text);
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.github-input,
+.ci-input,
+.menu-input {
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 13px;
+}
+
+.github-input:focus,
+.ci-input:focus,
+.menu-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.1);
+}
+
+.input-hint {
+    font-size: 12px;
+    color: var(--text-dim);
+}
+
+/* Expandable Sections - Pure CSS */
+.config-section {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface-light);
+}
+
+.section-toggle {
+    display: none; /* Hide the actual checkbox */
+}
+
+.section-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+}
+
+.section-label:hover {
+    background: rgba(0, 255, 0, 0.05);
+}
+
+.checkbox-icon {
+    font-size: 18px;
+    color: var(--primary);
+}
+
+/* Section content - CSS-only expand/collapse */
+.section-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    padding: 0 12px;
+}
+
+.section-toggle:checked + .section-label + .section-content {
+    max-height: 500px;
+    padding: 12px;
+    transition: max-height 0.5s ease-in;
+}
+
+/* Update expand/collapse icon */
+.section-toggle:not(:checked) + .section-label .checkbox-icon::before {
+    content: '▶';  /* Right arrow when collapsed */
+}
+
+.section-toggle:checked + .section-label .checkbox-icon::before {
+    content: '▼';  /* Down arrow when expanded */
+}
+
+/* Standards Grid */
+.standards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.standard-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 6px;
+    background: var(--surface);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 12px;
+}
+
+.standard-item:hover {
+    background: rgba(0, 255, 0, 0.1);
+}
+
+.standard-item input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+}
+
+.standard-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-small {
+    padding: 4px 12px;
+    font-size: 12px;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-small:hover {
+    background: var(--surface-light);
+    border-color: var(--primary);
+}
+
+/* CI Config */
+.ci-config,
+.menu-config {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.ci-select,
+.menu-select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px;
+    border-radius: 4px;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.menu-textarea {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px;
+    border-radius: 4px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 50px;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    padding-top: 20px;
+}
+
+.btn {
+    padding: 8px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: inherit;
+}
+
+.btn-plan {
+    background: linear-gradient(135deg, var(--secondary), var(--secondary));
+    color: white;
+}
+
+.btn-plan:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 128, 255, 0.3);
+}
+
+.btn-build {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: black;
+}
+
+.btn-build:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 255, 0, 0.3);
+}
+
+.btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.btn-icon {
+    font-size: 20px;
+}
+
+/* Zone 2: Planning Assistant */
+.ci-dialog-zone {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 300px;
+}
+
+.ci-dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-light);
+}
+
+.ci-dialog-header h3 {
+    color: var(--primary);
+    font-size: 14px;
+}
+
+.apply-btn {
+    font-size: 12px;
+    padding: 6px 12px;
+    background: var(--primary);
+    border: none;
+    border-radius: 4px;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.apply-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+/* CI Messages with auto-scroll */
+.ci-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    scroll-behavior: smooth;
+
+    /* CSS-only auto-scroll to bottom */
+    display: flex;
+    flex-direction: column;
+}
+
+.ci-messages:has(.ci-message:last-child) {
+    scroll-snap-type: y mandatory;
+}
+
+.ci-message:last-child {
+    scroll-snap-align: end;
+}
+
+/* Message Types */
+.ci-message {
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.ci-message.welcome {
+    background: linear-gradient(90deg, rgba(0, 255, 0, 0.1), transparent);
+    border-left: 3px solid var(--primary);
+    color: var(--text);
+}
+
+.ci-message.analysis {
+    background: linear-gradient(90deg, rgba(0, 128, 255, 0.1), transparent);
+    border-left: 3px solid var(--secondary);
+}
+
+.ci-message.recommendation {
+    background: linear-gradient(90deg, rgba(255, 170, 0, 0.1), transparent);
+    border-left: 3px solid var(--warning);
+}
+
+.ci-message.plan {
+    background: linear-gradient(90deg, rgba(0, 255, 0, 0.1), transparent);
+    border-left: 3px solid var(--success);
+}
+
+.ci-message.error {
+    background: linear-gradient(90deg, rgba(255, 68, 68, 0.1), transparent);
+    border-left: 3px solid var(--error);
+}
+
+.ci-message.progress {
+    background: var(--surface-light);
+    border-left: 3px solid var(--secondary);
+}
+
+/* Recommendation Buttons */
+.recommendation-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.rec-btn {
+    padding: 6px 16px;
+    background: var(--surface-light);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.rec-btn:hover {
+    background: var(--primary);
+    color: black;
+}
+
+/* Zone 3: Chat Input - removed, using parent Ergon chat */
+
+.chat-input {
+    flex: 1;
+    background: var(--surface-light);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px;
+    border-radius: 4px;
+    font-family: inherit;
+}
+
+.chat-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.chat-send {
+    padding: 10px 20px;
+    background: var(--primary);
+    color: black;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.chat-send:hover {
+    background: var(--primary-dark);
+}
+
+/* Loading Animation */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.loading {
+    display: inline-block;
+    animation: pulse 1.5s infinite;
+}
+
+/* Progress Bar */
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background: var(--surface);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+    transition: width 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: black;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .packager-container {
+        padding: 10px;
+    }
+
+    .standards-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ci-config,
+    .menu-config {
+        grid-template-columns: 1fr;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}

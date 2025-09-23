@@ -24,15 +24,15 @@ window.ergon_sendChat = function() {
         console.error('[ERGON] Chat input element not found!');
         return;
     }
-    
+
     const message = input.value.trim();
     console.log('[ERGON] Message:', message);
-    
+
     if (!message) {
         console.log('[ERGON] No message to send');
         return;
     }
-    
+
     // Determine which tab is active
     const chatRadio = document.getElementById('ergon-tab-chat');
     const teamchatRadio = document.getElementById('ergon-tab-teamchat');
@@ -40,28 +40,20 @@ window.ergon_sendChat = function() {
     const chatActive = chatRadio ? chatRadio.checked : false;
     const teamActive = teamchatRadio ? teamchatRadio.checked : false;
     const constructActive = constructRadio ? constructRadio.checked : false;
-    
-    // If we're on Construct tab, handle it specially
+
+    // If we're on Construct tab, send to the iframe
     if (constructActive) {
-        console.log('[ERGON] Construct tab is active - processing for guided dialog');
-        console.log('[ERGON] ConstructDialog available:', !!window.ConstructDialog);
-        
-        // Let the Construct guided dialog handle the input
-        if (window.ConstructDialog && window.ConstructDialog.processResponse) {
-            console.log('[ERGON] Calling ConstructDialog.processResponse with:', message);
-            window.ConstructDialog.processResponse(message);
+        console.log('[ERGON] Construct tab is active - sending to packager iframe');
+
+        const iframe = document.getElementById('construct-packager-frame');
+        if (iframe && iframe.contentWindow) {
+            iframe.contentWindow.postMessage({
+                type: 'ergon-chat-message',
+                message: message
+            }, '*');
+            console.log('[ERGON] Message sent to packager iframe');
         } else {
-            console.error('[ERGON] ConstructDialog.processResponse not available!');
-            // Try to initialize if not ready
-            if (window.ConstructDialog && window.ConstructDialog.init) {
-                console.log('[ERGON] Attempting to initialize ConstructDialog first...');
-                window.ConstructDialog.init().then(() => {
-                    console.log('[ERGON] Initialized, now processing message');
-                    if (window.ConstructDialog.processResponse) {
-                        window.ConstructDialog.processResponse(message);
-                    }
-                });
-            }
+            console.error('[ERGON] Packager iframe not found!');
         }
         input.value = '';
         return;
@@ -158,12 +150,35 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(ergon_initRegistry, 100); // Small delay to ensure tab is switched
         });
     }
-    
+
+    // Setup iframe communication for Construct tab
+    window.addEventListener('message', function(event) {
+        if (event.data.type === 'packager-to-ergon') {
+            console.log('[ERGON] Received message from packager:', event.data.message);
+
+            // Send to Ergon CI for processing
+            const ergonMessages = document.getElementById('ergon-messages');
+            if (window.SingleChat && ergonMessages) {
+                // Ensure it's initialized
+                if (!ergonMessages.getAttribute('data-component-name')) {
+                    window.SingleChat.init(ergonMessages, 'ergon', 'ergon');
+                }
+                // Send the message
+                window.SingleChat.sendMessage(ergonMessages, event.data.message);
+                console.log('[ERGON] Message sent to Ergon CI');
+            } else {
+                console.error('[ERGON] SingleChat or ergon-messages not available');
+            }
+        }
+    });
+
+    // Chat override is already defined in the main ergon_sendChat function above
+
     // Add click handler for Construct tab
     const constructTab = document.querySelector('label[for="ergon-tab-construct"]');
     if (constructTab) {
         constructTab.addEventListener('click', async function() {
-            console.log('[ERGON] Construct tab clicked - initializing guided dialog');
+            console.log('[ERGON] Construct tab clicked - Solution Packager ready');
             
             // Small delay to ensure tab is switched
             await new Promise(resolve => setTimeout(resolve, 100));
@@ -389,61 +404,14 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         
         
-        <!-- Construct Tab -->
-        <!-- @landmark Panel: Construct - Build solutions from Registry components -->
+        <!-- Construct Tab - Solution Packager -->
+        <!-- @landmark Panel: Construct - Package GitHub projects as deployable solutions -->
         <div id="construct-panel" class="ergon__panel" data-tekton-panel="construct" data-tekton-panel-for="Construct" data-tekton-panel-component="ergon" data-tekton-type="panel" data-tekton-zone="content-panel" data-tekton-state="inactive" data-tekton-visibility="hidden">
-            <div class="ergon__panel-header">
-                <h3 class="ergon__section-title">Solution Composer</h3>
-                <p class="ergon__section-description">Build new solutions by combining Registry components. Answer the questions below using the chat input at the bottom of the screen.</p>
-            </div>
-            
-            <!-- Two-column layout: Dialog on left, Workspace on right -->
-            <div class="ergon__construct-layout">
-                <!-- Left column: Guided Dialog -->
-                <div class="ergon__construct-dialog">
-                    <!-- Question list (shows all questions, grays out future ones) -->
-                    <div id="construct-question-list" class="ergon__question-list">
-                        <!-- Questions will be rendered here by JavaScript -->
-                    </div>
-                    
-                    <!-- Current question highlight area -->
-                    <div id="construct-current-question" class="ergon__current-question">
-                        <!-- Current question will be highlighted here -->
-                    </div>
-                    
-                    <!-- Navigation buttons -->
-                    <div class="ergon__dialog-buttons">
-                        <button id="construct-prev-btn" class="ergon__button ergon__button--secondary" onclick="window.ConstructDialog && window.ConstructDialog.previousQuestion()">
-                            ← Prev
-                        </button>
-                        <button id="construct-next-btn" class="ergon__button ergon__button--secondary" onclick="window.ConstructDialog && window.ConstructDialog.nextQuestion()">
-                            Next →
-                        </button>
-                        <button id="construct-build-btn" class="ergon__button ergon__button--primary" onclick="window.ConstructDialog && window.ConstructDialog.buildComposition()" disabled>
-                            Build
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Right column: Workspace JSON (real-time updates) -->
-                <div class="ergon__construct-workspace">
-                    <div class="ergon__workspace-header">
-                        <h4>Workspace JSON</h4>
-                        <span class="ergon__workspace-status">Building...</span>
-                    </div>
-                    <pre id="construct-workspace-json" class="ergon__json-display">{
-  "components": [],
-  "connections": [],
-  "constraints": {}
-}</pre>
-                </div>
-            </div>
-            
-            <!-- Action buttons (shown after Build) -->
-            <div id="construct-actions" class="ergon__construct-actions">
-                <!-- Separator line and Validate/Test/Publish/Revise buttons will appear here after composition is built -->
-            </div>
-            
+            <!-- Load the Solution Packager interface -->
+            <iframe src="/components/ergon/solution-packager.html"
+                    style="width: 100%; height: 100%; border: none; background: transparent;"
+                    id="construct-packager-frame">
+            </iframe>
         </div>
         
         <!-- Solution Chat Tab -->
