@@ -413,8 +413,8 @@ class SolutionPackager {
     handleErgonMessage(message) {
         console.log('[PACKAGER] Received from Ergon:', message);
 
-        // Display the message in the Planning Assistant
-        this.addMessage(`Ergon: ${message}`, 'analysis');
+        // Display the message in the Planning Assistant (no prefix for user input)
+        this.addMessage(message, 'analysis');
 
         // Parse for configuration updates if the message contains JSON
         try {
