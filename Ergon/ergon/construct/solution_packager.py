@@ -498,19 +498,71 @@ class SolutionPackager:
         self.work_dir.mkdir(exist_ok=True)
 
     async def analyze_repository(self, github_url: str, session_id: str) -> Dict[str, Any]:
-        """Analyze repository and return analysis."""
-        # Clone to temp directory
-        repo_name = github_url.rstrip('/').split('/')[-1]
-        repo_path = self.work_dir / session_id / repo_name
-        repo_path.parent.mkdir(exist_ok=True)
+        """Analyze repository and return analysis.
 
-        # Clone repository
-        if not repo_path.exists():
-            logger.info(f"Cloning {github_url}")
-            subprocess.run(['git', 'clone', github_url, str(repo_path)], check=True)
+        Args:
+            github_url: Either a GitHub URL or local file path
+            session_id: Session identifier
+        """
+        # Determine if this is a local path or GitHub URL
+        is_local = not github_url.startswith(('http://', 'https://'))
+
+        if is_local:
+            # Handle local path
+            repo_path = Path(github_url).expanduser().resolve()
+
+            if not repo_path.exists():
+                raise ValueError(f"Local path does not exist: {repo_path}")
+
+            if not repo_path.is_dir():
+                raise ValueError(f"Path is not a directory: {repo_path}")
+
+            logger.info(f"Using local repository: {repo_path}")
+
         else:
-            logger.info(f"Repository already exists, pulling latest")
-            subprocess.run(['git', 'pull'], cwd=repo_path, check=True)
+            # Handle GitHub URL - clone or pull
+            repo_name = github_url.rstrip('/').split('/')[-1]
+            if repo_name.endswith('.git'):
+                repo_name = repo_name[:-4]
+
+            repo_path = self.work_dir / session_id / repo_name
+            repo_path.parent.mkdir(parents=True, exist_ok=True)
+
+            # Check if it's already cloned
+            if repo_path.exists() and (repo_path / '.git').exists():
+                # Repository exists, pull latest changes
+                logger.info(f"Repository already exists at {repo_path}, pulling latest changes")
+                try:
+                    # Use simpler approach without capture_output for better cleanup
+                    subprocess.run(
+                        ['git', 'pull'],
+                        cwd=repo_path,
+                        timeout=30,
+                        check=True
+                    )
+                    logger.info("Successfully pulled latest changes")
+                except subprocess.TimeoutExpired:
+                    logger.warning("Git pull timed out after 30 seconds")
+                except subprocess.CalledProcessError as e:
+                    logger.warning(f"Git pull failed: {e}")
+                    # Continue anyway - maybe there are uncommitted changes
+            else:
+                # Clone the repository
+                logger.info(f"Cloning {github_url} to {repo_path}")
+                try:
+                    # Use simpler approach without capture_output for better cleanup
+                    subprocess.run(
+                        ['git', 'clone', github_url, str(repo_path)],
+                        timeout=60,
+                        check=True
+                    )
+                    logger.info("Successfully cloned repository")
+                except subprocess.TimeoutExpired:
+                    logger.error("Git clone timed out after 60 seconds")
+                    raise ValueError("Failed to clone repository: Operation timed out")
+                except subprocess.CalledProcessError as e:
+                    logger.error(f"Git clone failed: {e}")
+                    raise ValueError(f"Failed to clone repository: {e}")
 
         # Analyze
         analysis = await self.analyzer.analyze(repo_path)
@@ -526,9 +578,20 @@ class SolutionPackager:
 
     async def create_plan(self, config: Dict[str, Any], session_id: str) -> Dict[str, Any]:
         """Create execution plan."""
-        # Get stored analysis
-        repo_name = config['github_url'].rstrip('/').split('/')[-1]
-        repo_path = self.work_dir / session_id / repo_name
+        github_url = config['github_url']
+
+        # Determine if this is a local path or GitHub URL
+        is_local = not github_url.startswith(('http://', 'https://'))
+
+        if is_local:
+            # Handle local path
+            repo_path = Path(github_url).expanduser().resolve()
+        else:
+            # Handle GitHub URL
+            repo_name = github_url.rstrip('/').split('/')[-1]
+            if repo_name.endswith('.git'):
+                repo_name = repo_name[:-4]
+            repo_path = self.work_dir / session_id / repo_name
 
         # Re-analyze for latest state
         analysis = await self.analyzer.analyze(repo_path)

@@ -22,6 +22,14 @@
     box-sizing: border-box;
 }
 
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
 body {
     font-family: 'Monaco', 'Courier New', monospace;
     background: var(--background);
@@ -30,13 +38,13 @@ body {
 }
 
 .packager-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 10px;
+    width: 100%;
+    height: 100vh;
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    gap: 10px;
+    padding: 0;
+    margin: 0;
+    gap: 0;
 }
 
 /* Header - removed, no longer needed */
@@ -44,12 +52,12 @@ body {
 /* Zone 1: Configuration Form */
 .config-zone {
     background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    border-bottom: 1px solid var(--border);
     padding: 15px;
-    flex-shrink: 0;
-    max-height: 40vh;
+    flex: 0 0 45%;
     overflow-y: auto;
+    overflow-x: hidden;
+    width: 100%;
 }
 
 .config-form {
@@ -279,12 +287,12 @@ body {
 /* Zone 2: Planning Assistant */
 .ci-dialog-zone {
     background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    border-top: 1px solid var(--border);
     display: flex;
     flex-direction: column;
-    flex: 1;
-    min-height: 300px;
+    flex: 1 1 55%;
+    width: 100%;
+    overflow: hidden;
 }
 
 .ci-dialog-header {
@@ -318,24 +326,17 @@ body {
     transform: translateY(-1px);
 }
 
-/* CI Messages with auto-scroll */
+/* CI Messages with proper scrolling */
 .ci-messages {
-    flex: 1;
+    flex: 1 1 auto;
     overflow-y: auto;
+    overflow-x: hidden;
     padding: 12px;
     scroll-behavior: smooth;
-
-    /* CSS-only auto-scroll to bottom */
     display: flex;
     flex-direction: column;
-}
-
-.ci-messages:has(.ci-message:last-child) {
-    scroll-snap-type: y mandatory;
-}
-
-.ci-message:last-child {
-    scroll-snap-align: end;
+    gap: 10px;
+    min-height: 0; /* Important for flex overflow */
 }
 
 /* Message Types */

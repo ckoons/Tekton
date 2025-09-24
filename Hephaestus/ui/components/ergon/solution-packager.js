@@ -9,6 +9,7 @@ class SolutionPackager {
         this.eventSource = null;
         this.currentPlan = null;
         this.storedRecommendations = null; // Store Ergon's recommendations
+        this.constructContext = null; // Store the CI context metadata
         // Use the Ergon API endpoint directly
         this.baseUrl = 'http://localhost:8102/api/ergon/packager';
 
@@ -17,6 +18,9 @@ class SolutionPackager {
 
         // Setup communication with parent Ergon
         this.setupParentCommunication();
+
+        // Load the Construct context for CI guidance
+        this.loadConstructContext();
     }
 
     init() {
@@ -26,6 +30,9 @@ class SolutionPackager {
 
         // Load available standards
         this.loadStandards();
+
+        // Load model providers and models from Rhetor
+        this.loadProviders();
 
         console.log('[PACKAGER] Initialized with session:', this.sessionId);
     }
@@ -54,10 +61,167 @@ class SolutionPackager {
         }
     }
 
+    async loadProviders() {
+        try {
+            // Use Rhetor's endpoint to get real providers
+            const rhetorUrl = window.rhetorUrl || ((path) => `http://localhost:8003${path}`);
+            const response = await fetch(rhetorUrl('/api/providers'));
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch providers: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            const providers = data.providers || [];
+
+            // Build provider dropdown HTML
+            const providerSelect = document.getElementById('ci_provider');
+            if (providerSelect) {
+                // Clear existing options
+                providerSelect.innerHTML = '<option value="">Select Provider</option>';
+
+                // Add providers from Rhetor
+                providers.forEach(provider => {
+                    const option = document.createElement('option');
+                    option.value = provider.id;
+                    option.textContent = provider.name;
+                    providerSelect.appendChild(option);
+                });
+
+                // Set default to anthropic if available
+                if (providers.some(p => p.id === 'anthropic')) {
+                    providerSelect.value = 'anthropic';
+                    // Load models for default provider
+                    this.loadModelsForProvider('anthropic');
+                }
+
+                // Add change listener to load models when provider changes
+                providerSelect.addEventListener('change', async (e) => {
+                    const provider = e.target.value;
+                    if (provider) {
+                        await this.loadModelsForProvider(provider);
+                    } else {
+                        // Clear models dropdown
+                        const modelSelect = document.getElementById('ci_model');
+                        if (modelSelect) {
+                            modelSelect.innerHTML = '<option value="">Select Model</option>';
+                        }
+                    }
+                });
+            }
+
+            console.log('[PACKAGER] Loaded providers:', providers.length);
+        } catch (error) {
+            console.error('[PACKAGER] Failed to load providers:', error);
+            // Fallback to static list if Rhetor is not available
+            this.loadStaticProviders();
+        }
+    }
+
+    async loadModelsForProvider(provider) {
+        try {
+            const rhetorUrl = window.rhetorUrl || ((path) => `http://localhost:8003${path}`);
+            const response = await fetch(rhetorUrl(`/api/providers/${provider}/models`));
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch models: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            const models = data.models || [];
+
+            // Build model dropdown HTML
+            const modelSelect = document.getElementById('ci_model');
+            if (modelSelect) {
+                // Clear existing options
+                modelSelect.innerHTML = '<option value="">Select Model</option>';
+
+                // Add models from Rhetor
+                models.forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model.id;
+                    option.textContent = model.name;
+                    // Add deprecated indicator if needed
+                    if (model.deprecated) {
+                        option.textContent += ' (deprecated)';
+                        option.style.color = '#999';
+                    }
+                    modelSelect.appendChild(option);
+                });
+
+                // Set default model based on provider
+                if (provider === 'anthropic' && models.some(m => m.id === 'claude-3-5-sonnet')) {
+                    modelSelect.value = 'claude-3-5-sonnet';
+                } else if (models.length > 0) {
+                    // Select first non-deprecated model
+                    const firstActive = models.find(m => !m.deprecated);
+                    if (firstActive) {
+                        modelSelect.value = firstActive.id;
+                    }
+                }
+            }
+
+            console.log(`[PACKAGER] Loaded ${models.length} models for ${provider}`);
+        } catch (error) {
+            console.error(`[PACKAGER] Failed to load models for ${provider}:`, error);
+        }
+    }
+
+    loadStaticProviders() {
+        // Fallback static provider list
+        const providers = [
+            { id: 'anthropic', name: 'Anthropic' },
+            { id: 'openai', name: 'OpenAI' },
+            { id: 'groq', name: 'Groq' },
+            { id: 'ollama', name: 'Ollama (Local)' }
+        ];
+
+        const providerSelect = document.getElementById('ci_provider');
+        if (providerSelect) {
+            providerSelect.innerHTML = '<option value="">Select Provider</option>';
+            providers.forEach(provider => {
+                const option = document.createElement('option');
+                option.value = provider.id;
+                option.textContent = provider.name;
+                providerSelect.appendChild(option);
+            });
+            providerSelect.value = 'anthropic';
+        }
+
+        console.log('[PACKAGER] Using static provider list');
+    }
+
     async planSolution() {
         console.log('[PACKAGER] Planning solution...');
 
-        // First get feedback from Ergon
+        // Validate input is provided
+        const githubUrlInput = document.getElementById('github_url');
+        const githubUrl = githubUrlInput ? githubUrlInput.value.trim() : '';
+
+        if (!githubUrl) {
+            // Only get feedback from Ergon when no URL/path is provided
+            this.clearMessages();
+            this.addMessage('Please provide a GitHub repository URL or local directory path to analyze.', 'error');
+            this.requestErgonFeedback();
+            return;
+        }
+
+        // Validate input - accept either GitHub URL or local path
+        const isGitHubUrl = githubUrl.match(/^https?:\/\/github\.com\/.+\/.+/);
+        const isLocalPath = githubUrl.startsWith('/') || githubUrl.startsWith('~/') || githubUrl.startsWith('./') || githubUrl.startsWith('../');
+
+        if (!isGitHubUrl && !isLocalPath) {
+            this.clearMessages();
+            this.addMessage('Please provide either:', 'error');
+            this.addMessage('• A valid GitHub URL (e.g., https://github.com/owner/repo)', 'info');
+            this.addMessage('• A local directory path (e.g., /path/to/project or ~/projects/myapp)', 'info');
+            return;
+        }
+
+        // Log what type of input we're processing
+        console.log('[PACKAGER] Processing:', isGitHubUrl ? 'GitHub URL' : 'Local Path', githubUrl);
+
+        // First get feedback from Ergon with the URL/path
         this.requestErgonFeedback();
 
         // Update UI state
@@ -82,7 +246,18 @@ class SolutionPackager {
             });
 
             if (!analyzeResponse.ok) {
-                throw new Error('Analysis failed');
+                let errorMsg = `Analysis failed: ${analyzeResponse.status} ${analyzeResponse.statusText}`;
+                try {
+                    const errorData = await analyzeResponse.json();
+                    if (errorData.detail) {
+                        errorMsg = `Analysis failed: ${errorData.detail}`;
+                    } else if (errorData.error) {
+                        errorMsg = `Analysis failed: ${errorData.error}`;
+                    }
+                } catch (e) {
+                    // If response isn't JSON, use status text
+                }
+                throw new Error(errorMsg);
             }
 
             const analysis = await analyzeResponse.json();
@@ -413,8 +588,8 @@ class SolutionPackager {
     handleErgonMessage(message) {
         console.log('[PACKAGER] Received from Ergon:', message);
 
-        // Display the message in the Planning Assistant (no prefix for user input)
-        this.addMessage(message, 'analysis');
+        // Display the message in the Planning Assistant with Ergon prefix
+        this.addMessage(`<strong>Ergon:</strong> ${message}`, 'analysis');
 
         // Parse for configuration updates if the message contains JSON
         try {
@@ -451,57 +626,61 @@ class SolutionPackager {
         }
     }
 
+    async loadConstructContext() {
+        try {
+            // Load the context file using MCP file operations
+            // Note: MCP paths are relative to Tekton root
+            this.constructContext = await window.mcp.readFile('Workflows/Ergon/construct-context.md');
+            console.log('[PACKAGER] Loaded Construct context for CI guidance');
+        } catch (error) {
+            console.log('[PACKAGER] Construct context not found, using default instructions');
+            // Fallback to basic instructions if file not found
+            this.constructContext = 'You are helping users package GitHub repositories into deployable solutions.';
+        }
+    }
+
     requestErgonFeedback() {
         const config = this.getConfig();
 
-        // Create structured message for Ergon with clear instructions
+        // Create message with context and current configuration
         const message = `
-=== CONSTRUCT FEEDBACK REQUEST ===
+${this.constructContext || ''}
 
-I need you to analyze this Solution Packager configuration and provide recommendations.
+=== CURRENT USER CONFIGURATION ===
 
-CURRENT CONFIGURATION:
-- GitHub URL: ${config.github_url || '[Not provided - NEEDS URL]'}
-- Apply Standards: ${config.apply_standards ? 'Yes' : 'No'}
-  ${config.apply_standards && config.standards ? 'Selected: ' + config.standards.join(', ') : ''}
-- Include CI Guide: ${config.include_ci ? 'Yes' : 'No'}
-  ${config.include_ci ? `Provider: ${config.ci_provider}, Model: ${config.ci_model}, Name: ${config.ci_name || 'auto'}` : ''}
-- Add to Menu: ${config.add_to_menu ? 'Yes' : 'No'}
-  ${config.add_to_menu ? `Category: ${config.menu_category}` : ''}
+GitHub Repository URL: ${config.github_url || '[Not provided - User needs to enter a GitHub URL]'}
 
-INSTRUCTIONS FOR YOUR ANALYSIS:
-1. Check if GitHub URL is valid and accessible
-2. Based on the repository type, recommend which standards to apply:
-   - extract_hardcoded: For repos with hardcoded URLs/ports/paths
-   - split_large_files: For repos with files >500 lines
-   - add_documentation: For repos missing README/docs
-   - add_error_handling: For production code lacking try/catch
-   - enforce_naming: For inconsistent naming conventions
-   - add_config_example: For configurable applications
+Apply Programming Standards: ${config.apply_standards ? 'Yes' : 'No'}
+${config.apply_standards && config.standards && config.standards.length > 0 ?
+  'Currently Selected Standards: ' + config.standards.join(', ') :
+  config.apply_standards ? 'No standards selected yet' : ''}
 
-3. Suggest the best CI model based on complexity
-4. Identify any potential issues or missing configuration
+Include CI Guide: ${config.include_ci ? 'Yes' : 'No'}
+${config.include_ci ? `
+  CI Provider: ${config.ci_provider || 'anthropic'}
+  CI Model: ${config.ci_model || 'claude-3-5-sonnet'}
+  CI Name: ${config.ci_name === 'Auto-generate from project' ? 'auto-generate' : config.ci_name || 'auto-generate'}` : ''}
 
-RESPONSE FORMAT:
-Please provide:
-1. A brief analysis in plain text
-2. Then include a JSON block with your recommendations:
+Add to Menu of the Day: ${config.add_to_menu ? 'Yes' : 'No'}
+${config.add_to_menu ? `
+  Category: ${config.menu_category || 'not selected'}
+  Build Command: ${config.build_command || 'not specified'}
+  Run Command: ${config.run_command || 'not specified'}` : ''}
 
-{
-  "recommendations": {
-    "standards": ["standard_id1", "standard_id2"],
-    "ci_model": "recommended-model",
-    "ci_provider": "recommended-provider",
-    "warnings": ["warning1", "warning2"],
-    "suggestions": ["suggestion1", "suggestion2"]
-  }
-}
+=== REQUEST ===
 
-The JSON will be automatically parsed and can be applied with the Apply button.
+The user has clicked PLAN. Please analyze this configuration and provide your recommendations as described in your context guide.
+
+Remember to:
+1. Validate the configuration
+2. Analyze the repository (if URL provided)
+3. Recommend applicable standards
+4. Include a JSON recommendations block for the Apply button
+5. Explain your reasoning clearly
 `;
 
         this.sendToErgon(message);
-        this.addMessage('📡 Requesting feedback from Ergon CI...', 'progress');
+        this.addMessage('📡 Requesting analysis from Ergon CI...', 'progress');
     }
 
     applyStoredRecommendations() {

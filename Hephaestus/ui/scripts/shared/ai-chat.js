@@ -485,3 +485,89 @@ window.AIChat = {
 
 // Export for use in components
 window.TektonAIChat = window.AIChat;
+
+// MCP File Operations
+// Provides secure file read/write through the MCP server
+window.mcp = {
+    // Base URL for MCP endpoints
+    baseUrl: window.rhetorUrl ? window.rhetorUrl('/mcp') : 'http://localhost:8003/mcp',
+
+    /**
+     * Read a file through MCP
+     * @param {string} path - File path relative to Tekton root
+     * @returns {Promise<string>} File contents
+     */
+    async readFile(path) {
+        try {
+            const response = await fetch(`${this.baseUrl}/file/read`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ path })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.detail || `Failed to read file: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            return data.content;
+        } catch (error) {
+            console.error('[MCP] File read error:', error);
+            throw error;
+        }
+    },
+
+    /**
+     * Write a file through MCP
+     * @param {string} path - File path relative to Tekton root
+     * @param {string} content - Content to write
+     * @param {boolean} backup - Whether to create a backup (default: true)
+     * @returns {Promise<Object>} Write result with success status and backup path
+     */
+    async writeFile(path, content, backup = true) {
+        try {
+            const response = await fetch(`${this.baseUrl}/file/write`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    path,
+                    content,
+                    backup
+                })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.detail || `Failed to write file: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('[MCP] File write error:', error);
+            throw error;
+        }
+    },
+
+    /**
+     * Check if a file exists through MCP
+     * @param {string} path - File path relative to Tekton root
+     * @returns {Promise<boolean>} True if file exists
+     */
+    async fileExists(path) {
+        try {
+            await this.readFile(path);
+            return true;
+        } catch (error) {
+            if (error.message.includes('not found')) {
+                return false;
+            }
+            throw error;
+        }
+    }
+};

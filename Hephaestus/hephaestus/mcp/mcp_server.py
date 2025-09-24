@@ -40,6 +40,8 @@ from ui_dev_tools.tools.screenshot import Screenshot
 
 # Import configuration
 from shared.utils.global_config import GlobalConfig
+import json
+from pathlib import Path
 
 # MCP Server configuration
 global_config = GlobalConfig.get_instance()
@@ -70,6 +72,20 @@ class ToolResponse(BaseModel):
     """Response model for tool execution"""
     tool: str
     status: str
+
+
+class FileReadRequest(BaseModel):
+    """Request model for reading files"""
+    path: str
+    encoding: Optional[str] = "utf-8"
+
+
+class FileWriteRequest(BaseModel):
+    """Request model for writing files"""
+    path: str
+    content: str
+    encoding: Optional[str] = "utf-8"
+    create_dirs: Optional[bool] = False
     data: Optional[Dict[str, Any]] = None
     error: Optional[str] = None
     warnings: Optional[List[str]] = None
@@ -231,6 +247,152 @@ async def execute_tool(request: ToolRequest):
             content={
                 "tool": request.tool_name,
                 "status": "error",
+                "error": str(e)
+            }
+        )
+
+
+@app.post("/mcp/file/read")
+async def read_file(request: FileReadRequest):
+    """Read a file from the filesystem
+
+    Security: Only allows reading from Tekton project directories
+    """
+    try:
+        # Convert to absolute path and resolve
+        file_path = Path(request.path)
+
+        # If relative, make it relative to Tekton root
+        if not file_path.is_absolute():
+            file_path = Path(tekton_root) / file_path
+
+        # Resolve to real path (follows symlinks)
+        file_path = file_path.resolve()
+
+        # Security check - ensure path is within Tekton project
+        tekton_path = Path(tekton_root).resolve()
+        if not str(file_path).startswith(str(tekton_path)):
+            raise HTTPException(
+                status_code=403,
+                detail=f"Access denied: Path outside Tekton project"
+            )
+
+        # Check file exists
+        if not file_path.exists():
+            raise HTTPException(
+                status_code=404,
+                detail=f"File not found: {request.path}"
+            )
+
+        # Read file
+        try:
+            content = file_path.read_text(encoding=request.encoding)
+            logger.info(f"Read file: {file_path}")
+
+            return JSONResponse(content={
+                "success": True,
+                "path": str(file_path),
+                "content": content,
+                "size": len(content)
+            })
+
+        except UnicodeDecodeError:
+            # Try reading as binary and return base64
+            import base64
+            content_bytes = file_path.read_bytes()
+            content_b64 = base64.b64encode(content_bytes).decode('ascii')
+
+            return JSONResponse(content={
+                "success": True,
+                "path": str(file_path),
+                "content": content_b64,
+                "encoding": "base64",
+                "size": len(content_bytes)
+            })
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error reading file {request.path}: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={
+                "success": False,
+                "error": str(e)
+            }
+        )
+
+
+@app.post("/mcp/file/write")
+async def write_file(request: FileWriteRequest):
+    """Write content to a file
+
+    Security: Only allows writing within Tekton project directories
+    """
+    try:
+        # Convert to absolute path
+        file_path = Path(request.path)
+
+        # If relative, make it relative to Tekton root
+        if not file_path.is_absolute():
+            file_path = Path(tekton_root) / file_path
+
+        # Resolve to real path
+        file_path = file_path.resolve()
+
+        # Security check - ensure path is within Tekton project
+        tekton_path = Path(tekton_root).resolve()
+        if not str(file_path).startswith(str(tekton_path)):
+            raise HTTPException(
+                status_code=403,
+                detail=f"Access denied: Path outside Tekton project"
+            )
+
+        # Create directories if requested
+        if request.create_dirs:
+            file_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # Check parent directory exists
+        if not file_path.parent.exists():
+            raise HTTPException(
+                status_code=404,
+                detail=f"Parent directory does not exist: {file_path.parent}"
+            )
+
+        # Backup existing file if it exists
+        backup_path = None
+        if file_path.exists():
+            backup_path = file_path.with_suffix(file_path.suffix + '.bak')
+            import shutil
+            shutil.copy2(file_path, backup_path)
+
+        # Write content
+        try:
+            file_path.write_text(request.content, encoding=request.encoding)
+            logger.info(f"Wrote file: {file_path}")
+
+            return JSONResponse(content={
+                "success": True,
+                "path": str(file_path),
+                "size": len(request.content),
+                "backup": str(backup_path) if backup_path else None
+            })
+
+        except Exception as e:
+            # Restore backup if write failed
+            if backup_path and backup_path.exists():
+                import shutil
+                shutil.move(backup_path, file_path)
+            raise e
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error writing file {request.path}: {e}")
+        return JSONResponse(
+            status_code=500,
+            content={
+                "success": False,
                 "error": str(e)
             }
         )
