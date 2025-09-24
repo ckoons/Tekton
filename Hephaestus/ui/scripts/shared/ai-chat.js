@@ -385,6 +385,101 @@ window.AIChat = {
         }
         
         return parts.length > 0 ? parts : [{type: 'text', content: content}];
+    },
+
+    /**
+     * Route CI chat to specified destination
+     * Sends message to CI and routes response to iframe, element, or callback
+     * @param {string} ciName - CI to chat with (e.g., 'ergon-ci', 'terma-ci')
+     * @param {string} message - Message to send to the CI
+     * @param {Object} destination - Where to route the response
+     * @param {string} destination.type - Type of destination ('iframe', 'element', 'callback')
+     * @param {HTMLElement} destination.element - Target element (for iframe or element type)
+     * @param {Function} destination.callback - Callback function (for callback type)
+     * @param {string} destination.messageType - Message type for postMessage (default: 'ci-response')
+     * @returns {Promise<Object>} The CI response object
+     */
+    async routeCIChat(ciName, message, destination) {
+        try {
+            console.log(`[AI-CHAT] Routing message to ${ciName}`, destination);
+
+            // Send message to CI and get response
+            const response = await this.sendMessage(ciName, message);
+
+            // Extract response content
+            const responseContent = response.content || response;
+
+            // Route based on destination type
+            if (destination.type === 'iframe') {
+                // Send to iframe via postMessage
+                if (destination.element && destination.element.contentWindow) {
+                    destination.element.contentWindow.postMessage({
+                        type: destination.messageType || 'ci-response',
+                        message: responseContent,
+                        from: ciName
+                    }, '*');
+                    console.log(`[AI-CHAT] Response routed to iframe`);
+                } else {
+                    console.error('[AI-CHAT] Invalid iframe element provided');
+                }
+
+            } else if (destination.type === 'element') {
+                // Add to DOM element
+                if (destination.element) {
+                    // Check if element wants HTML or text
+                    if (destination.asHtml) {
+                        destination.element.innerHTML += `
+                            <div class="ci-message">
+                                <strong>${ciName}:</strong> ${responseContent}
+                            </div>
+                        `;
+                    } else {
+                        destination.element.textContent += responseContent;
+                    }
+
+                    // Auto-scroll if it's a scrollable container
+                    if (destination.element.scrollHeight > destination.element.clientHeight) {
+                        destination.element.scrollTop = destination.element.scrollHeight;
+                    }
+                    console.log(`[AI-CHAT] Response added to DOM element`);
+                } else {
+                    console.error('[AI-CHAT] No element provided for destination');
+                }
+
+            } else if (destination.type === 'callback') {
+                // Call the callback with response
+                if (typeof destination.callback === 'function') {
+                    destination.callback(responseContent, ciName);
+                    console.log(`[AI-CHAT] Response sent to callback`);
+                } else {
+                    console.error('[AI-CHAT] Invalid callback function provided');
+                }
+
+            } else {
+                console.warn(`[AI-CHAT] Unknown destination type: ${destination.type}`);
+            }
+
+            return response;
+
+        } catch (error) {
+            console.error(`[AI-CHAT] Failed to route CI chat:`, error);
+
+            // Send error to destination if possible
+            if (destination.type === 'callback' && destination.callback) {
+                destination.callback({
+                    error: error.message,
+                    success: false
+                }, ciName);
+            } else if (destination.type === 'iframe' && destination.element?.contentWindow) {
+                destination.element.contentWindow.postMessage({
+                    type: destination.messageType || 'ci-response',
+                    error: error.message,
+                    from: ciName
+                }, '*');
+            }
+
+            throw error;
+        }
     }
 };
 

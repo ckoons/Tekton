@@ -41,17 +41,29 @@ window.ergon_sendChat = function() {
     const teamActive = teamchatRadio ? teamchatRadio.checked : false;
     const constructActive = constructRadio ? constructRadio.checked : false;
 
-    // If we're on Construct tab, send to the iframe
+    // If we're on Construct tab, send to the iframe and get Ergon response
     if (constructActive) {
-        console.log('[ERGON] Construct tab is active - sending to packager iframe');
+        console.log('[ERGON] Construct tab is active - routing through Ergon');
 
         const iframe = document.getElementById('construct-packager-frame');
+
         if (iframe && iframe.contentWindow) {
+            // First echo the user message to packager
             iframe.contentWindow.postMessage({
                 type: 'ergon-chat-message',
                 message: message
             }, '*');
-            console.log('[ERGON] Message sent to packager iframe');
+
+            // Then send to Ergon and route response back
+            if (window.AIChat) {
+                window.AIChat.routeCIChat('ergon-ci', message, {
+                    type: 'iframe',
+                    element: iframe,
+                    messageType: 'ergon-chat-message'
+                }).catch(error => {
+                    console.error('[ERGON] Failed to get Ergon response:', error);
+                });
+            }
         } else {
             console.error('[ERGON] Packager iframe not found!');
         }
@@ -152,22 +164,26 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Setup iframe communication for Construct tab
-    window.addEventListener('message', function(event) {
+    window.addEventListener('message', async function(event) {
         if (event.data.type === 'packager-to-ergon') {
             console.log('[ERGON] Received message from packager:', event.data.message);
 
-            // Send to Ergon CI for processing
-            const ergonMessages = document.getElementById('ergon-messages');
-            if (window.SingleChat && ergonMessages) {
-                // Ensure it's initialized
-                if (!ergonMessages.getAttribute('data-component-name')) {
-                    window.SingleChat.init(ergonMessages, 'ergon', 'ergon');
+            // Use the new routeCIChat to send to Ergon and route response back to iframe
+            const iframe = document.getElementById('construct-packager-frame');
+
+            if (window.AIChat && iframe) {
+                try {
+                    await window.AIChat.routeCIChat('ergon-ci', event.data.message, {
+                        type: 'iframe',
+                        element: iframe,
+                        messageType: 'ergon-chat-message'
+                    });
+                    console.log('[ERGON] Message routed through AIChat.routeCIChat');
+                } catch (error) {
+                    console.error('[ERGON] Failed to route message:', error);
                 }
-                // Send the message
-                window.SingleChat.sendMessage(ergonMessages, event.data.message);
-                console.log('[ERGON] Message sent to Ergon CI');
             } else {
-                console.error('[ERGON] SingleChat or ergon-messages not available');
+                console.error('[ERGON] AIChat or iframe not available');
             }
         }
     });
