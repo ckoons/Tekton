@@ -636,7 +636,6 @@ class TerminalLauncher:
             # iTerm2 AppleScript
             script = f'''
             tell application "iTerm"
-                activate
                 create window with default profile
                 tell current session of current window
                     write text "{shell_cmd}"
@@ -774,7 +773,6 @@ class TerminalLauncher:
             # Use session ID to find and activate Terminal window
             script = f'''
             tell application "Terminal"
-                activate
                 set windowList to every window
                 repeat with aWindow in windowList
                     set tabList to every tab of aWindow
