@@ -582,7 +582,6 @@ class TerminalLauncher:
             script = f'''
             tell application "Terminal"
                 do script "{shell_cmd}"
-                activate
                 set windowID to id of window 1
                 return windowID
             end tell
