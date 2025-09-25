@@ -310,12 +310,12 @@ class TerminalLauncher:
     
     def __init__(self, aish_path: Optional[str] = None):
         self.platform = platform.system().lower()
-        
+
         # Setup logging
         import logging
         self.logger = logging.getLogger("terma.launcher")
         self.logger.info(f"Initializing TerminalLauncher on {self.platform}")
-        
+
         try:
             self.aish_path = aish_path or self._find_aish_proxy()
             self.logger.info(f"Found aish-proxy at: {self.aish_path}")
@@ -323,13 +323,17 @@ class TerminalLauncher:
             self.logger.warning("aish-proxy not found. Terminal launching will use basic shells.")
             self.aish_path = None
         self.terminals: Dict[int, TerminalInfo] = {}
-        
+
         # Get the active terminal roster
         self.roster = get_terminal_roster()
-        
+
+        # Track recent activations to prevent jitter
+        self._recent_activations = {}  # {session_id: timestamp}
+        self._activation_cooldown = 5.0  # seconds between activations
+
         # Platform-specific terminal detection
         self.available_terminals = self._detect_terminals()
-        
+
         if not self.available_terminals:
             raise RuntimeError(f"No supported terminal applications found on {self.platform}")
     
@@ -725,10 +729,10 @@ class TerminalLauncher:
         """Bring terminal to foreground (macOS only for now)."""
         if self.platform != "darwin":
             return False
-        
+
         # First, try to find session ID from pid
         session_id = None
-        
+
         # Check if we have a session mapping
         if hasattr(self, '_session_mapping') and pid in self._session_mapping:
             session_id = self._session_mapping[pid]
@@ -738,7 +742,21 @@ class TerminalLauncher:
                 if term.get("pid") == pid:
                     session_id = term.get("terma_id")
                     break
-        
+
+        # Check if we've recently activated this terminal
+        if session_id:
+            from datetime import datetime
+            now = datetime.now()
+            if session_id in self._recent_activations:
+                last_activation = self._recent_activations[session_id]
+                time_since = (now - last_activation).total_seconds()
+                if time_since < self._activation_cooldown:
+                    self.logger.debug(f"Skipping activation for {session_id}, last activated {time_since:.1f}s ago")
+                    return True  # Return true but skip actual activation
+
+            # Update activation timestamp
+            self._recent_activations[session_id] = now
+
         if not session_id:
             # Fall back to trying System Events with PID
             script = f'''
@@ -771,9 +789,9 @@ class TerminalLauncher:
                 return "not found"
             end tell
             '''
-        
+
         try:
-            result = subprocess.run(["osascript", "-e", script], 
+            result = subprocess.run(["osascript", "-e", script],
                                   capture_output=True, text=True)
             self.logger.info(f"Show terminal result: {result.stdout}")
             return result.returncode == 0 and "success" in result.stdout
