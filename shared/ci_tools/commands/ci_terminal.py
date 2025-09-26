@@ -57,12 +57,31 @@ def handle_ci_terminal_command(args):
     if name:
         sys.path.insert(0, str(Path(__file__).parent.parent.parent))
         from shared.aish.src.registry.ci_registry import get_registry
-        
+
         registry = get_registry()
-        if registry.get_by_name(name):
-            print(f"Error: '{name}' already exists in CI registry")
-            print("Please use a unique name")
-            sys.exit(1)
+        # Registry cleans up dead entries on init, but let's also check if the entry is stale
+        existing = registry.get_by_name(name)
+        if existing:
+            # Check if it's actually alive
+            pid = existing.get('pid')
+            socket_path = existing.get('socket')
+            is_alive = False
+
+            if pid:
+                try:
+                    os.kill(pid, 0)  # Check if process exists
+                    is_alive = True
+                except (ProcessLookupError, PermissionError):
+                    is_alive = False
+
+            # If it's dead, unregister it
+            if not is_alive or not (socket_path and os.path.exists(socket_path)):
+                print(f"[CI Terminal] Cleaning up dead entry for '{name}' (PID {pid})")
+                registry.unregister_wrapped_ci(name)
+            else:
+                print(f"Error: '{name}' already exists in CI registry (PID {pid} is active)")
+                print("Please use a unique name")
+                sys.exit(1)
     
     # Build the command to execute the minimal wrapper (PTY injection only)
     wrapper_path = Path(__file__).parent.parent / 'ci_pty_minimal.py'

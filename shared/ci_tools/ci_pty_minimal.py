@@ -102,13 +102,16 @@ class MinimalPTYWrapper:
 
                     # Extract message details
                     from_ci = message.get('from', 'unknown')
-                    content = message.get('message', '')
-                    use_delimiter = message.get('use_delimiter', False)
+                    # Handle both 'message' and 'content' keys for compatibility
+                    content = message.get('message') or message.get('content', '')
+                    # Handle both 'use_delimiter' and 'execute' for compatibility
+                    use_delimiter = message.get('use_delimiter', False) or message.get('execute', False)
 
                     # Format the injection
-                    if use_delimiter and self.delimiter:
-                        # Auto-execute with delimiter
-                        injection = content + self.delimiter
+                    if use_delimiter:
+                        # Use message delimiter if provided, otherwise wrapper delimiter, otherwise newline
+                        delimiter = message.get('delimiter', self.delimiter or '\n')
+                        injection = content + delimiter
                         print(f"[CI Wrapper] Executing command from {from_ci} with delimiter", file=sys.stderr)
                     else:
                         # Format as message notification

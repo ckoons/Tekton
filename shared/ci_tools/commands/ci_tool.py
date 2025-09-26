@@ -32,12 +32,15 @@ def handle_ci_tool_command(args):
         show_ci_tool_help()
         return True
     
-    # Build the command to execute the simple wrapper
-    wrapper_path = Path(__file__).parent.parent / 'ci_simple_wrapper.py'
-    
+    # Build the command to execute the minimal wrapper
+    wrapper_path = Path(__file__).parent.parent / 'ci_tool_minimal.py'
+
     if not wrapper_path.exists():
-        print(f"Error: Simple wrapper not found at {wrapper_path}")
-        return
+        # Fall back to simple wrapper if minimal doesn't exist
+        wrapper_path = Path(__file__).parent.parent / 'ci_simple_wrapper.py'
+        if not wrapper_path.exists():
+            print(f"Error: CI tool wrapper not found at {wrapper_path}")
+            return
     
     # Extract name, delimiter, and OS injection setting from arguments
     name = None
@@ -56,11 +59,39 @@ def handle_ci_tool_command(args):
     
     # If injection info requested, pass it through to the wrapper
     if injection_info:
-        wrapper_path = Path(__file__).parent.parent / 'ci_simple_wrapper.py'
-        cmd = [sys.executable, str(wrapper_path), '--injection-info']
-        os.execvp(cmd[0], cmd)
+        print("Injection: Minimal stdin injection (subprocess)")
         return
-    
+
+    # Check name uniqueness if provided
+    if name:
+        sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+        from shared.aish.src.registry.ci_registry import get_registry
+
+        registry = get_registry()
+        # Registry cleans up dead entries on init, but let's also check if the entry is stale
+        existing = registry.get_by_name(name)
+        if existing:
+            # Check if it's actually alive
+            pid = existing.get('pid')
+            socket_path = existing.get('socket')
+            is_alive = False
+
+            if pid:
+                try:
+                    os.kill(pid, 0)  # Check if process exists
+                    is_alive = True
+                except (ProcessLookupError, PermissionError):
+                    is_alive = False
+
+            # If it's dead, unregister it
+            if not is_alive or not (socket_path and os.path.exists(socket_path)):
+                print(f"[CI Tool] Cleaning up dead entry for '{name}' (PID {pid})")
+                registry.unregister_wrapped_ci(name)
+            else:
+                print(f"Error: '{name}' already exists in CI registry (PID {pid} is active)")
+                print("Please use a unique name")
+                sys.exit(1)
+
     # Set TEKTON_CI_NAME environment variable if name was provided
     env = os.environ.copy()
     if name:
