@@ -1,0 +1,15 @@
+{
+  "ci_name": "Amy-ci",
+  "todo_list": [
+    {
+      "task": "Continue current work",
+      "status": "in_progress"
+    }
+  ],
+  "context_notes": "\u001b[38;2;51;153;255m\u23fa\u001b[39m \u001b[1mBash\u001b[22m(ls -la)\n  \u23bf \u00a0total 88                                             \u001b(B\n     drwxr-xr-x  76 cskoons  staff   2.4K Sep 20 11:07 ./\n     drwxr-xr-x   6 cskoons  s",
+  "open_questions": [
+    "Review and confirm next steps"
+  ],
+  "files_in_focus": [],
+  "custom_data": null
+}

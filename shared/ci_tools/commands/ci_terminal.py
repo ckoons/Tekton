@@ -64,12 +64,18 @@ def handle_ci_terminal_command(args):
             print("Please use a unique name")
             sys.exit(1)
     
-    # Build the command to execute the PTY wrapper
-    wrapper_path = Path(__file__).parent.parent / 'ci_pty_wrapper.py'
-    
+    # Build the command to execute the minimal wrapper (PTY injection only)
+    wrapper_path = Path(__file__).parent.parent / 'ci_pty_minimal.py'
+
     if not wrapper_path.exists():
-        print(f"Error: PTY wrapper not found at {wrapper_path}")
-        return
+        # Fall back to simple (tmux-based) if minimal doesn't exist
+        wrapper_path = Path(__file__).parent.parent / 'ci_pty_wrapper_simple.py'
+        if not wrapper_path.exists():
+            # Fall back to original if simple doesn't exist
+            wrapper_path = Path(__file__).parent.parent / 'ci_pty_wrapper.py'
+            if not wrapper_path.exists():
+                print(f"Error: PTY wrapper not found at {wrapper_path}")
+                return
     
     # Set TEKTON_CI_NAME environment variable if name was provided
     env = os.environ.copy()
