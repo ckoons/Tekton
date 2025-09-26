@@ -1,0 +1,15 @@
+{
+  "ci_name": "Amy-ci",
+  "todo_list": [
+    {
+      "task": "Continue current work",
+      "status": "in_progress"
+    }
+  ],
+  "context_notes": "\u001b[?2026h\u001b[2J\u001b[3J\u001b[H\n\u001b[?2026l\n\u001b[?25l\u001b[?2004h\u001b[?2026h\u001b[2J\u001b[3J\u001b[H\n\u001b[?2026l\n\u001b[?2026h\u001b[2J\u001b[3J\u001b[H\n\u001b[?2026l\n\u001b[?25h\u001b[?25h\u001b[?2004l\u001b[?2026h\u001b[2J\u001b[3J\u001b[H\n\u001b[?2026l\u001b[?25l\n\u001b[?2004h\u001b[?2026h\u001b[2J\u001b[3J\u001b[H\n\u001b[?2026l\u001b[?",
+  "open_questions": [
+    "Review and confirm next steps"
+  ],
+  "files_in_focus": [],
+  "custom_data": null
+}

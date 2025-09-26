@@ -225,12 +225,12 @@ class PTYWrapper:
 
             try:
                 if has_terminal:
-                    # Save terminal settings but don't change to raw mode
-                    # Let the PTY handle terminal emulation properly
+                    # Save terminal settings and use raw mode
+                    # This is needed for proper input handling with Claude
                     try:
                         old_tty = termios.tcgetattr(sys.stdin)
-                        # Don't use raw mode - it breaks Claude's screen management
-                        # The PTY already handles echo and buffering
+                        # Use raw mode - this works best with Claude
+                        tty.setraw(sys.stdin.fileno())
                     except:
                         # If we can't get terminal attributes, continue
                         has_terminal = False
