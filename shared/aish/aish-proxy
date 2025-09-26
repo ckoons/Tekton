@@ -107,6 +107,9 @@ message_inbox = {
     'keep': deque(maxlen=50)      # Last 50 kept messages
 }
 
+# Global user activity tracking for flicker prevention
+last_user_input_time = time.time()
+
 def write_inbox_snapshot():
     """Write inbox state to file for inbox command access."""
     try:
@@ -274,23 +277,28 @@ def start_heartbeat_daemon():
     terma_session_id = TektonEnviron.get('TERMA_SESSION_ID')
     # Use tekton_url to get the correct Terma endpoint
     terma_endpoint = tekton_url('terma', '')
-    
+
     if not terma_session_id:
         # Not launched by Terma, no heartbeats needed
         return None, None
-    
+
     # Load existing inbox snapshot before starting
     load_inbox_snapshot()
-    
+
     # Import queue for thread-safe command handling
     import queue
-    
+
     # Flag to stop heartbeat thread
     stop_heartbeat = threading.Event()
-    
+
     # Queue for pending command results
     pending_results = []
     result_lock = threading.Lock()
+
+    # Track user activity for flicker prevention
+    global last_user_input_time
+    last_user_input_time = time.time()
+    USER_ACTIVE_THRESHOLD = 1.0  # User considered active within 1 second of input
     
     def send_heartbeat(status="active", immediate=False):
         """Send a single heartbeat."""
@@ -441,29 +449,43 @@ def start_heartbeat_daemon():
                 })
             send_heartbeat("active", immediate=True)
     
-    # Landmark: Heartbeat Loop - 0.5s sleep, 2s command check, 30s heartbeat
+    # Landmark: Heartbeat Loop - Adaptive polling with flicker prevention
     def send_heartbeats():
-        """Send heartbeat every 30 seconds, check for commands every 0.5 seconds."""
+        """Send heartbeat with adaptive intervals based on user activity."""
         last_heartbeat = time.time()
         last_command_check = time.time()
-        
+        inbox_poll_interval = 0.5  # Start with 500ms
+        MAX_INBOX_INTERVAL = 5.0   # Max 5 seconds when idle
+
         while not stop_heartbeat.is_set():
-            # Process any inbox commands
-            process_inbox_commands()
-            
-            # Check for commands frequently (every 2 seconds)
-            if time.time() - last_command_check >= 2:
-                # Send a heartbeat to check for commands
-                send_heartbeat("active")
-                last_command_check = time.time()
-                last_heartbeat = time.time()  # This counts as a heartbeat too
-            # Send regular heartbeat if time
-            elif time.time() - last_heartbeat >= 30:
+            # Determine if user is active
+            global last_user_input_time
+            now = time.time()
+            user_active = (now - last_user_input_time) < USER_ACTIVE_THRESHOLD
+
+            # Adaptive inbox polling - only when active or at longer intervals when idle
+            if user_active:
+                # Active mode: check frequently
+                inbox_poll_interval = 0.5
+                process_inbox_commands()
+            else:
+                # Idle mode: exponential backoff for inbox checks
+                if now - last_command_check >= inbox_poll_interval:
+                    process_inbox_commands()
+                    last_command_check = now
+                    # Increase interval up to maximum
+                    inbox_poll_interval = min(inbox_poll_interval * 1.5, MAX_INBOX_INTERVAL)
+
+            # Heartbeat logic remains unchanged (background operation)
+            if time.time() - last_heartbeat >= 30:
                 send_heartbeat("active")
                 last_heartbeat = time.time()
-            
-            # Short sleep to be responsive
-            time.sleep(0.5)
+
+            # Adaptive sleep based on activity
+            if user_active:
+                time.sleep(0.1)  # 100ms when active for responsiveness
+            else:
+                time.sleep(1.0)  # 1 second when idle to reduce CPU usage
     
     # Start heartbeat thread as daemon so it exits when main process exits
     heartbeat_thread = threading.Thread(target=send_heartbeats, daemon=True)

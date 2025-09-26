@@ -1,0 +1,52 @@
+{
+  "ci_name": "Tara-ci",
+  "todo_list": [
+    {
+      "task": "Continue current work",
+      "status": "in_progress"
+    }
+  ],
+  "context_notes": "\u001b[2m\u001b[38;2;136;136;136m\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u001b[39m\u001b[22m\n\u001b[2m>\u00a0\u001b[22m\u001b[7m \u001b[27m\n\u001b[2m\u001b[38;2;136;136;136m\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500",
+  "open_questions": [
+    "Review and confirm next steps"
+  ],
+  "files_in_focus": [
+    {
+      "path": "till/docs/TEKTON_README.md",
+      "description": ""
+    },
+    {
+      "path": "Terma/terma/core/terminal_launcher_impl.p",
+      "description": ""
+    },
+    {
+      "path": "/terma/core/terminal_launcher_impl.py",
+      "description": ""
+    },
+    {
+      "path": "Terma/terma/core/terminal_launcher_impl.py",
+      "description": ""
+    },
+    {
+      "path": "/terma/core/terminal_launcher_impl.p",
+      "description": ""
+    },
+    {
+      "path": "Coder-A/MetaData/Documentation/Roadmap/Vision.md",
+      "description": ""
+    },
+    {
+      "path": "1mCoder-A/CLAUDE.md",
+      "description": ""
+    },
+    {
+      "path": "/MetaData/Documentation/Roadmap/Vision.md",
+      "description": ""
+    },
+    {
+      "path": "/docs/TEKTON_README.md",
+      "description": ""
+    }
+  ],
+  "custom_data": null
+}

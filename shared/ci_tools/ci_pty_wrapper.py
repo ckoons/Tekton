@@ -14,6 +14,7 @@ import socket
 import json
 import select
 import signal
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -41,6 +42,13 @@ class PTYWrapper:
             self.hook_system = CIHookSystem(name)
             self.session_output = []
             self.output_buffer = []
+
+        # Simple buffering: flush on keyboard or 2-second pause
+        self.output_accumulator = []
+        self.last_user_input = 0
+        self.last_output_received = 0
+        self.keyboard_flush_pending = False
+        self.keyboard_flush_time = 0
         
     def setup_socket(self):
         """Set up Unix socket for receiving messages"""
@@ -119,12 +127,20 @@ class PTYWrapper:
             from pathlib import Path
             sys.path.insert(0, str(Path(__file__).parent.parent.parent))
             from shared.aish.src.registry.ci_registry import get_registry
-            
+
             registry = get_registry()
             registry.unregister_wrapped_ci(self.name)
             print(f"[PTY Wrapper] Unregistered {self.name}", file=sys.stderr)
         except Exception as e:
             print(f"[PTY Wrapper] Failed to unregister: {e}", file=sys.stderr)
+
+    def flush_output(self):
+        """Flush all accumulated output to terminal."""
+        if self.output_accumulator:
+            combined = b''.join(self.output_accumulator)
+            os.write(1, combined)  # Write to stdout
+            self.output_accumulator = []
+            self.keyboard_flush_pending = False
     
     def socket_listener(self):
         """Listen for messages and inject to PTY"""
@@ -173,6 +189,7 @@ class PTYWrapper:
                         injection = f"\n[{datetime.now().strftime('%H:%M')}] Message from {from_ci}: {content}\n"
                         print(f"[PTY Wrapper] Injected message from {from_ci}", file=sys.stderr)
                     
+                    # Direct write for message injection
                     os.write(self.master_fd, injection.encode('utf-8'))
                     
             except Exception as e:
@@ -229,21 +246,43 @@ class PTYWrapper:
                         has_terminal = False
                         print(f"[PTY Wrapper] Running without terminal (background mode)", file=sys.stderr)
                 
-                # I/O loop
+                # I/O loop with simple flush rules
                 stdin_closed = False
+                import time
+
                 while True:
                     try:
-                        # Build select list based on what's available
+                        now = time.time()
+
+                        # Check flush conditions
+                        should_flush = False
+
+                        # 1. Keyboard flush: 500ms after user typed
+                        if self.keyboard_flush_pending and (now - self.keyboard_flush_time) >= 0.5:
+                            should_flush = True
+                            self.keyboard_flush_pending = False
+
+                        # 2. Claude pause: 2 seconds of no output
+                        elif self.output_accumulator and (now - self.last_output_received) >= 2.0:
+                            should_flush = True
+
+                        if should_flush:
+                            self.flush_output()
+
+                        # Build select list
                         read_fds = [self.master_fd]
                         if has_terminal and not stdin_closed:
                             read_fds.append(sys.stdin)
-                        
+
                         r, w, e = select.select(read_fds, [], [], 0.1)
                         
                         if self.master_fd in r:
                             try:
                                 data = os.read(self.master_fd, 10240)
                                 if data:
+                                    # Always accumulate output, never write directly
+                                    self.output_accumulator.append(data)
+                                    self.last_output_received = time.time()
                                     # Process through hooks if enabled
                                     if self.enable_hooks:
                                         try:
@@ -269,6 +308,7 @@ class PTYWrapper:
                                                     sundown_prompt = self.hook_system._get_sundown_prompt()
                                                     prompt_bytes = sundown_prompt.encode('utf-8')
                                                     # Inject sundown prompt to PTY
+                                                    # Direct write for sundown prompt (critical)
                                                     os.write(self.master_fd, prompt_bytes)
 
                                                 self.output_buffer = []
@@ -291,6 +331,13 @@ class PTYWrapper:
                             try:
                                 data = os.read(sys.stdin.fileno(), 10240)
                                 if data:
+                                    # User typed - set up flush after 500ms
+                                    import time
+                                    self.last_user_input = time.time()
+                                    self.keyboard_flush_pending = True
+                                    self.keyboard_flush_time = self.last_user_input
+
+                                    # Send input to Claude
                                     os.write(self.master_fd, data)
                                 else:
                                     # EOF on stdin - terminal disconnected
@@ -325,6 +372,15 @@ class PTYWrapper:
     def cleanup(self):
         """Clean up resources with mandatory sundown check"""
         self.running = False
+
+        # Flush any remaining output
+        if self.output_accumulator:
+            try:
+                combined = b''.join(self.output_accumulator)
+                os.write(1, combined)
+            except:
+                pass
+            self.output_accumulator = []
 
         # Execute pre-sundown hooks if enabled
         if self.enable_hooks and hasattr(self, 'session_output') and self.session_output:
