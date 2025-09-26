@@ -363,14 +363,9 @@ def start_heartbeat_daemon():
         else:
             prefix = f"[TERMA: from {from_name}]"
         
-        # Write to terminal directly to avoid prompt interference
-        try:
-            with open('/dev/tty', 'w') as tty:
-                tty.write(f"\n{prefix} {message}\n")
-                tty.flush()
-        except:
-            # Fallback to print if /dev/tty not available
-            print(f"\n{prefix} {message}")
+        # Don't write to terminal - let ci_pty_wrapper handle all display
+        # This prevents flicker from competing flush operations
+        logger.info(f"Message received: {prefix} {message}")
         
         # Add to appropriate inbox based on message type
         if message.startswith('[PROMPT]') or message.startswith('[autoprompt]'):
@@ -490,7 +485,8 @@ def start_heartbeat_daemon():
     # Start heartbeat thread as daemon so it exits when main process exits
     heartbeat_thread = threading.Thread(target=send_heartbeats, daemon=True)
     heartbeat_thread.start()
-    print(f"aish heartbeat started (session: {terma_session_id[:8]}...)")
+    # Don't print to screen - this causes flicker
+    logger.info(f"aish heartbeat started (session: {terma_session_id[:8]}...)")
     
     # Return the send_heartbeat function and stop event for exit handler
     return send_heartbeat, stop_heartbeat

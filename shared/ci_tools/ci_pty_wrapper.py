@@ -43,12 +43,8 @@ class PTYWrapper:
             self.session_output = []
             self.output_buffer = []
 
-        # Simple buffering: flush on keyboard or 2-second pause
-        self.output_accumulator = []
-        self.last_user_input = 0
-        self.last_output_received = 0
-        self.keyboard_flush_pending = False
-        self.keyboard_flush_time = 0
+        # No buffering - simple pass-through
+        # Keep hooks for compatibility but no output buffering
         
     def setup_socket(self):
         """Set up Unix socket for receiving messages"""
@@ -134,13 +130,7 @@ class PTYWrapper:
         except Exception as e:
             print(f"[PTY Wrapper] Failed to unregister: {e}", file=sys.stderr)
 
-    def flush_output(self):
-        """Flush all accumulated output to terminal."""
-        if self.output_accumulator:
-            combined = b''.join(self.output_accumulator)
-            os.write(1, combined)  # Write to stdout
-            self.output_accumulator = []
-            self.keyboard_flush_pending = False
+    # Removed buffering methods - no longer needed
     
     def socket_listener(self):
         """Listen for messages and inject to PTY"""
@@ -232,43 +222,25 @@ class PTYWrapper:
             # Check if we have a valid terminal
             has_terminal = sys.stdin.isatty()
             old_tty = None
-            
+
             try:
                 if has_terminal:
-                    # Save terminal settings
+                    # Save terminal settings but don't change to raw mode
+                    # Let the PTY handle terminal emulation properly
                     try:
                         old_tty = termios.tcgetattr(sys.stdin)
-                        # Set terminal to raw mode for proper passthrough
-                        tty.setraw(sys.stdin.fileno())
-                        tty.setcbreak(sys.stdin.fileno())
+                        # Don't use raw mode - it breaks Claude's screen management
+                        # The PTY already handles echo and buffering
                     except:
-                        # If we can't get terminal attributes, continue without raw mode
+                        # If we can't get terminal attributes, continue
                         has_terminal = False
                         print(f"[PTY Wrapper] Running without terminal (background mode)", file=sys.stderr)
                 
-                # I/O loop with simple flush rules
+                # Simple pass-through I/O loop - no buffering
                 stdin_closed = False
-                import time
 
                 while True:
                     try:
-                        now = time.time()
-
-                        # Check flush conditions
-                        should_flush = False
-
-                        # 1. Keyboard flush: 500ms after user typed
-                        if self.keyboard_flush_pending and (now - self.keyboard_flush_time) >= 0.5:
-                            should_flush = True
-                            self.keyboard_flush_pending = False
-
-                        # 2. Claude pause: 2 seconds of no output
-                        elif self.output_accumulator and (now - self.last_output_received) >= 2.0:
-                            should_flush = True
-
-                        if should_flush:
-                            self.flush_output()
-
                         # Build select list
                         read_fds = [self.master_fd]
                         if has_terminal and not stdin_closed:
@@ -280,10 +252,10 @@ class PTYWrapper:
                             try:
                                 data = os.read(self.master_fd, 10240)
                                 if data:
-                                    # Always accumulate output, never write directly
-                                    self.output_accumulator.append(data)
-                                    self.last_output_received = time.time()
-                                    # Process through hooks if enabled
+                                    # Simple pass-through - write ONCE to stdout
+                                    os.write(1, data)  # Direct to stdout
+
+                                    # Process through hooks if enabled (but don't write again!)
                                     if self.enable_hooks:
                                         try:
                                             output_str = data.decode('utf-8', errors='replace')
@@ -308,19 +280,11 @@ class PTYWrapper:
                                                     sundown_prompt = self.hook_system._get_sundown_prompt()
                                                     prompt_bytes = sundown_prompt.encode('utf-8')
                                                     # Inject sundown prompt to PTY
-                                                    # Direct write for sundown prompt (critical)
                                                     os.write(self.master_fd, prompt_bytes)
 
                                                 self.output_buffer = []
                                         except Exception as e:
                                             print(f"[Hook Error] {e}", file=sys.stderr)
-
-                                    if has_terminal:
-                                        try:
-                                            os.write(sys.stdout.fileno(), data)
-                                        except (BrokenPipeError, OSError):
-                                            # stdout closed, continue without output
-                                            pass
                                 elif not data:
                                     # EOF from child
                                     break
@@ -331,13 +295,7 @@ class PTYWrapper:
                             try:
                                 data = os.read(sys.stdin.fileno(), 10240)
                                 if data:
-                                    # User typed - set up flush after 500ms
-                                    import time
-                                    self.last_user_input = time.time()
-                                    self.keyboard_flush_pending = True
-                                    self.keyboard_flush_time = self.last_user_input
-
-                                    # Send input to Claude
+                                    # Simple pass-through - user input to PTY
                                     os.write(self.master_fd, data)
                                 else:
                                     # EOF on stdin - terminal disconnected
@@ -373,14 +331,7 @@ class PTYWrapper:
         """Clean up resources with mandatory sundown check"""
         self.running = False
 
-        # Flush any remaining output
-        if self.output_accumulator:
-            try:
-                combined = b''.join(self.output_accumulator)
-                os.write(1, combined)
-            except:
-                pass
-            self.output_accumulator = []
+        # No buffering to flush - just ensure clean exit
 
         # Execute pre-sundown hooks if enabled
         if self.enable_hooks and hasattr(self, 'session_output') and self.session_output:
