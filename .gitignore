@@ -97,9 +97,7 @@ CLAUDE.md
 .tekton/*
 
 # Landmark operational data (not the system itself)
-landmarks/data/*.json
-landmarks/data/registry.json
-!landmarks/data/.gitkeep
+landmarks/data/
 
 # Component registrations (runtime)
 Hermes/registrations/
